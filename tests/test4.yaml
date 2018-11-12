@@ -1,0 +1,13 @@
+# Settings for imagenode.py RPi temperature sensor testing
+---
+node:
+  name: RPi
+hub_address:
+  H1: tcp://jeff-macbook:5555
+sensors:
+  T1:
+    name: Temp
+    type: DS18B20
+    gpio: 4
+    read_interval_minutes: 1  # will check temperature once per minute
+    min_difference: 0  # will report every temperature, even if no change

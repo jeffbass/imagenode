@@ -1,0 +1,24 @@
+# Settings file for imagenode.py PiCamera light detector test
+---
+node:
+  name: PiCameraTest
+  print_settings: True
+hub_address:
+  # Edit the line below to point to your Mac that will be the test hub
+  H1: tcp://192.168.86.88:5555  # or format like tcp://jeff-macbook:5555
+cameras:
+  P1:
+    resolution: (640, 480)
+    resize_width: 80
+    framerate: 32
+    vflip: True   # change to True or False to suit your RPi PiCamera
+    src: 0
+    detectors:
+      light:
+        ROI: (70,2),(100,25)
+        draw_roi: ((255,0,0),5)
+        send_frames: continuous # or none or detected event; test all 3
+        send_count: 7
+        threshold: 50
+        min_frames: 5
+        send_test_images: True

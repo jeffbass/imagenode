@@ -1,0 +1,35 @@
+# Settings for imagenode.py picam motion detector testing
+---
+node:
+  name: JeffOffice
+  queuemax: 50
+  patience: 10
+  heartbeat: 10
+  send_type: jpg
+  print_settings: True
+hub_address:
+  H1: tcp://jeff-macbook:5555
+cameras:
+  P1:
+    viewname: Window
+    resolution: (640, 480)
+    resize_width: 80
+    framerate: 32
+    vflip: False
+    detectors:
+      motion:
+        ROI: (70,2),(100,25)
+        draw_roi: ((255,0,0),5)
+        send_frames: detected event # continuous # or none or detected event
+        send_count: 5
+        delta_threshold: 5
+        min_motion_frames: 4
+        min_still_frames: 4
+        min_area: 3  # minimum area of motion as percent of ROI
+        blur_kernel_size: 21  # Guassian Blur kernel size
+        send_test_images: False
+lights:
+  L1:
+    name: floodlight
+    gpio: 18
+    on: continuous

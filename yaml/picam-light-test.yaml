@@ -1,0 +1,32 @@
+# Settings for imagenode.py picam light detector testing
+---
+node:
+  name: JeffOffice
+  queuemax: 50
+  patience: 10
+  heartbeat: 10
+  send_type: jpg
+  print_settings: True
+hub_address:
+  H1: tcp://jeff-macbook:5555
+cameras:
+  P1:
+    viewname: Window
+    resolution: (640, 480)
+    resize_width: 95
+    framerate: 32
+    vflip: True
+    detectors:
+      light:
+        ROI: (65,2),(100,25)
+        draw_roi: ((255,0,0),5)
+        send_frames: detected event # continuous # or none or detected event; test all 3
+        send_count: 7
+        threshold: 50
+        min_frames: 5
+        send_test_images: False
+lights:
+  L1:
+    name: floodlight
+    gpio: 18
+    on: continuous

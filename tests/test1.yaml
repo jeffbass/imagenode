@@ -1,0 +1,23 @@
+# Settings file for imagenode.py Mac webcam light detector testing
+---
+node:
+  name: WebCamTest
+  print_settings: True
+hub_address:
+  H1: tcp://127.0.0.1:5555  # or use tcp://localhost:5555
+cameras:
+  W1:
+    resolution: (640, 480)
+    resize_width: 80
+    framerate: 32
+    vflip: False
+    src: 0
+    detectors:
+      light:
+        ROI: (70,2),(100,25)
+        draw_roi: ((255,0,0),5)
+        send_frames: continuous # or none or detected event; test all 3
+        send_count: 7
+        threshold: 50
+        min_frames: 5
+        send_test_images: True

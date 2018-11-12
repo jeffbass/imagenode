@@ -1,0 +1,63 @@
+# Settings file imagenode.yaml -- example with lots of settings
+---
+node:
+  name: JeffOffice
+  queuemax: 50
+  patience: 10
+  heartbeat: 10
+  send_type: jpg
+  print_settings: False
+hub_address:
+  H1: tcp://jeff-macbook:5555
+  H2: tcp://192.168.1.155:5555
+cameras:
+  P1:
+    viewname: PiCameraView
+    resolution: (640, 480)
+    resize_width: 95
+    framerate: 32
+    vflip: True
+    detectors:
+      light:
+        ROI: (65,2),(100,25)
+        draw_roi: ((255,0,0),5)
+        send_frames: detected event # or continuous or none
+        send_count: 7
+        threshold: 50
+        min_frames: 5
+        send_test_images: False
+  W1:
+    viewname: USBCamView
+    resolution: (640, 480)
+    resize_width: 80
+    framerate: 32
+    vflip: False
+    src: 0
+    detectors:
+      motion:
+        ROI: (70,2),(100,25)
+        draw_roi: ((255,0,0),5)
+        send_frames: continuous # or none or detected event
+        send_count: 5
+        delta_threshold: 5
+        min_motion_frames: 4
+        min_still_frames: 4
+        min_area: 3  # minimum area of motion as percent of ROI
+        blur_kernel_size: 21  # Guassian Blur kernel size
+        send_test_images: True
+lights:
+  L1:
+    name: floodlight
+    gpio: 18
+    on: continuous
+  L2:
+    name: spotlight
+    gpio: 23
+    on: (11pm-5am)
+sensors:
+  T1:
+    name: Temperature
+    type: DS18B20
+    gpio: 4
+    read_interval_minutes: 1
+    min_difference: 1
