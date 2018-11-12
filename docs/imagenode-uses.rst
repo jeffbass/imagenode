@@ -44,7 +44,7 @@ Here's what **imagenode** does on the Raspberry Pi:
   along with a series of images that show when the status changed (from flowing
   to not flowing or vice-versa). To minimize network load, images are only sent
   when there has been a status change. The program logic to select which images
-  to send is running in a thread on the Raspberry Pi.
+  to send is running in the main thread on the Raspberry Pi.
 
 Here's what **imagehub** does on the Mac:
 
@@ -74,6 +74,10 @@ which it is best suited:
   Pi is very slow for writing large binary image files. Also, there have been
   reports of SD card failures caused by frequent writes of large binary files.
 - The Raspberry Pi can control the lighting to gather the best images.
+- The Raspberry Pi can also send information from sensors connected to its
+  GPIO pins. For example, if there is a temperature sensor connected, the
+  temperature can read and sent at specified intervals. Reading of GPIO
+  sensors happens in a secondary thread.
 - The Raspberry Pi can do simple image processing, motion detection and can use
   an algoritm to select which images to send via **imagezmq**.
 - The Mac can use its larger memory and faster CPU to do more complex image
