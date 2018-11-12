@@ -76,48 +76,48 @@ versus "dark" states in a specified ROI.
 2. Clone the **imagenode** GitHub repository onto your mac in your home
    directory::
 
-    git clone https://github.com/jeffbass/imagenode.git
+     git clone https://github.com/jeffbass/imagenode.git
 
 3. Open 2 terminal windows on your Mac. One will be used for running
    **imagenode** and the other will be used for running **imagezmq** as a test hub.
 4. In one terminal window, copy ``imagenode/tests/test1.yaml`` to ``imagenode.yaml``
-  in the home directory (~) using the command below. This test1.yaml file
-  contains settings that will send a continuous stream of images from the webcam
-  on the Mac while detecting "lighted" and "dark" states. You will not need to
-  edit the yaml file. The name of the file in the home directory must be
-  ``imagenode.yaml`` for these tests::
+   in the home directory (~) using the command below. This test1.yaml file
+   contains settings that will send a continuous stream of images from the webcam
+   on the Mac while detecting "lighted" and "dark" states. You will not need to
+   edit the yaml file. The name of the file in the home directory must be
+   ``imagenode.yaml`` for these tests::
 
-    cp  ~/imagenode/tests/test1.yaml  ~/imagenode.yaml
+     cp  ~/imagenode/tests/test1.yaml  ~/imagenode.yaml
 
-  You may want to open the ``imagenode.yaml`` file in your text editor as you
-  do the rest of the testing below. You may want to change some of the options
-  between test runs of ``imagenode.py`` to see how they affect detection of
-  the "lighted" and "dark" states. This test uses the Light Detector, and
-  you can see how the Light Detector is specified in the imaganode.yaml file
-  (which is the file that you just copied from the ``test1.yaml`` file in the
-  ``imagenode/tests`` directory).
+   You may want to open the ``imagenode.yaml`` file in your text editor as you
+   do the rest of the testing below. You may want to change some of the options
+   between test runs of ``imagenode.py`` to see how they affect detection of
+   the "lighted" and "dark" states. This test uses the Light Detector, and
+   you can see how the Light Detector is specified in the imaganode.yaml file
+   (which is the file that you just copied from the ``test1.yaml`` file in the
+   ``imagenode/tests`` directory).
 
 5. In the same terminal window, change to the ``~/imagenode/imagenode`` directory.
-  You will be running imagenode.py from here in a few more steps::
+   You will be running imagenode.py from here in a few more steps::
 
-    cd ~/imagenode/imagenode
+     cd ~/imagenode/imagenode
 
 6. In the other terminal window, change to the ``tests`` directory in the
-  **imagezmq** repository: ~/imagezmq/tests::
+   **imagezmq** repository: ~/imagezmq/tests::
 
-    cd ~/imagezmq/tests
+     cd ~/imagezmq/tests
 
 7. In this same terminal window, run the program ``timing_receive_jpg_buf.py``
-  and leave it running::
+   and leave it running::
 
-    workon py3cv3  # my virtualenv name; use yours instead
-    python timing_receive_jpg_buf.py
+     workon py3cv3  # my virtualenv name; use yours instead
+     python timing_receive_jpg_buf.py
 
 8. In the first terminal window (in directory ~/imagenode/imagenode), run the
-  ``imagenode.py`` program::
+   ``imagenode.py`` program::
 
-    workon py3cv3  # my virtualenv name; use yours instead
-    python imagenode.py
+     workon py3cv3  # my virtualenv name; use yours instead
+     python imagenode.py
 
 In about 1 minute, you should see a steam of images from the Mac's webcam appear
 in OpenCV display windows on the Mac. There are actually several windows
@@ -152,8 +152,8 @@ You can change the option values of the light detector to run experiments with
 the Light Detector.
 
 1. Stop the imagenode.py program running in the imagenode terminal window by
-  pressing Ctrl-C. Edit the ~/imagenode.yaml file to change the threshold value
-  to a different value.
+   pressing Ctrl-C. Edit the ~/imagenode.yaml file to change the threshold value
+   to a different value.
 2. Rerun the imagenode.py program and watch what happens.
 
 You can leave the test hub program ``timing_receive_jpg_buf.py`` program
@@ -185,68 +185,68 @@ works.  It tests the Light Detector which detects "lighted" versus "dark" states
 in a specified ROI in the field of view of the PiCamera.
 
 1. Make sure **imagezmq.py** is installed and tested on your Mac or other
-  display computer. The link to the **imagezmq** GitHub repository is above.
+   display computer. The link to the **imagezmq** GitHub repository is above.
 2. Make sure **imagezmq.py** is installed and tested on your RPi that has a
-  PiCamera that will be sending images to test the Light Detector. The link to
-  the **imagezmq** GitHub repository is above.
+   PiCamera that will be sending images to test the Light Detector. The link to
+   the **imagezmq** GitHub repository is above.
 3. Clone the **imagenode** GitHub repository onto your RPi in the home
-  directory (typically the "pi" user home directory)::
+   directory (typically the "pi" user home directory)::
 
-    git clone https://github.com/jeffbass/imagenode.git
+     git clone https://github.com/jeffbass/imagenode.git
 
-  Your directory structure on your RPi should be like the directory structure
-  described above.
+   Your directory structure on your RPi should be like the directory structure
+   described above.
 4. Open 2 terminal windows on your Mac. One will be used for running
-  **imagenode** on RPi and the other will be used for running **imagezmq** as a
-  test hub on the Mac.
+   **imagenode** on RPi and the other will be used for running **imagezmq** as a
+   test hub on the Mac.
 5. In one terminal window, ssh into the RPi. Copy ``imagenode/tests/test2.yaml``
-  to ``imagenode.yaml`` in the home directory (~) using the command below.
-  This ``test2.yaml`` file contains settings that will send a continuous stream of
-  images from the PiCamera to the Mac while detecting "lighted" and "dark"
-  states. The name of the file in the home directory must be ``imagenode.yaml``
-  for these tests::
+   to ``imagenode.yaml`` in the home directory (~) using the command below.
+   This ``test2.yaml`` file contains settings that will send a continuous stream of
+   images from the PiCamera to the Mac while detecting "lighted" and "dark"
+   states. The name of the file in the home directory must be ``imagenode.yaml``
+   for these tests::
 
-    cp  ~/imagenode/tests/test2.yaml  ~/imagenode.yaml
+     cp  ~/imagenode/tests/test2.yaml  ~/imagenode.yaml
 
-  Open a text editor in your RPi terminal window. Edit the ``~/imagenode.yaml``
-  file to change the H1 hub address to point to the TCP address of you Mac
-  that will be acting as a hub.
+   Open a text editor in your RPi terminal window. Edit the ``~/imagenode.yaml``
+   file to change the H1 hub address to point to the TCP address of you Mac
+   that will be acting as a hub.
 
-  While you are editing the H1 hub address in the ``imagenode.yaml`` file, you
-  may want set the vflip option to True. I find that in over half of my RPi
-  PiCamera setups, the camera is positioned upside down; it has to do with the
-  way the PiCamera cable connects to the main board. Setting the vflip option to
-  True will cause the image to be vertically flipped.
+   While you are editing the H1 hub address in the ``imagenode.yaml`` file, you
+   may want set the vflip option to True. I find that in over half of my RPi
+   PiCamera setups, the camera is positioned upside down; it has to do with the
+   way the PiCamera cable connects to the main board. Setting the vflip option to
+   True will cause the image to be vertically flipped.
 
-  You may want to open the ``imagenode.yaml`` file in your RPi text editor as you
-  do the rest of the testing below. You may want to change some of the options
-  between test runs of ``imagenode.py`` and see how they affect detection of
-  the "lighted" and "dark" states. This test uses the Light Detector, and
-  you can see how the Light Detector is specified in the imaganode.yaml file
-  (that is the file that you just copied from the ``test2.yaml`` file in the
-  ``imagenode/tests`` directory).
+   You may want to open the ``imagenode.yaml`` file in your RPi text editor as you
+   do the rest of the testing below. You may want to change some of the options
+   between test runs of ``imagenode.py`` and see how they affect detection of
+   the "lighted" and "dark" states. This test uses the Light Detector, and
+   you can see how the Light Detector is specified in the imaganode.yaml file
+   (that is the file that you just copied from the ``test2.yaml`` file in the
+   ``imagenode/tests`` directory).
 
 6. In the same RPi terminal window, change to the ``~/imagenode/imagenode``
-  directory. You will be running imagenode.py from here in a few more steps::
+   directory. You will be running imagenode.py from here in a few more steps::
 
-    cd ~/imagenode/imagenode
+     cd ~/imagenode/imagenode
 
 7. In the other terminal window, which is going to be used to run the test hub
-  on the Mac, change to the ``tests`` directory in the **imagezmq** repository::
+   on the Mac, change to the ``tests`` directory in the **imagezmq** repository::
 
-    cd ~/imagezmq/tests
+     cd ~/imagezmq/tests
 
 8. In this same Mac terminal window (in the ``~/imagezmq/tests`` directory),
-  run the program ``timing_receive_jpg_buf.py`` and leave it running::
+   run the program ``timing_receive_jpg_buf.py`` and leave it running::
 
-    workon py3cv3  # my virtualenv name; use yours instead
-    python timing_receive_jpg_buf.py
+     workon py3cv3  # my virtualenv name; use yours instead
+     python timing_receive_jpg_buf.py
 
 9. In the RPi terminal window (in directory ~/imagenode/imagenode), run the
-  ``imagenode.py`` program::
+   ``imagenode.py`` program::
 
-    workon py3cv3  # my virtualenv name; use yours instead
-    python imagenode.py
+     workon py3cv3  # my virtualenv name; use yours instead
+     python imagenode.py
 
 In about 1 minute, you should see a steam of images from the Mac's webcam appear
 in OpenCV display windows on the Mac. There are actually several windows
@@ -269,8 +269,8 @@ You can change the option values of the light detector to run experiments with
 the Light Detector.
 
 1. Stop the imagenode.py program running in the RPi imagenode terminal window by
-  pressing Ctrl-C. Edit the ``~/imagenode.yaml`` file to change the threshold value
-  to a different value.
+   pressing Ctrl-C. Edit the ``~/imagenode.yaml`` file to change the threshold value
+   to a different value.
 2. Rerun the ``imagenode.py`` program and watch what happens.
 
 You can experiment with other option setting values as well. You can read about
