@@ -145,24 +145,26 @@ Test 1: Running **imagenode** with **imagezmq** both running on a Mac
 **The first test** runs both the sending program **imagenode** and the receiving
 program **imagezmq** timing_receive_jpg_buf.py (acting as a test hub) on
 a Mac (or linux computer) with a webcam. It tests that the **imagenode** software
-is installed correctly and that ``imagenode.yaml`` file has been copied and edited
-in a way that works. It uses the webcam on the Mac for testing. It uses a
+is installed correctly and that the ``imagenode.yaml`` file has been copied and
+edited in a way that works. It uses the webcam on the Mac for testing. It uses a
 "lighted" versus "dark" detector applied to a specified ROI.
 
 Test 2: Sending a light detector stream of images from RPi PiCamera to a Mac
 ----------------------------------------------------------------------------
 **The second test** runs **imagenode** on a Raspberry Pi, using **imagezmq**
-(acting as a test hub) on a Mac (or Linux computer). It tests that the imagenode
-software is installed correctly on the RPi and that imagenode.yaml file has been copied and
-edited in a way that works. It tests that the **imagezmq** communication is working
-between the Raspberry Pi and the Mac. It also tests the Picamera. It uses a
-"lighted" versus "dark" detector applied to a specified ROI.
+(acting as a test hub) on a Mac (or Linux computer). It tests that the
+**imagenode** software is installed correctly on the RPi and that
+the ``imagenode.yaml`` file has been copied and edited in a way that works.
+It tests that the **imagezmq** communication is working between the Raspberry Pi
+and the Mac. It also tests the Picamera. It uses a "lighted" versus "dark"
+detector applied to a specified ROI.
 
 Test 3: Sending a motion detector stream of images from RPi PiCamera to a Mac
 -----------------------------------------------------------------------------
 **The third test** runs **imagenode** on a Raspberry Pi, using **imagezmq**
-(acting as a test hub) on a Mac (or Linux computer). It uses a
-"moving" versus "still" motion detector applied to a specified ROI.
+(acting as a test hub) on a Mac (or Linux computer). It is very similar to Test
+2, except that it uses a "moving" versus "still" motion detector applied to a
+specified ROI.
 
 Test 4: Sending temperature readings from RPi temperature sensor to a Mac
 -------------------------------------------------------------------------
@@ -206,9 +208,9 @@ Additional Documentation
 Contributing
 ============
 **imagenode** is in early development and testing. I welcome open issues and
-pull requests, but because the programs are still rapidly evolving, it is best to
-open an issue with some discussion before submitting any pull requests or code
-changes.
+pull requests, but because the programs are still rapidly evolving, it is best
+to open an issue with some discussion before submitting any pull requests or
+code changes.
 
 Acknowledgments
 ===============
