@@ -17,10 +17,10 @@ cameras:
         ROI: (70,2),(100,25)
         draw_roi: ((255,0,0),5)
         send_frames: continuous # or none or detected event
-        send_count: 5
+        send_count: 6
         delta_threshold: 5
         min_motion_frames: 4
-        min_still_frames: 4
+        min_still_frames: 5
         min_area: 3  # minimum area of motion as percent of ROI
         blur_kernel_size: 21  # Guassian Blur kernel size
         send_test_images: True
