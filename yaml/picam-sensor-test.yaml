@@ -35,5 +35,5 @@ sensors:
     name: Temperature
     type: DS18B20
     gpio: 4
-    read_interval_minutes: 1
+    read_interval_minutes: 30
     min_difference: 1
