@@ -152,8 +152,8 @@ You can change the option values of the light detector to run experiments with
 the Light Detector.
 
 1. Stop the imagenode.py program running in the imagenode terminal window by
-   pressing Ctrl-C. Edit the ~/imagenode.yaml file to change the threshold value
-   to a different value.
+   pressing Ctrl-C. Edit the ``~/imagenode.yaml`` file to change the threshold
+   value to a different value.
 2. Rerun the imagenode.py program and watch what happens.
 
 You can leave the test hub program ``timing_receive_jpg_buf.py`` program
@@ -349,7 +349,8 @@ temperature sensor readings. It also uses the Mac running the program
 this test you will need a DS18B20 temperature sensor appropriately attached
 to GPIO pin 4 of the RPi.
 
-Set things up as in Test 2. Then, in the RPi terminal window, copy test3.yaml::
+Set things up as in Test 2. Then, in the RPi terminal window, copy
+``test3.yaml``::
 
   cp  ~/imagenode/tests/test3.yaml  ~/imagenode.yaml
 
@@ -359,7 +360,7 @@ Mac display::
 
   RPi |Temp | 72 F
 
-The test4.yaml settings file causes the temperature sensor thread to start
+The ``test4.yaml`` settings file causes the temperature sensor thread to start
 and report temperature values once per minute. It will report the temperature
 once per minute even if the temperature doesn't change because the
 ``min_difference`` is set to 0. If the ``min_difference`` had ben set to ``1``,
