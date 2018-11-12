@@ -39,6 +39,7 @@ the processing power of the Raspberry Pi to:
 - Continuously capture images (around 10 frames a second is typical)
 - Analyze the images to detect events (e.g., water meter started flowing)
 - When a detected event occurs:
+
   - Send an event message about the event to the imagehub
   - Send a select few "detected state change" images to the imagehub
 
@@ -46,14 +47,14 @@ So, instead of 36,000 images an hour being sent from our water meter cam to our
 **imagehub**, only about 20 images are sent each time the water starts flowing
 or stops flowing. Instead of many thousands of images an hour showing a mostly
 unmoving farm area, our critter cams spot coyotes, raccoons and rabbits and only
-send event messages and images when something is seen actually moving about.
+sends event messages and images when something is seen actually moving about.
 
 **imagenode** provides image capture, event detection and transmission services
 as part of a distributed computer vision system that includes multiple
 computers with cameras, sensors, database hubs and communication links.
 See `Using imagenode in distributed computer vision projects <docs/imagenode-uses.rst>`_
 for a more detailed explanation of the overall project design. See the
-`Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_.
+`Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_
 for more details about the architecture of the
 **imagenode** <--> **imagezmq** <--> **imagehub** system.
 
@@ -82,7 +83,7 @@ Dependencies and Installation
 **imagenode** captures images and uses **imagezmq** to transfer the images.
 It is best to install and test **imagezmq** before installing **imagenode**.
 The instructions for installing and testing **imagezmq** are in the
-`imagezmq GitHub repository <https://github.com/jeffbass/imagezmq.git>`_
+`imagezmq GitHub repository <https://github.com/jeffbass/imagezmq.git>`_.
 
 **imagenode** is still in early development, so it is not yet in PyPI. Get it by
 cloning the GitHub repository::
@@ -98,7 +99,7 @@ for the GPIO pins, settings for detector and each ROI, etc. The settings are
 kept in a YAML file and are changed to "tune" the image capture, ROIs, motion
 detection and computer vision parameters. An example YAML file is included in
 the "yaml" directory. An explanation of the yaml file and adjusting the settings
-is in `imagenode Settings and YAML files <docs/settings-yaml.rst>`_
+is in `imagenode Settings and YAML files <docs/settings-yaml.rst>`_.
 
 Running the Tests
 =================
@@ -117,8 +118,8 @@ and run all of its tests. The **imagezmq** tests must run successfully on every
 computer you will be using **imagenode** on. You should then be able to run the
 tests below.
 
-Directory Structure
--------------------
+Directory Structure for running the tests
+-----------------------------------------
 Neither **imagenode** or **imagezmq** are far enough along in their development
 to be pip installable. So they should both be git-cloned to any computer that
 they will be running on. I have done all testing at the user home

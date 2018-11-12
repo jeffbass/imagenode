@@ -72,14 +72,14 @@ specific testing windows. It tests the Light Detector which detects "lighted"
 versus "dark" states in a specified ROI.
 
 1. Make sure **imagezmq.py** is installed and tested on your Mac or other
-  display computer. The link to the **imagezmq** GitHub repository is above.
+   display computer. The link to the **imagezmq** GitHub repository is above.
 2. Clone the **imagenode** GitHub repository onto your mac in your home
-  directory::
+   directory::
 
     git clone https://github.com/jeffbass/imagenode.git
 
 3. Open 2 terminal windows on your Mac. One will be used for running
-  **imagenode** and the other will be used for running **imagezmq** as a test hub.
+   **imagenode** and the other will be used for running **imagezmq** as a test hub.
 4. In one terminal window, copy ``imagenode/tests/test1.yaml`` to ``imagenode.yaml``
   in the home directory (~) using the command below. This test1.yaml file
   contains settings that will send a continuous stream of images from the webcam

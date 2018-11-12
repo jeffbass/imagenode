@@ -29,7 +29,7 @@ cameras:
   W1:
     viewname: USBCamView
     resolution: (640, 480)
-    resize_width: 80
+    resize_width: 90
     framerate: 32
     vflip: False
     src: 0
