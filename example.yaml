@@ -15,7 +15,7 @@ cameras:
     viewname: PiCameraView
     resolution: (640, 480)
     resize_width: 95
-    framerate: 32
+    framerate: 10
     vflip: True
     detectors:
       light:
@@ -30,7 +30,7 @@ cameras:
     viewname: USBCamView
     resolution: (640, 480)
     resize_width: 90
-    framerate: 32
+    framerate: 16
     vflip: False
     src: 0
     detectors:
