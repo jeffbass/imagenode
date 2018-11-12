@@ -194,7 +194,7 @@ of the imagenode.py program file.
 
 Additional Documentation
 ========================
-- `How imagenode works <docs/imagenode_details.rst>`_.
+- `How imagenode works <docs/imagenode-details.rst>`_.
 - `How imagenode is used in a larger project <docs/imagenode-uses.rst>`_.
 - `The imagezmq classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_.
 - The **imagehub** software that receives and files images from multiple RPi's
