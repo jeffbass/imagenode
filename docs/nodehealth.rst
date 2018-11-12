@@ -45,7 +45,7 @@ Recovery options include:
 
 The current nodehealth.py module is mostly a stub awaiting the results of
 ongoing testing of different methods of implementing the above listed
-recovery options
+recovery options.
 
 Restarting imagenode.py after rebooting the Rpi
 ===============================================
@@ -60,4 +60,4 @@ the RPi computer.
 
 `Return to How imagenode works <imagenode_details.rst>`_.
 or
-`Return to main documentation page README.rst <../README.rst>`_
+`Return to main documentation page README.rst <../README.rst>`_.
