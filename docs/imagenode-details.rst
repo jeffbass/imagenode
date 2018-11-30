@@ -142,12 +142,12 @@ relatively few if statements in the event loop. These design choices were
 the most helpful in speeding up the event loop:
 
 1. Using multiple if statements in Settings.__init__ to parse nested yaml
-  dictionary to a flat set of node Attributes.
+   dictionary to a flat set of node Attributes.
 2. Using function templates to set up functions that are specific to an option
-  choice. For example, the ``send_frame function`` is set to either the
-  ``send_jpg_frame`` function or ``send_image_frame`` function during __init__,
-  so that there does not to be an if statement about image type in the event
-  loop itself.
+   choice. For example, the ``send_frame function`` is set to either the
+   ``send_jpg_frame`` function or ``send_image_frame`` function during __init__,
+   so that there does not to be an if statement about image type in the event
+   loop itself.
 
 An example of design choice 1: camera-->event loop-->frames-to-send becomes
 camera.frames instead of camera['send_amount']['event']. This makes the
