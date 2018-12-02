@@ -162,7 +162,7 @@ and restart the ``imagenode.py`` program.
 
 You can experiment with other option setting values as well. You can read about
 the option settings and get an explanation of the file and adjusting the settings
-in `imagenode Settings and the YAML files <docs/settings-yaml.rst>`_.
+in `imagenode Settings and the YAML files <settings-yaml.rst>`_.
 
 All of these windows are used for testing. In a production use of **imagenode**,
 and **imagehub**, the event messages and the event related images would be
@@ -275,7 +275,7 @@ the Light Detector.
 
 You can experiment with other option setting values as well. You can read about
 the option settings with an explanation of the file and adjusting the settings
-in `imagenode Settings and the YAML files <docs/settings-yaml.rst>`_.
+in `imagenode Settings and the YAML files <settings-yaml.rst>`_.
 
 All of these windows are used for testing. In a production use of **imagenode**,
 and **imagehub**, the event messages and the event related images would be
