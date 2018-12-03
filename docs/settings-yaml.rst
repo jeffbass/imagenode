@@ -451,6 +451,7 @@ There are 3 additional options that don't affect how motion is detected, but do
 affect how it is recorded:
 
 1. send_frames: How images should be sent to the hub. Options are:
+
    - "detected event": this will send "send_count" frames when the state changes
      from "still" to "moving" or vice versa.
    - "continuous": this will send images to the hub continuously and is used for
@@ -550,6 +551,7 @@ There are 3 additional options that don't affect how motion is detected, but do
 affect how it is recorded:
 
 1. send_frames: How images should be sent to the hub. Options are:
+
    - "detected event": this will send "send_count" frames when the state changes
      from "still" to "moving" or vice versa.
    - "continuous": this will send images to the hub continuously and is used for
@@ -629,6 +631,7 @@ There are 3 options for set up turning on the GPIO pins::
 1. name: name of the light, e.g., "floodlight" or "overhead spotlight"
 2. gpio: Which GPIO pin is used to signal the LED electronic switching device
 3. on: When to turn on the LEDs. Settings include:
+
    - continuous
    - timed: times of day to have lights turn on and off
 
