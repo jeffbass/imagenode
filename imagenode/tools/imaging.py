@@ -57,9 +57,9 @@ class ImageNode:
         self.sensors = []  # need an empty list even if no sensors
         self.lights = []
         if self.health.sys_type == 'RPi':  # set up GPIO & sensors
-            global GPIO
-            import RPi.GPIO as GPIO
             if settings.sensors or settings.lights:
+                global GPIO
+                import RPi.GPIO as GPIO
                 GPIO.setmode(GPIO.BCM)
                 GPIO.setwarnings(False)
             if settings.sensors:   # is there at least one sensor in yaml file
