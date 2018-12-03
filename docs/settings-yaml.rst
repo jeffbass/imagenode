@@ -449,6 +449,7 @@ detectors, open an issue or pull request.
 
 There are 3 additional options that don't affect how motion is detected, but do
 affect how it is recorded:
+
 1. send_frames: How images should be sent to the hub. Options are:
    - "detected event": this will send "send_count" frames when the state changes
      from "still" to "moving" or vice versa.
@@ -505,6 +506,7 @@ code could be changed to make it behave that way).
 All images are converted to grayscale before motion detection is done.
 
 There are 4 primary options to tune the motion detector:
+
 1. delta_threshold: the minimum intensity difference between the current image
    and the weighted average of past images required to count a given pixel as
    'motion'. Smaller values cause more motion to be detected. Larger values will
@@ -546,6 +548,7 @@ the state to "still".
 
 There are 3 additional options that don't affect how motion is detected, but do
 affect how it is recorded:
+
 1. send_frames: How images should be sent to the hub. Options are:
    - "detected event": this will send "send_count" frames when the state changes
      from "still" to "moving" or vice versa.
