@@ -75,8 +75,10 @@ Dependencies and Installation
 
 - Python 3.5 and 3.6
 - OpenCV 3.3
-- Raspian Stretch and Raspian Jessie
+- Raspbian Stretch and Raspbian Jessie
 - PyZMQ 16.0
+- RPi.GPIO 0.6.5  (imported only if using GPIO pins)
+- picamera 1.13   (imported only if using PiCamera)
 - imagezmq 0.0.2
 - imutils 0.4.3 (used get to images from PiCamera)
 
@@ -93,6 +95,9 @@ cloning the GitHub repository::
 Once you have cloned **imagenode** to a directory on your local machine,
 you can run the tests using the instructions below. The instructions assume you
 have cloned both **imagehub** and **imagezmq** to the user home directory.
+
+Imagenode settings via YAML files
+=================================
 
 **imagenode** requires a *LOT* of settings: settings for the camera, settings
 for the GPIO pins, settings for detector and each ROI, etc. The settings are
