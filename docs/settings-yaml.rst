@@ -506,7 +506,7 @@ code could be changed to make it behave that way).
 
 All images are converted to grayscale before motion detection is done.
 
-There are 4 primary options to tune the motion detector:
+There are 5 options to tune the motion detector:
 
 1. delta_threshold: the minimum intensity difference between the current image
    and the weighted average of past images required to count a given pixel as
