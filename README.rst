@@ -100,7 +100,7 @@ Imagenode settings via YAML files
 =================================
 
 **imagenode** requires a *LOT* of settings: settings for the camera, settings
-for the GPIO pins, settings for detector and each ROI, etc. The settings are
+for the GPIO pins, settings for each detector and each ROI, etc. The settings are
 kept in a YAML file and are changed to "tune" the image capture, ROIs, motion
 detection and computer vision parameters. An example YAML file is included in
 the "yaml" directory. An explanation of the yaml file and adjusting the settings
