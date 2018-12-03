@@ -411,24 +411,24 @@ most garage door openers turn on a garage light when the garage door is opened.
 
 All images are converted to grayscale before light value detection.
 
-The **light** detector needs to have 2 values provided:
+The **light** detector needs to have 3 values provided:
 
 1. threshold: an intensity threshold value (0 to 255) that is "bright enough" to
-  count as lighted. Any pixel intensity value equal to or greater than the
-  threshold value will cause that pixel to be counted as "lighted". Any pixel
-  intensity value less than the threshold value will be counted as "dark".
+   count as lighted. Any pixel intensity value equal to or greater than the
+   threshold value will cause that pixel to be counted as "lighted". Any pixel
+   intensity value less than the threshold value will be counted as "dark".
 2. percent: the percentage of pixels in the ROI that must exceed the
-  threshold intensity value in order to declare the ROI state as "lighted". If
-  fewer than this percentage of pixels exceeds the Threshold, then the ROI state
-  is "dark".
+   threshold intensity value in order to declare the ROI state as "lighted". If
+   fewer than this percentage of pixels exceeds the Threshold, then the ROI state
+   is "dark".
 3. min_frames: the minimum number of frames that counts as a change of state.
-  This specifies how many frames must exceed the threshold and percent values
-  in order to change the state from "lighted" to "dark" or vice versa. This
-  setting can be adjusted to prevent minor light transients from causing a
-  "flickering" of the state. Setting this number higher will make the make the
-  state change less sensitive to transient light changes, but also make it take
-  longer to detect a change. A typical value would be 5 frames. The default
-  value is 5 frames.
+   This specifies how many frames must exceed the threshold and percent values
+   in order to change the state from "lighted" to "dark" or vice versa. This
+   setting can be adjusted to prevent minor light transients from causing a
+   "flickering" of the state. Setting this number higher will make the make the
+   state change less sensitive to transient light changes, but also make it take
+   longer to detect a change. A typical value would be 5 frames. The default
+   value is 5 frames.
 
 For example,::
 
@@ -450,23 +450,23 @@ detectors, open an issue or pull request.
 There are 3 additional options that don't affect how motion is detected, but do
 affect how it is recorded:
 1. send_frames: How images should be sent to the hub. Options are:
-  -  "detected event": this will send "send_count" frames when the state changes
-    from "still" to "moving" or vice versa.
-  -  "continuous": this will send images to the hub continuously and is used for
-    testing option settings. It allows the hub to display images in real time.
-    It is most often used with the send_test_images option.
-  -  "none": this will send no images to the hub at all. It is used when all
-    that is desired is event messages and images aren't needed. It can save
-    network bandwidth for simple motion detection tasks.
+   - "detected event": this will send "send_count" frames when the state changes
+     from "still" to "moving" or vice versa.
+   - "continuous": this will send images to the hub continuously and is used for
+     testing option settings. It allows the hub to display images in real time.
+     It is most often used with the send_test_images option.
+   - "none": this will send no images to the hub at all. It is used when all
+     that is desired is event messages and images aren't needed. It can save
+     network bandwidth for simple motion detection tasks.
 2. send_count: how many images to send when an event occurs.
 3. send_test_images: Set to True, this will send additional test images for
-  viewing the effect of option setting changes. The additional test images that
-  are sent are ROI, ROI grayscale, ROI frameDelta (showing the pixel differences
-  between the current image and the average of past images) and the ROI
-  thresholded image where all the frameDelta pixels are thresholded to black
-  or white per the delta_threshold option. Watching the continuous frames and
-  these additional test images improves tuning the options to the desired
-  motion detection level.
+   viewing the effect of option setting changes. The additional test images that
+   are sent are ROI, ROI grayscale, ROI frameDelta (showing the pixel differences
+   between the current image and the average of past images) and the ROI
+   thresholded image where all the frameDelta pixels are thresholded to black
+   or white per the delta_threshold option. Watching the continuous frames and
+   these additional test images improves tuning the options to the desired
+   motion detection level.
 
 Settings for the **motion** detector
 ====================================
@@ -506,18 +506,18 @@ All images are converted to grayscale before motion detection is done.
 
 There are 4 primary options to tune the motion detector:
 1. delta_threshold: the minimum intensity difference between the current image
-  and the weighted average of past images required to count a given pixel as
-  'motion'. Smaller values cause more motion to be detected. Larger values will
-  cause less motion to be detected. Typical values are 3 to 10.
+   and the weighted average of past images required to count a given pixel as
+   'motion'. Smaller values cause more motion to be detected. Larger values will
+   cause less motion to be detected. Typical values are 3 to 10.
 2. min_area: How much of the ROI has to have pixels show motion to cause the
-  change to the "moving" state. This is specified as a percent of ROI and the
-  value varies widely depending on ROI size, motion type, etc.
+   change to the "moving" state. This is specified as a percent of ROI and the
+   value varies widely depending on ROI size, motion type, etc.
 3. blur_kernel_size: Images are "blurred" using the OpenCV GaussianBlur method.
-  This option chooses the kernel size in pixels. Typical values are 5 to 23.
+   This option chooses the kernel size in pixels. Typical values are 5 to 23.
 4. min_motion_frames: The minimum number of frames with detected motion to change
-  the state to "moving". Typical values are 3 to 7 frames of motion.
+   the state to "moving". Typical values are 3 to 7 frames of motion.
 5. min_still_frames: The minimum number of frames with no detected motion to
-  change the state to "still". Typical values are 3 to 7 frames of no motion.
+   change the state to "still". Typical values are 3 to 7 frames of no motion.
 
 All of these values are tuned to get the motion detection results that are
 desired. There is a send_test_images option that allows real time viewing
@@ -547,23 +547,23 @@ the state to "still".
 There are 3 additional options that don't affect how motion is detected, but do
 affect how it is recorded:
 1. send_frames: How images should be sent to the hub. Options are:
-  -  "detected event": this will send "send_count" frames when the state changes
-    from "still" to "moving" or vice versa.
-  -  "continuous": this will send images to the hub continuously and is used for
-    testing option settings. It allows the hub to display images in real time.
-    It is most often used with the send_test_images option.
-  -  "none": this will send no images to the hub at all. It is used when all
-    that is desired is event messages and images aren't needed. It can save
-    network bandwidth for simple motion detection tasks.
+   - "detected event": this will send "send_count" frames when the state changes
+     from "still" to "moving" or vice versa.
+   - "continuous": this will send images to the hub continuously and is used for
+     testing option settings. It allows the hub to display images in real time.
+     It is most often used with the send_test_images option.
+   - "none": this will send no images to the hub at all. It is used when all
+     that is desired is event messages and images aren't needed. It can save
+     network bandwidth for simple motion detection tasks.
 2. send_count: how many images to send when an event occurs.
 3. send_test_images: Set to True, this will send additional test images for
-  viewing the effect of option setting changes. The additional test images that
-  are sent are ROI, ROI grayscale, ROI frameDelta (showing the pixel differences
-  between the current image and the average of past images) and the ROI
-  thresholded image where all the frameDelta pixels are thresholded to black
-  or white per the delta_threshold option. Watching the continuous frames and
-  these additional test images improves tuning the options to the desired
-  motion detection level.
+   viewing the effect of option setting changes. The additional test images that
+   are sent are ROI, ROI grayscale, ROI frameDelta (showing the pixel differences
+   between the current image and the average of past images) and the ROI
+   thresholded image where all the frameDelta pixels are thresholded to black
+   or white per the delta_threshold option. Watching the continuous frames and
+   these additional test images improves tuning the options to the desired
+   motion detection level.
 
 =========================================================================
 Settings for Sensor Detectors, including temperature and humidity sensors
@@ -586,15 +586,15 @@ There are 5 options to set up reading the temperature DS18B20 sensor::
   min_difference: 1
 
 1. name: The name you specify here will be the name that is put into the event
-  log messages recorded by the hub.
+   log messages recorded by the hub.
 2. type: DS18B20 is the only choice for now; others are in testing
 3. gpio: Which GPIO pin to read the sensor from. Pin 4 is the one most commonly
-  used for "one-wire" sensors like the DS18B20
+   used for "one-wire" sensors like the DS18B20
 4. read_interval_minutes: How often the sensor measurements should be read,
-  specified in minutes
+   specified in minutes
 5. min_difference: The minimum temperature change from the last reading that
-  will cause an event message to be sent to the hub. Typically set to 1 or 2
-  degrees.
+   will cause an event message to be sent to the hub. Typically set to 1 or 2
+   degrees.
 
 When the sensor takes a reading that meets the ``min_difference`` requirement,
 a message of this format is placed into the ``send_q`` for sending to the hub::
@@ -626,8 +626,8 @@ There are 3 options for set up turning on the GPIO pins::
 1. name: name of the light, e.g., "floodlight" or "overhead spotlight"
 2. gpio: Which GPIO pin is used to signal the LED electronic switching device
 3. on: When to turn on the LEDs. Settings include:
-  - continuous
-  - timed: times of day to have lights turn on and off
+   - continuous
+   - timed: times of day to have lights turn on and off
 
 There can be multiple lights specified, but each one would require a different
 gpio pin to be specified as well.
