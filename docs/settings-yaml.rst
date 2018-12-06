@@ -243,7 +243,7 @@ can be empty. For each camera, there are a variety of possible settings such as
 those shown below::
 
   P1:
-    view: Window
+    viewname: Window
     resolution: (640,480)
     framerate: 8
     vflip: False
@@ -274,7 +274,7 @@ cv2.VideoCapture(). PiCameras will typically use settings for resolution and
 framerate, but many other settings, such as 'exposure_mode = sports' can be
 set if needed. See the PiCamera readthedocs for the detailed API.
 
-``view`` is an optional setting. It is required when there are multiple
+``viewname`` is an optional setting. It is required when there are multiple
 cameras to give each one a unique viewname. For example, the node could be named
 ``JeffOffice`` and could have one camera with ``viewname: window`` and another
 camera with ``viewname: door`` to distinguish the two camera's fields of view.
