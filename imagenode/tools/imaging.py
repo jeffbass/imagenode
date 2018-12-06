@@ -363,7 +363,7 @@ class Sensor:
         # example: Garage|Temperature|71 F
         # example: Compost|Moisture|95 %
         # self.event_text will have self.current_reading appended when events are sent
-        self.event_text = ' |'.join([settings.nodename, self.name])
+        self.event_text = '|'.join([settings.nodename, self.name]).strip()
 
         # TODO add other sensor types as testing is completed for each sensor type
         if self.type == 'DS18B20':
@@ -382,7 +382,7 @@ class Sensor:
             # temperature has changed from last reported temperature, therefore
             # send an event message reporting temperature by appending to send_q
             temp_text = str(temperature) + " F"
-            text = ' |'.join([self.event_text, temp_text])
+            text = '|'.join([self.event_text, temp_text])
             text_and_image = (text, self.tiny_image)
             self.send_q.append(text_and_image)
             self.last_reading = temperature
@@ -499,8 +499,8 @@ class Camera:
         # Nodename and View name are in one field, separated by a space.
         # send_type is in the next field
         # The 2 field names are separaged by the | character
-        node_and_view = ' '.join([settings.nodename, self.viewname])
-        self.text = ' |'.join([node_and_view, settings.send_type])
+        node_and_view = ' '.join([settings.nodename, self.viewname]).strip()
+        self.text = '|'.join([node_and_view, settings.send_type])
 
         # set up camera image queue
         self.cam_q = deque(maxlen=settings.queuemax)
@@ -620,8 +620,8 @@ class Detector:
         # example: JeffOffice Window|light|dark
         # example: JeffOffice Window|light|lighted
         # self.event_text will have self.current_state appended when events are sent
-        node_and_view = ' '.join([nodename, viewname])
-        self.event_text = ' |'.join([node_and_view, self.detector_type])
+        node_and_view = ' '.join([nodename, viewname]).strip()
+        self.event_text = '|'.join([node_and_view, self.detector_type])
 
         # An event is a change of state (e.g., 'dark' to 'lighted')
         # Every detector is instantiated with all states = 'unknown'
@@ -704,7 +704,7 @@ class Detector:
 
         # state has changed from last reported state, therefore
         # send event message, reporting current_state, by appending it to send_q
-        text = ' |'.join([self.event_text, self.current_state])
+        text = '|'.join([self.event_text, self.current_state])
         text_and_image = (text, self.msg_image)
         send_q.append(text_and_image)
 
@@ -818,7 +818,7 @@ class Detector:
 
         # state has changed from last reported state, so...
         # send event message reporting current_state by appending it to send_q
-        text = ' |'.join([self.event_text, self.current_state])
+        text = '|'.join([self.event_text, self.current_state])
         text_and_image = (text, self.msg_image)
         send_q.append(text_and_image)
 
