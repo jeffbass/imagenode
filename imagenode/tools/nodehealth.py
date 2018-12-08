@@ -27,7 +27,7 @@ class HealthMonitor:
         self.send_q = send_q
         self.sys_type = self.get_sys_type()
         self.tiny_image = np.zeros((3,3), dtype="uint8")  # tiny blank image
-        self.heartbeat_event_text = ' |'.join([settings.nodename, 'heartbeat'])
+        self.heartbeat_event_text = ' |'.join([settings.nodename, 'Heartbeat'])
         if settings.heartbeat:
             threading.Thread(
                 target=lambda: interval_timer(
