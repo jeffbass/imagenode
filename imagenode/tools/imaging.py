@@ -476,6 +476,10 @@ class Camera:
             self.src = cameras[camera]['src']
         else:
             self.src = 0
+        if 'exposure_mode' in cameras[camera]:
+            self.exposure_mode = cameras[camera]['exposure_mode']
+        else:
+            self.exposure_mode = None
         self.detectors = []
         if 'detectors' in cameras[camera]:  # is there at least one detector
             self.setup_detectors(cameras[camera]['detectors'],
@@ -486,6 +490,10 @@ class Camera:
             self.cam = VideoStream(usePiCamera=True,
                 resolution=self.resolution,
                 framerate=self.framerate).start()
+            # if an exposure mode has been set in yaml, set it
+            if self.exposure_mode:
+                self.cam.camera.exposure_mode = self.exposure_mode
+            print('Exposure mode set to', self.cam.camera.exposure_mode)            
             self.cam_type = 'PiCamera'
         else:  # this is a webcam (not a picam)
             self.cam = VideoStream(src=0).start()
