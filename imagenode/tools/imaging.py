@@ -342,7 +342,7 @@ class Sensor:
         if 'gpio' in sensors[sensor]:
             self.gpio = sensors[sensor]['gpio']
         else:
-            self.gpio = 4   # GPIO pin 4 is the default for testing
+            self.gpio = 4   # GPIO pin 4 is default for testing
         if 'type' in sensors[sensor]:
             self.type = sensors[sensor]['type']
         else:
