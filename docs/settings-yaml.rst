@@ -40,6 +40,7 @@ Here is a imagenode.yaml file where many options have been specified::
     P1:
       viewname: PiCameraView
       resolution: (640, 480)
+      exposure_mode: night
       resize_width: 95
       framerate: 32
       vflip: True
@@ -245,24 +246,31 @@ those shown below::
   P1:
     viewname: Window
     resolution: (640,480)
+    exposure_mode: night
     framerate: 8
     vflip: False
     resize_width: 80
     send_type: jpg   # or image
-    send_frames:  # continuous or none or detected event
-    src: 0  # for webcams only, src is passed to cv2.VideoCapture()
     detectors:
       motion:
-        resize_width: 80 # resize to 80% of existing width
-        ROI:
-          corners: ((10, 15),(75, 99)) # like OpenCV rectangle drawing, but %
-          delta_threshold:
-          frame_spread:
+        ROI: (70,2),(100,25)
+        draw_roi: ((255,0,0),5)
+        send_frames: continuous # or none or detected event
+        send_count: 5
+        delta_threshold: 5
+        min_motion_frames: 4
+        min_still_frames: 4
+        min_area: 3  # minimum area of motion as percent of ROI
+        blur_kernel_size: 15  # Guassian Blur kernel size
+        send_test_images: True
       light:
-        resize_width: 90  # resize to 90% of existing width
-        ROI: ((0, 0),(100, 100))  # This ROI is all of the image (in percent)
-        threshold: 25
-        percent: 70
+        ROI: (0, 0),(100, 100)  # This ROI is all of the image (in percent)
+        draw_roi: ((255,0,0),1)   # Draws the box of the ROI with blue line
+        send_frames: continuous   # or none or detected event
+        send_count: 7
+        threshold: 50
+        min_frames: 5
+        send_test_images: True
 
 If there is a camera, the camera label ('P1' or 'W1' etc.) designates the camera
 type. 'P1' designates a PiCamera. 'W1', 'W2', etc. designate webcams. Most other
@@ -280,6 +288,17 @@ cameras to give each one a unique viewname. For example, the node could be named
 camera with ``viewname: door`` to distinguish the two camera's fields of view.
 Thus, one camera's images would be named 'JeffOffice window' and the other
 camera's images would be named 'JeffOffice door'.
+
+``resolution`` is an optional setting. It is specified as a tuple as shown
+above. Typical values are (320, 240) and (640, 480). The default if none is
+specified is (320, 240).
+
+``exposure_mode`` is an optional setting for PiCameras. It sets the PiCamera
+exposure_mode to a number of available choices, such as ``auto``, ``night``,
+and ``sports``. The details of these exposure modes are in the PiCamera
+readthedocs or you can type ``raspistill --help`` at a CLI prompt on a
+Raspberry Pi computer for a list. If no ``exposure_mode`` is specified, then
+the default is ``auto``.
 
 ``vflip`` is an optional setting. If the camera image needs to be vertically
 flipped, set ``vflip: True``. The default if not present is ``False``.
