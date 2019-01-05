@@ -353,7 +353,11 @@ use a lot are ``light``, ``motion`` and ``color``.
 
 At least one detector must be specified.  The simplest detector is the **light**
 detector and is the one that is used for camera positioning and testing. It is
-also the one that is used for running the tests described in the README.
+also the one that is used for running the tests described in the README. It is
+possible to specify multiple detectors, such as both a light detector and a
+motion detector. Sometimes it is helpful to specify multiple motion detectors
+with different ROI's and different threshholds to cover different parts of
+the imaging area.
 
 The ROI for a detector is a rectangle within the image that will be used by
 the detection algorithm. For a motion detector, the ROI coordinates define the
