@@ -370,7 +370,7 @@ class Sensor:
             self.temp_sensor = W1ThermSensor()
             self.last_reading = -999  # will ensure first reading is a change
             self.check_temperature() # check one time, then start interval_timer
-            threading.Thread(
+            threading.Thread(daemon=True,
                 target=lambda: interval_timer(
                     self.interval, self.check_temperature)).start()
 
