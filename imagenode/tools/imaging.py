@@ -493,7 +493,6 @@ class Camera:
             # if an exposure mode has been set in yaml, set it
             if self.exposure_mode:
                 self.cam.camera.exposure_mode = self.exposure_mode
-            print('Exposure mode set to', self.cam.camera.exposure_mode)            
             self.cam_type = 'PiCamera'
         else:  # this is a webcam (not a picam)
             self.cam = VideoStream(src=0).start()
