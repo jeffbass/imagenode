@@ -273,7 +273,7 @@ class ImageNode:
         #     4. Check WiFi ping; stop and restart WiFi service
         #     5. Reboot RPi; allow startup to restart imagenode.py
         #
-        sleep(10)
+        sys.exit()
         return 'hub_reply'
         pass
 
