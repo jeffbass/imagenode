@@ -50,7 +50,7 @@ class HealthMonitor:
         text_and_image = (text, self.tiny_image)
         self.send_q.append(text_and_image)
 
-    def stall_watcher(pid):
+    def stall_watcher(self, pid):
         p = psutil.Process(pid)
         print('In stall_watcher, pid =', pid)
         main_time = p.cpu_times().user
