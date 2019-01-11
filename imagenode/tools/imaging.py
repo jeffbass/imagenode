@@ -273,9 +273,7 @@ class ImageNode:
         #     4. Check WiFi ping; stop and restart WiFi service
         #     5. Reboot RPi; allow startup to restart imagenode.py
         #
-        print('Fixing broken comm link...')
-        print('....by ending the program.')
-        raise KeyboardInterrupt
+        sleep(10)
         return 'hub_reply'
         pass
 
