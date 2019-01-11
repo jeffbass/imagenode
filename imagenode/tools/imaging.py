@@ -308,6 +308,9 @@ class ImageNode:
             light.turn_off()
         if settings.sensors or settings.lights:
             GPIO.cleanup()
+        if node.stall_p:
+            stall_p.terminate()
+            stall_p.join()
 
 class Sensor:
     """ Methods and attributes of a sensor, such as a temperature sensor
