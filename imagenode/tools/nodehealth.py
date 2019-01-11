@@ -6,6 +6,7 @@ License: MIT, see LICENSE for more details.
 
 import os
 import psutil
+import signal
 import logging
 import platform
 import threading
@@ -39,7 +40,6 @@ class HealthMonitor:
         self.stall_p = None
         if True:  # later change this to stall_watcher settings value test
             pid = os.getpid()
-            print('In nodehealth.__init__, pid =', pid)
             self.stall_p = multiprocessing.Process(daemon=True,
                                args=((pid,)),
                                target=self.stall_watcher)
@@ -54,7 +54,6 @@ class HealthMonitor:
 
     def stall_watcher(self, pid):
         p = psutil.Process(pid)
-        print('In stall_watcher, pid =', pid)
         main_time = p.cpu_times().user
         sleep_time = 10
         sleep(sleep_time)
