@@ -36,13 +36,14 @@ class HealthMonitor:
             threading.Thread(daemon=True,
                 target=lambda: interval_timer(
                     settings.heartbeat, self.send_heartbeat)).start()
+        self.stall_p = None
         if True:  # later change this to stall_watcher settings value test
             pid = os.getpid()
             print('In nodehealth.__init__, pid =', pid)
-            stall_watcher = multiprocessing.Process(daemon=True,
+            self.stall_p = multiprocessing.Process(daemon=True,
                                args=((pid,)),
                                target=self.stall_watcher)
-            stall_watcher.start()
+            self.stall_p.start()
 
     def send_heartbeat(self):
         """ send a heartbeat message to imagehub
