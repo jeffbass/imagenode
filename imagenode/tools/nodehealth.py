@@ -4,6 +4,8 @@ Copyright (c) 2017 by Jeff Bass.
 License: MIT, see LICENSE for more details.
 """
 
+import os
+import psutil
 import logging
 import platform
 import threading
@@ -32,6 +34,11 @@ class HealthMonitor:
             threading.Thread(daemon=True,
                 target=lambda: interval_timer(
                     settings.heartbeat, self.send_heartbeat)).start()
+        if True:  # later change this to stall_watcher settings value test
+            pid = os.getpid()
+            timing_thread = multiprocessing.Process(daemon=True,
+                               args=((pid,)),
+                               target=self.stall_watcher)
 
     def send_heartbeat(self):
         """ send a heartbeat message to imagehub
@@ -39,6 +46,20 @@ class HealthMonitor:
         text = self.heartbeat_event_text
         text_and_image = (text, self.tiny_image)
         self.send_q.append(text_and_image)
+
+    def stall_watcher(pid):
+        p = psutil.Process(pid)
+        main_time = p.cpu_times().user
+        sleep_time = 10
+        sleep(sleep_time)
+        while True:
+            last_main_time = main_time
+            main_time = p.cpu_times().user
+            delta_time = round(abs(main_time - last_main_time))
+            if delta_time < 1:
+                os.kill(pid, signal.SIGTERM) # p.terminate() # or os.kill(pid, signal.SIGTERM)
+                sys.exit()
+            sleep(sleep_time)
 
     def get_sys_type(self):
         """ determine system type, e.g., RPi or Mac
