@@ -4,6 +4,7 @@ Copyright (c) 2017 by Jeff Bass.
 License: MIT, see LICENSE for more details.
 """
 
+import sys
 import time
 import signal
 import logging
@@ -15,7 +16,7 @@ def clean_shutdown_when_killed(signum, *args):
     KeyboardInterrupt to close all resources and log the shutdown.
     """
     logging.warning('SIGTERM detected, shutting down')
-    raise KeyboardInterrupt
+    sys.exit()
 
 def interval_timer(interval, action):
     """ Call the function 'action' every 'interval' seconds
