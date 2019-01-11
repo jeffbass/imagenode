@@ -37,6 +37,7 @@ class HealthMonitor:
                     settings.heartbeat, self.send_heartbeat)).start()
         if True:  # later change this to stall_watcher settings value test
             pid = os.getpid()
+            print('In nodehealth.__init__, pid =', pid)
             timing_thread = multiprocessing.Process(daemon=True,
                                args=((pid,)),
                                target=self.stall_watcher)
@@ -50,6 +51,7 @@ class HealthMonitor:
 
     def stall_watcher(pid):
         p = psutil.Process(pid)
+        print('In stall_watcher, pid =', pid)
         main_time = p.cpu_times().user
         sleep_time = 10
         sleep(sleep_time)
