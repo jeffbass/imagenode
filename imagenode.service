@@ -1,0 +1,14 @@
+[Unit]
+Description=Imagenode Service
+After=multi-user.target
+
+[Service]
+Type=idle
+WorkingDirectory=/home/pi/imagenode/imagenode
+User=pi
+Restart=always
+RestartSec=5
+ExecStart=/home/pi/.virtualenvs/py3cv3/bin/python -u /home/pi/imagenode/imagenode/imagenode.py
+
+[Install]
+WantedBy=multi-user.target
