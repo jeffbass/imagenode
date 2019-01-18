@@ -1,0 +1,35 @@
+# Settings file for imagenode.py camera
+---
+node:
+  name: WaterMeter
+  print_settings: False
+  patience: 30
+  # heartbeat: 2
+hub_address:
+  # Edit the line below to point to your Mac that will be the test hub
+  # H1: tcp://jeff-macbook:5555
+  # H1: tcp://jeff-thinkpad:5555
+  H1: tcp://192.168.86.70:5555
+cameras:
+  P1:
+    resolution: (320, 240)
+    framerate: 16
+    vflip: True   # change to True or False to suit your RPi PiCamera
+    exposure_mode: night
+    detectors:
+      motion:
+        ROI: (45,58),(69,79)
+        draw_roi: ((255,0,0),1)
+        send_frames:  detected event # continuous or none or detected event
+        send_count: 3
+        delta_threshold: 3
+        min_motion_frames: 3
+        min_still_frames: 4
+        min_area: 2  # minimum area of motion as percent of ROI
+        blur_kernel_size:  7 # Guassian Blur kernel size
+        send_test_images: False
+lights:
+  L1:
+    name: floodlight
+    gpio: 18
+    on: continuous
