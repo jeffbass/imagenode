@@ -693,3 +693,5 @@ Additional methods of controlling lights are in development, such as
 testing for an average image brightness level to turn on a light. For example,
 a light could be turned on if the brightness level of the camera field of view
 drops to a dark value.
+
+`Return to main documentation page README.rst <../README.rst>`_
