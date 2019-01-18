@@ -47,7 +47,7 @@ So, instead of 36,000 images an hour being sent from our water meter cam to our
 **imagehub**, only about 20 images are sent each time the water starts flowing
 or stops flowing. Instead of many thousands of images an hour showing a mostly
 unmoving farm area, our critter cams spot coyotes, raccoons and rabbits and only
-sends event messages and images when something is seen actually moving about.
+send event messages and images when something is actually seen moving about.
 
 **imagenode** provides image capture, event detection and transmission services
 as part of a distributed computer vision system that includes multiple
@@ -103,7 +103,7 @@ Imagenode settings via YAML files
 for the GPIO pins, settings for each detector and each ROI, etc. The settings are
 kept in a YAML file and are changed to "tune" the image capture, ROIs, motion
 detection and computer vision parameters. An example YAML file is included in
-the "yaml" directory. An explanation of the yaml file and adjusting the settings
+the "yaml" directory. An explanation of the yaml file and how to adjust the settings
 is in `imagenode Settings and YAML files <docs/settings-yaml.rst>`_.
 
 Running the Tests
@@ -113,7 +113,7 @@ Running the Tests
 functionality. The tests are numbered in the order in which they should be run
 to determine if **imagenode** is running correctly on your systems.
 
-Test **imagenode** in the same virtualenv that you tested **imagenzmq** in. For
+Test **imagenode** in the same virtualenv in which you tested **imagenzmq**. For
 the **imagezmq** testing and for the **imagenode** testing, my virtualenv is
 called py3cv3.
 
@@ -145,8 +145,8 @@ user home directory (either on a Mac, a RPi or other Linux computer) will
 put both the **imagenode** and **imagezmq** directories in the right place
 for testing.
 
-Test 1: Running **imagenode** with **imagezmq** both running on a Mac
----------------------------------------------------------------------
+Test 1: Running **imagenode** and **imagezmq** together on a Mac
+-----------------------------------------------------------------
 **The first test** runs both the sending program **imagenode** and the receiving
 program **imagezmq** timing_receive_jpg_buf.py (acting as a test hub) on
 a Mac (or linux computer) with a webcam. It tests that the **imagenode** software
@@ -173,7 +173,7 @@ specified ROI.
 
 Test 4: Sending temperature readings from RPi temperature sensor to a Mac
 -------------------------------------------------------------------------
-**the fourth test** runs **imagenode** on a Raspberry Pi, using **imagezmq**
+**The fourth test** runs **imagenode** on a Raspberry Pi, using **imagezmq**
 (acting as a test hub) on a Mac (or Linux computer). It allows testing of the
 temperature sensor capabilities of **imagenode**. It requires setting up a
 DS18B20 temperature sensor and connecting it appropriately to RPi GPIO pin 4.
@@ -226,7 +226,7 @@ Acknowledgments
   `PyZMQ documentation <https://pyzmq.readthedocs.io/en/latest/index.html>`_.
 - **OpenCV** and its Python bindings provide great scaffolding for computer
   vision projects large or small: `OpenCV.org <https://opencv.org/>`_.
-- **imutils** is a collection of Python classes and methods that allows computer
+- **imutils** is a collection of Python classes and methods that allow computer
   vision programs using OpenCV to be cleaner and more compact. It has a very
   helpful threaded image reader for Raspberry PiCamera modules or webcams. It
   allowed me to shorten my camera reading programs on the Raspberry Pi by half:

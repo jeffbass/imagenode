@@ -24,7 +24,7 @@ part of:
 - Communications with imagehub via imagezmq OK
 - Before starting imagenode.py, check that no imagenode.py is already running
 - Check that some processes take "normal" amount of time; sometimes ssh takes
-  45 seconds to respond; indicates issues like marginal SD card
+  longer to respond; indicates issues like marginal SD card
 - On RPi, check integrity of SD card occasionally (how?)
 
 **imagenode** Recovery Options
@@ -41,7 +41,7 @@ Recovery options include:
 - stopping and restarting the system wifi service
 - connecting to a different wifi network
 - restarting the imagenode.py program
-- rebooting the node computer
+- rebooting the computer runnin **imagenode**
 
 The current nodehealth.py module is mostly a stub awaiting the results of
 ongoing testing of different methods of implementing the above listed

@@ -22,7 +22,9 @@ The Python traceback error will help identify what setting was problematic.
 This is a design choice and is preferable to writing lots of settings checking
 code (that could never catch everything anyway ;-)
 
-Here is a imagenode.yaml file where many options have been specified::
+Here is a imagenode.yaml file where many options have been specified:
+
+.. code-block:: yaml
 
   # Settings file imagenode.yaml -- example with lots of settings
   ---
@@ -116,7 +118,9 @@ Conventions used for settings
 =============================
 
 Settings follow YAML conventions. Most settings are dictionary key value pairs.
-For example::
+For example:
+
+.. code-block:: yaml
 
   node: WaterMeter
 
@@ -142,7 +146,9 @@ to print the settings; this can be helpful in spotting option mispellings, etc.
 Categories of Settings in the YAML file
 =======================================
 
-There are 5 settings categories at the root level of the yaml file::
+There are 5 settings categories at the root level of the yaml file:
+
+.. code-block:: yaml
 
   node:  # specifies node name and operational settings like heartbeat interval
   hub_address:  # specifies 1 or more tcp address(es) for imagehub(s)
@@ -154,10 +160,10 @@ The ``node`` and ``hub_address`` settings groups are required and a traceback
 error will be generated if they are not present or are misspelled.
 
 Each of the other root level settings groups contains additional nested groups
-that allow multiple settings. They can also be nested further as needed
+that allow multiple settings. They can also be nested further as needed,
 especially when specifying details of ROIs and detector parameters for the
 camera(s). The entire yaml file is read into the settings.config dictionary,
-when the Settings() class is called, then the root level items in the yaml
+when the Settings() class is called.  Then the root level items in the yaml
 file are parsed in the Settings.__init__() method. Settings at more nested
 layers below the root level are parsed in individual setup methods in the
 ``ImageNode()`` class. For example, the ``setup_cameras()`` method in the
@@ -169,11 +175,15 @@ settings in the yaml file are described.
 node: Settings details
 ======================
 
-The 1 required ``node`` setting is::
+The 1 required ``node`` setting is:
 
-  name: A descriptive node name, often in CapWords format (e.g. WaterMeter)
+.. code-block:: yaml
 
-There is 5 optional ``node`` settings::
+  name: A descriptive node name (e.g. WaterMeter)
+
+There is 5 optional ``node`` settings:
+
+.. code-block:: yaml
 
   heartbeat: an integer number of minutes; how often to send a heartbeat to hub
   patience: maximum number of seconds to wait for a reply from imagehub
@@ -194,7 +204,7 @@ will retry and try to correct the issue (restart the WiFi connection, restart
 the ZMQ link, restart the Raspberry Pi itself, etc.). I have found heartbeat
 messages helpful in testing and restarting network issues when the the option
 is set to 10 minutes. Some of my Raspberry Pi imagenode cameras have run for
-weeks without any heartbeat messages; some have required 10 minute spaced
+weeks without any heartbeat messages, but some have required 10 minute spaced
 heartbeat messages in order to run reliably for even a couple of hours. If you
 do not provide a ``heartbeat`` value, then no heartbeat messages will be sent.
 
@@ -210,12 +220,12 @@ connection, restart the ZMQ link, restart the Raspberry Pi itself, etc.). If
 you do not specify an ``patience`` value, the default is 10 seconds.
 
 The ``queuemax`` setting sets the length of the queues used to hold images,
-messages, etc. Default is 50; setting it to a longer values will allow more
+messages, etc. Default is 50; setting it to a larger value will allow more
 images to be stored and sent for each event, but will use more memory.
 
 The ``send_type`` setting sets image transmission type. The **imagezmq**
 possible transmission types are ``image`` (for full size uncompressed OpenCV
-images) or ``jpg`` (for jpeg compressed images). The default is ``jpg``, because
+images) or ``jpg`` (for jpeg compressed images). The default is ``jpg`` because
 it saves network bandwidth with minimal image information loss. The ``image``
 setting will send unmodified OpenCV images, but they are very large compared to
 jpg compressed images and should only be used when really needed.
@@ -226,7 +236,9 @@ hub_address: Settings details
 There must be at least one hub address specified. If more than one hub
 address is listed, the one labeled H1: will be used first, then if it fails
 to respond, the one labeled H2: will be tried next, etc. Hub addresses have
-the following formats::
+the following formats:
+
+.. code-block:: yaml
 
   H1: tcp://jeff-macbook:5555
   H2: tcp://192.168.1.155:5555
@@ -241,7 +253,9 @@ Cameras are optional. While there is typically one camera (e.g., one PiCamera
 is typically the only camera on a Raspberry Pi), it is also possible to have
 multiple cameras. If there are no cameras, the cameras section of the YAML file
 can be empty. For each camera, there are a variety of possible settings such as
-those shown below::
+those shown below:
+
+.. code-block:: yaml
 
   P1:
     viewname: Window
@@ -285,7 +299,7 @@ set if needed. See the PiCamera readthedocs for the detailed API.
 ``viewname`` is an optional setting. It is required when there are multiple
 cameras to give each one a unique viewname. For example, the node could be named
 ``JeffOffice`` and could have one camera with ``viewname: window`` and another
-camera with ``viewname: door`` to distinguish the two camera's fields of view.
+camera with ``viewname: door`` to distinguish the two cameras' fields of view.
 Thus, one camera's images would be named 'JeffOffice window' and the other
 camera's images would be named 'JeffOffice door'.
 
@@ -349,14 +363,14 @@ detected. Was motion detected in a certain ROI? Did the light in the garage
 come on? Did the water meter needle move? There are settings for detectors that
 can specify how events are detected. The code and the yaml file for **imagenode**
 detectors and event tuning is continuously evolving, but three detectors that we
-use a lot are ``light``, ``motion`` and ``color``.
+use often are ``light``, ``motion`` and ``color``.
 
 At least one detector must be specified.  The simplest detector is the **light**
 detector and is the one that is used for camera positioning and testing. It is
 also the one that is used for running the tests described in the README. It is
 possible to specify multiple detectors, such as both a light detector and a
 motion detector. Sometimes it is helpful to specify multiple motion detectors
-with different ROI's and different threshholds to cover different parts of
+with different ROI's and different thresholds to cover different parts of
 the imaging area.
 
 The ROI for a detector is a rectangle within the image that will be used by
@@ -381,7 +395,7 @@ of the use of percentages versus absolute pixel coordinate values.
 For example, if the original image size is 640 x 480, then:
 
 - ((0,0),(100,100)) would specify an ROI that is the full image. This is the
-  default ROI if not ROI is explicitly specified.
+  default ROI if no ROI is explicitly specified.
 
 - ((40,40),(60,60)) would specify an ROI in the center that stretches from 40
   percent to 60 percent in each dimension. In pixels, that would be
@@ -395,7 +409,9 @@ For example, if the original image size is 640 x 480, then:
 
 A detector can also draw the ROI rectangle onto the images that are sent by
 specifying the color of the rectangle and the pixel width of the drawing line.
-For example::
+For example:
+
+.. code-block:: yaml
 
   draw_roi: ((255,0,0),5)
 
@@ -411,7 +427,9 @@ The **light** detector type sends an event message (and event image frames) when
 an ROI changes from dark to lighted or from lighted to dark. There are 2 states
 detected by the light detector: "dark" and "lighted".
 
-Here is an example of the **light** detector settings::
+Here is an example of the **light** detector settings:
+
+.. code-block:: yaml
 
   detectors:
     light:
@@ -448,12 +466,14 @@ The **light** detector needs to have 3 values provided:
    This specifies how many frames must exceed the threshold and percent values
    in order to change the state from "lighted" to "dark" or vice versa. This
    setting can be adjusted to prevent minor light transients from causing a
-   "flickering" of the state. Setting this number higher will make the make the
+   "flickering" of the state. Setting this number higher will make the
    state change less sensitive to transient light changes, but also make it take
    longer to detect a change. A typical value would be 5 frames. The default
    value is 5 frames.
 
-For example,::
+For example,
+
+.. code-block:: yaml
 
   threshold: 25
   percent: 40
@@ -496,7 +516,9 @@ affect how it is recorded:
 Settings for the **motion** detector
 ====================================
 
-The ``motion`` detector settings are more complex::
+The ``motion`` detector settings are more complex:
+
+.. code-block:: yaml
 
   detectors:
     motion:
@@ -520,8 +542,8 @@ The motion detector detects 2 states, ``moving`` and ``still``. An event is
 sent (as an event message and some event images) whenever the motion state
 changes. The detector is setup to send only a few images (determined by the
 ``send_count`` option) at each state change. This is a specific design choice.
-For example, when a water meter needle starts moving, it is enough to send a
-few frames when then needle starts moving and a few frames when it stops moving.
+For example, when a water meter needle starts moving, it is sufficient to send a
+few frames when then needle starts moving and to send a few frames when it stops moving.
 The continuous sending of frames during needle movement does not add any useful
 information. Some motion detection software sends all frames when motion is
 detected; the current **imagenode** motion detector doesn't do that (but the
@@ -552,7 +574,9 @@ see which ones best track the motion you are trying to detect. Tuning is a
 trial and error process of changing the option values and watching the various
 intermediate images sent by the send_test_images option.
 
-For example,::
+For example,
+
+.. code-block:: yaml
 
   delta_threshold: 25
   min_area: 40
@@ -605,7 +629,9 @@ sensors for motion detection. That code will be added to the repository when it
 has been more thoroughly tested. Sensors use the RPi.GPIO module and can only
 be run on Raspberry Pi computers.
 
-There are 5 options to set up reading the temperature DS18B20 sensor::
+There are 5 options to set up reading the temperature DS18B20 sensor:
+
+.. code-block:: yaml
 
   name: Temperature
   type: DS18B20
@@ -616,7 +642,7 @@ There are 5 options to set up reading the temperature DS18B20 sensor::
 1. name: The name you specify here will be the name that is put into the event
    log messages recorded by the hub.
 2. type: DS18B20 is the only choice for now; others are in testing
-3. gpio: Which GPIO pin to read the sensor from. Pin 4 is the one most commonly
+3. gpio: Which GPIO pin reads the sensor. Pin 4 is the one most commonly
    used for "one-wire" sensors like the DS18B20
 4. read_interval_minutes: How often the sensor measurements should be read,
    specified in minutes
@@ -631,7 +657,7 @@ a message of this format is placed into the ``send_q`` for sending to the hub::
 
 The temperature readings are not taken during the main event loop that captures,
 processes and sends images. Instead, the check_temperature() function uses a
-separate Python thread to start a timer thread that checks the temperature probe
+separate Python thread that reads the temperature probe
 at intervals specified by the ``read_interval_minutes`` option.
 
 ===============================================
@@ -645,7 +671,9 @@ the Raspberry Pi computer GPIO pins. The GPIO pins don't typically power the
 LEDs directly, but instead use some electronic switch (such as an N channel
 MOSFET) to turn on the LEDs.
 
-There are 3 options for set up turning on the GPIO pins::
+There are 3 options to set up the GPIO pins:
+
+.. code-block:: yaml
 
   name: floodlight
   gpio: 18
