@@ -205,8 +205,7 @@ Additional Documentation
 - `How imagenode works <docs/imagenode-details.rst>`_.
 - `How imagenode is used in a larger project <docs/imagenode-uses.rst>`_.
 - `The imagezmq classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_.
-- The **imagehub** software that receives and files images from multiple RPi's
-  running **imagenode** is ``(coming soon)``.
+- `The imagehub software saves events and images <https://github.com/jeffbass/imagehub>`_.
 - `The larger farm automation / computer vision project <https://github.com/jeffbass/yin-yang-ranch>`_.
   This project also shows the overall system architecture.
 
