@@ -49,8 +49,20 @@ class ImageNode:
         self.tiny_jpg = jpg_buffer # matching tiny blank jpeg
         self.jpeg_quality = 95
 
+        self.send_frame = self.send_jpg_frame # default send function is jpg
+        if settings.send_type == 'image':
+            self.send_frame = self.send_image_frame # set send function to image
+        else: # anything not spelled 'image' is set to jpg
+            self.send_frame = self.send_jpg_frame # set send function to jpg
+
         # set up message queue to hold (text, image) messages to be sent to hub
         self.send_q = deque(maxlen=settings.queuemax)
+        if settings.send_threading:  # use a threaded send_q sender instead
+            self.send_q = SendQueue(maxlen=settings.queuemax,
+                          send_frame=self.send_frame,
+                          process_hub_reply=self.process_hub_reply)
+            self.send_q.start()
+
         # start system health monitoring & get system type (RPi vs Mac etc)
         self.health = HealthMonitor(settings, self.send_q)
 
@@ -68,12 +80,6 @@ class ImageNode:
                 self.setup_sensors(settings)
             if settings.lights:   # is there at least one light in yaml file
                 self.setup_lights(settings)
-
-        self.send_frame = self.send_jpg_frame # default send function is jpg
-        if settings.send_type == 'image':
-            self.send_frame = self.send_image_frame # set send function to image
-        else: # anything not spelled 'image' is set to jpg
-            self.send_frame = self.send_jpg_frame # set send function to jpg
 
         # set up and start camera(s)
         self.camlist = []  # need an empty list if there are no cameras
@@ -277,7 +283,6 @@ class ImageNode:
         print('....by ending the program.')
         raise KeyboardInterrupt
         return 'hub_reply'
-        pass
 
     def process_hub_reply(self, hub_reply):
         """ Process hub reply if it is other than "OK".
@@ -310,6 +315,62 @@ class ImageNode:
             light.turn_off()
         if settings.sensors or settings.lights:
             GPIO.cleanup()
+        if settings.send_threading:
+            self.send_q.stop_sending()
+
+class SendQueue:
+    """ Methods and attributes of a send_q replacement that uses threaded sends
+
+    The default send_q is a deque that is written in a forever loop in
+    the imagenode.py main() event loop. It works, but has speed issues when
+    sending occurs while motion detection is actively occuring.
+
+    This class creates a drop-in replacement for send_q. This replacement
+    send_q will always return len() as if empty, so that the main() event loop
+    will loop forever in node.read_cameras() without ever sending anything.
+    Instead, this send_q replacement will append() as usual, but has a method
+    that continuously sends the message tuples from send_q in a separate thread.
+
+    Parameters:
+        maxlen (int): maximum length of deque
+        send_frame (func): the ImageNode method that sends frames
+        process_hub_reply (func): the ImageNode method that processes hub replies
+
+    """
+    def __init__(self, maxlen=500, send_frame=None,
+                        process_hub_reply=None):
+        self.send_q = deque(maxlen=maxlen)
+        self.send_frame = send_frame
+        self.process_hub_reply = process_hub_reply
+        self.keep_sending = True
+
+    def __bool__(self):
+        return False  # so that the read loop keeps reading forever
+
+    def __len__(self):
+        return 0  # so that the main() send loop is never entered
+
+    def append(self, text_and_image):
+        self.send_q.append(text_and_image)
+
+    def send_messages_forever(self):
+        while self.keep_sending:
+            if len(self.send_q) > 0:  # send until send_q is empty
+                text, image = self.send_q.popleft()
+                hub_reply = self.send_frame(text, image)
+                self.process_hub_reply(hub_reply)
+            else:
+                sleep(0.0000001) # sleep before checking send_q again
+
+    def start(self):
+    		# start the thread to read frames from the video stream
+    		t = Thread(target=self.send_messages_forever)
+    		t.daemon = True
+    		t.start()
+
+    def stop_sending(self):
+        self.keep_sending = False
+        sleep(0.0000001) # sleep to allow ZMQ to clear buffer
 
 class Sensor:
     """ Methods and attributes of a sensor, such as a temperature sensor
@@ -923,6 +984,10 @@ class Settings:
             self.heartbeat = self.config['node']['heartbeat']
         else:
             self.heartbeat = 0
+        if 'send_threading' in self.config['node']:
+            self.send_threading = self.config['node']['send_threading']
+        else:
+            self.send_threading = False
         if 'send_type' in self.config['node']:
             self.send_type = self.config['node']['send_type']
         else:
