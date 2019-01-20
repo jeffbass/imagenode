@@ -49,6 +49,12 @@ class ImageNode:
         self.tiny_jpg = jpg_buffer # matching tiny blank jpeg
         self.jpeg_quality = 95
 
+        # open ZMQ link to imagehub
+        # use either of the formats below to specifiy address of display computer
+        # sender = imagezmq.ImageSender(connect_to='tcp://jeff-macbook:5555')
+        # self.sender = imagezmq.ImageSender(connect_to='tcp://192.168.1.190:5555')
+        self.sender = imagezmq.ImageSender(connect_to=settings.hub_address)
+
         self.send_frame = self.send_jpg_frame # default send function is jpg
         if settings.send_type == 'image':
             self.send_frame = self.send_image_frame # set send function to image
@@ -85,12 +91,6 @@ class ImageNode:
         self.camlist = []  # need an empty list if there are no cameras
         if settings.cameras:  # is there at least one camera in yaml file
             self.setup_cameras(settings)
-
-        # open ZMQ link to imagehub
-        # use either of the formats below to specifiy address of display computer
-        # sender = imagezmq.ImageSender(connect_to='tcp://jeff-macbook:5555')
-        # self.sender = imagezmq.ImageSender(connect_to='tcp://192.168.1.190:5555')
-        self.sender = imagezmq.ImageSender(connect_to=settings.hub_address)
 
         # Read a test image from each camera to check and verify:
         # 1. test that all cameras can successfully read an image
