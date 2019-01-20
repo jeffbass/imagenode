@@ -363,10 +363,11 @@ class SendQueue:
                 sleep(0.0000001) # sleep before checking send_q again
 
     def start(self):
-    		# start the thread to read frames from the video stream
-    		t = Thread(target=self.send_messages_forever)
-    		t.daemon = True
-    		t.start()
+        # start the thread to read frames from the video stream
+        t = threading.Thread(target=self.send_messages_forever)
+        print('Starting threading')
+        t.daemon = True
+        t.start()
 
     def stop_sending(self):
         self.keep_sending = False
