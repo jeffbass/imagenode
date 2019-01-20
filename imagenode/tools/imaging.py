@@ -890,6 +890,7 @@ class Detector:
         text = '|'.join([self.event_text, self.current_state])
         text_and_image = (text, self.msg_image)
         send_q.append(text_and_image)
+        send_q.append(text_and_image)
 
         # if frame_count = -1, then already sending images continuously...
         #   so no need to send the images of this detected event
