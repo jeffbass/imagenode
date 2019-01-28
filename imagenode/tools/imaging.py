@@ -134,7 +134,7 @@ class ImageNode:
             print('    Resolution actual after cam read:', cam.res_actual)
             print('    Resize_width setting:', cam.resize_width)
             print('    Resolution after resizing:', cam.res_resized)
-            if self.cam_type == 'PiCamera':
+            if cam.cam_type == 'PiCamera':
                 print ('    PiCamera exposure_mode:', cam.camera.exposure_mode)
             for detector in cam.detectors:
                 print('    Detector:', detector.detector_type)
