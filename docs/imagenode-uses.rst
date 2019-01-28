@@ -76,7 +76,7 @@ which it is best suited:
 - The Raspberry Pi can control the lighting to gather the best images.
 - The Raspberry Pi can also send information from sensors connected to its
   GPIO pins. For example, if there is a temperature sensor connected, the
-  temperature can read and sent at specified intervals. Reading of GPIO
+  temperature can be read and sent at specified intervals. Reading of GPIO
   sensors happens in a secondary thread.
 - The Raspberry Pi can do simple image processing, motion detection and can use
   an algoritm to select which images to send via **imagezmq**.

@@ -43,7 +43,7 @@ You can read more about the YAML file and get examples of settings at
 The ``HealthMonitor`` class is pretty simple so far. It determines what
 kind of computer **imagenode** is running on so that the right camera, sensor
 and light control libraries can be imported. It also holds the methods to
-implement ``heartbeat`` messages to help maintain network reliablity. You can
+implement ``heartbeat`` messages to help maintain network reliability. You can
 read more about the ``HealthMonitor`` class in the
 `HealthMonitor documentation <nodehealth.rst>`_.
 
@@ -61,8 +61,8 @@ is a tuple::
 
   (text, image)
 
-There are 2 categories of messages: (1) event messages that are text (with no
-image from a camera), and (2) images from a camera.
+There are 2 categories of messages: (1) event messages that are text only with no
+image from a camera, and (2) images from a camera.
 
 **Event messages** are about detected events, such as "lighted" or "dark". For
 event messages, the image portion of the tuple is a tiny black image. This
@@ -77,26 +77,31 @@ is only one camera, then the view name could be absent.
 
 Event messages look like this (there is also a small black image as 2nd part of
 each message tuple, not shown here)::
+
   WaterMeter|startup|
   WaterMeter|OK|                 # If Heartbeat message option chosen
   WaterMeter|motion|moving
   WaterMeter|motion|still
   Garage|light|lighted
   Garage|light|dark
+  Garage|Temp|59 F
   JeffOffice window|light|lighted
   JeffOffice door|motion|still
 
 The template for **event** messages is::
+
   node name and view name|information|detected state
 
 Image messages look like this (the image itself is the 2nd part of each
 message tuple, not shown here)::
+
   WaterMeter|jpg|moving
   WaterMeter|image|moving
   Garage|jpg|lighted
   Garage|image|lighted
 
 The template for **image** messages is::
+
     node name and view name|send_type|detector state
 
 When running tests, such as when using the **imagezmq** ``timing_receive_jpg_buf``
@@ -114,8 +119,9 @@ Some Overall Design Choices (that may or may not be obvious)
 A YAML file was chosen for setting the **many** options needed to define what
 images to select and send. This seems more readable, especially for the nested
 options that are necessary to set up a motion detector, for example. Choices
-that were possible but rejected include using command line arguments, using a
-json configuration file and using a config.ini file (Python module is?)
+that were considered but rejected included using command line arguments, using a
+json configuration file or using a config.ini file (read using the Python
+configparser module).
 
 Every message from **imagenode** to the **imagehub** is a tuple::
 
@@ -146,22 +152,28 @@ the most helpful in speeding up the event loop:
 2. Using function templates to set up functions that are specific to an option
    choice. For example, the ``send_frame function`` is set to either the
    ``send_jpg_frame`` function or ``send_image_frame`` function during __init__,
-   so that there does not to be an if statement about image type in the event
+   so that there does not need to be an if statement about image type in the event
    loop itself.
 
 An example of design choice 1: camera-->event loop-->frames-to-send becomes
 camera.frames instead of camera['send_amount']['event']. This makes the
 Settings.__init__ a bit hard to read, but makes the event loop only reference
-first level attributes.  That means that this nested dictionary get::
+first level attributes.  That means that this nested dictionary get:
+
+.. code-block:: python
 
   send_multiple(camera['send_amount']['event'])
 
-becomes a first level attribute of camera object::
+becomes a first level attribute of camera object:
+
+.. code-block:: python
 
   send_multiple(camera.frames)
 
 An example for design choice 2 is the choice of jpg vs image execution. Instead of
-(use python code rst display here)::
+(use python code rst display here):
+
+.. code-block:: python
 
   # inside event loop there is if statement about jpg vs. image choice
   # design choice is to NOT to do it this way!
@@ -173,7 +185,9 @@ An example for design choice 2 is the choice of jpg vs image execution. Instead 
 
 Instead, the choice of frame type is moved to a one-time function choice in
 Settings.__init__. That way, there is no if statement needed in the event
-loop::
+loop:
+
+.. code-block:: python
 
   # make the jpg vs. image choice one time only in Settings.__init__
   if settings.jpg:

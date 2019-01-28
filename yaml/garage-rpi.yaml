@@ -1,0 +1,33 @@
+# Settings file for imagenode.py PiCamera light detector test
+---
+node:
+  name: Garage
+  print_settings: False
+  # heartbeat: 10
+hub_address:
+  # Edit the line below to point to your Mac that will be the test hub
+  # H1: tcp://jeff-thinkpad:5555
+  H1: tcp://192.168.86.70:5555
+cameras:
+  P1:
+    resolution: (320, 240)
+    framerate: 8
+    vflip: False # change to True or False to suit your RPi PiCamera
+    exposure_mode: night
+    detectors:
+      light:
+        ROI: (50,25),(85,45)
+        draw_roi: ((255,0,0),2)
+        send_frames: detected event # continuous or none or detected event
+        send_count: 7
+        threshold: 50
+        min_frames: 5
+        send_test_images: False
+sensors:
+  T1:
+    name: Temp
+    type: DS18B20
+    gpio: 4
+    read_interval_minutes: 30  # will check temperature once per minute
+    min_difference: 1  # will report every temperature, even if no change
+
