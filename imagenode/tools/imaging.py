@@ -691,11 +691,11 @@ class Detector:
             state_num = -1
         if self.send_test_images:
             images = []
-            images.append(('ROI|jpg', ROI,))
-            images.append(('Grayscale|jpg', gray,))
+            images.append(('ROI', ROI,))
+            images.append(('Grayscale', gray,))
             state_values =[]
-            state_values.append(('State|jpg', state,))
-            state_values.append(('Mean Pixel Value|jpg', str(gray_mean),))
+            state_values.append(('State', state,))
+            state_values.append(('Mean Pixel Value', str(gray_mean),))
             self.send_test_data(images, state_values, send_q)
         self.state_history_q.append(state_num)
         if len(self.state_history_q) < self.min_frames:
@@ -797,14 +797,14 @@ class Detector:
         # Optionally, send various test images to visually tune settings
         if self.send_test_images:  # send some intermediate test images
             images = []
-            images.append(('ROI|jpg', ROI,))
-            images.append(('Grayscale|jpg', gray,))
-            images.append(('frameDelta|jpg', frameDelta,))
-            images.append(('thresholded|jpg', thresholded,))
+            images.append(('ROI', ROI,))
+            images.append(('Grayscale', gray,))
+            images.append(('frameDelta', frameDelta,))
+            images.append(('thresholded', thresholded,))
             state_values =[]
-            state_values.append(('State|jpg', self.current_state,))
-            state_values.append(('N Contours|jpg', str(len(contours)),))
-            state_values.append(('Area|jpg', str(area),))
+            state_values.append(('State', self.current_state,))
+            state_values.append(('N Contours', str(len(contours)),))
+            state_values.append(('Area', str(area),))
             self.send_test_data(images, state_values, send_q)
         else:
             sleep(0.02)  # for testing
