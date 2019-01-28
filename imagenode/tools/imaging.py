@@ -924,6 +924,10 @@ class Settings:
             self.heartbeat = self.config['node']['heartbeat']
         else:
             self.heartbeat = 0
+        if 'stall_watcher' in self.config['node']:
+            self.stall_watcher = self.config['node']['stall_watcher']
+        else:
+            self.stall_watcher = False
         if 'send_type' in self.config['node']:
             self.send_type = self.config['node']['send_type']
         else:

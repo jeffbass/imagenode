@@ -32,6 +32,7 @@ Here is a imagenode.yaml file where many options have been specified:
     name: JeffOffice
     queuemax: 50
     patience: 10
+    stall_watcher: False
     heartbeat: 10
     send_type: jpg
     print_settings: False
@@ -187,6 +188,8 @@ There is 5 optional ``node`` settings:
 
   heartbeat: an integer number of minutes; how often to send a heartbeat to hub
   patience: maximum number of seconds to wait for a reply from imagehub
+  stall_watcher: True or False to start a 'stall_watcher' sub-process
+    (default is False)
   queuemax: maximum size of the queue for images, messages, etc.
   print_settings: True or False to print the settings from imagenode.yaml
     (default is False)
@@ -218,6 +221,25 @@ for a hub response before calling the ``fix_comm_link`` function that will retry
 a non-responsive message and then try to correct the issue (restart the WiFi
 connection, restart the ZMQ link, restart the Raspberry Pi itself, etc.). If
 you do not specify an ``patience`` value, the default is 10 seconds.
+
+If the ``stall_watcher`` setting is set to ``True``, then a sub-process is
+started that watches the main process for "slow downs" or "stalls".
+As mentioned in the above ``patience`` option, the communications link
+between **imagenode** and **imagehub** is often reliable for weeks. The ZMQ protocol
+can recover from brief network outages almost all of the time. But some network
+outages (e.g., brief power outages that confuse routers or wifi hubs) can cause
+the main process to stall and stop reading and transmitting images. Setting
+this option to ``True`` will start a 2nd process that checks that the
+cumulative cpu time of the main process is increasing as it should. If there
+has been some sort of "stall", the main process cpu time stops advancing. If
+the ``stall_watcher`` option is set to ``True``, the 2nd process will end the
+**imagenode** program when a "stall" has been detected, so that the systemd
+service can restart **imagenode**. An example **imagenode.service** file that
+provides for restarting (using systemd / systemctl) is in the main directory.
+The ``patience`` option (above) sets the number of seconds between "stall"
+checks. If no ``patience`` value is provided, the default is 10 seconds. If
+this option is set to ``False`` or is not present, there is no separate
+stall watching process started.
 
 The ``queuemax`` setting sets the length of the queues used to hold images,
 messages, etc. Default is 50; setting it to a larger value will allow more
