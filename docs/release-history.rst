@@ -24,11 +24,13 @@ here, with the most recent changes at the top.
 - Added ``exposure_mode`` option to allow choosing PiCamera exposure_mode.
   Very helpful with Infrared PiCamera "Noir" and infrared lights.
 - Bug Fixes:
+
   - Conditionally import GPIO only if needed. Fixes import error when GPIO pins
     not used.
   - Fixed a number of documentation broken links and formatting errors.
 
 0.0.1 (2018-11-15)
+------------------
 - First commit; major refactor after 18 months of testing previous version.
 - Includes motion detector, light detector, temperature sensor, LED light
   control via GPIO pins.
