@@ -140,6 +140,8 @@ class ImageNode:
             print('    Resolution actual after cam read:', cam.res_actual)
             print('    Resize_width setting:', cam.resize_width)
             print('    Resolution after resizing:', cam.res_resized)
+            if cam.cam_type == 'PiCamera':
+                print ('    PiCamera exposure_mode:', cam.cam.camera.exposure_mode)
             for detector in cam.detectors:
                 print('    Detector:', detector.detector_type)
                 print('      ROI:', detector.roi_pct, '(in percents)')
@@ -279,9 +281,7 @@ class ImageNode:
         #     4. Check WiFi ping; stop and restart WiFi service
         #     5. Reboot RPi; allow startup to restart imagenode.py
         #
-        print('Fixing broken comm link...')
-        print('....by ending the program.')
-        raise KeyboardInterrupt
+        sys.exit()
         return 'hub_reply'
 
     def process_hub_reply(self, hub_reply):
@@ -315,6 +315,9 @@ class ImageNode:
             light.turn_off()
         if settings.sensors or settings.lights:
             GPIO.cleanup()
+        if self.health.stall_p:
+            self.health.stall_p.terminate()
+            self.health.stall_p.join()
         if settings.send_threading:
             self.send_q.stop_sending()
 
@@ -750,11 +753,11 @@ class Detector:
             state_num = -1
         if self.send_test_images:
             images = []
-            images.append(('ROI|jpg', ROI,))
-            images.append(('Grayscale|jpg', gray,))
+            images.append(('ROI', ROI,))
+            images.append(('Grayscale', gray,))
             state_values =[]
-            state_values.append(('State|jpg', state,))
-            state_values.append(('Mean Pixel Value|jpg', str(gray_mean),))
+            state_values.append(('State', state,))
+            state_values.append(('Mean Pixel Value', str(gray_mean),))
             self.send_test_data(images, state_values, send_q)
         self.state_history_q.append(state_num)
         if len(self.state_history_q) < self.min_frames:
@@ -856,14 +859,14 @@ class Detector:
         # Optionally, send various test images to visually tune settings
         if self.send_test_images:  # send some intermediate test images
             images = []
-            images.append(('ROI|jpg', ROI,))
-            images.append(('Grayscale|jpg', gray,))
-            images.append(('frameDelta|jpg', frameDelta,))
-            images.append(('thresholded|jpg', thresholded,))
+            images.append(('ROI', ROI,))
+            images.append(('Grayscale', gray,))
+            images.append(('frameDelta', frameDelta,))
+            images.append(('thresholded', thresholded,))
             state_values =[]
-            state_values.append(('State|jpg', self.current_state,))
-            state_values.append(('N Contours|jpg', str(len(contours)),))
-            state_values.append(('Area|jpg', str(area),))
+            state_values.append(('State', self.current_state,))
+            state_values.append(('N Contours', str(len(contours)),))
+            state_values.append(('Area', str(area),))
             self.send_test_data(images, state_values, send_q)
         else:
             sleep(0.02)  # for testing
@@ -985,6 +988,10 @@ class Settings:
             self.heartbeat = self.config['node']['heartbeat']
         else:
             self.heartbeat = 0
+        if 'stall_watcher' in self.config['node']:
+            self.stall_watcher = self.config['node']['stall_watcher']
+        else:
+            self.stall_watcher = False
         if 'send_threading' in self.config['node']:
             self.send_threading = self.config['node']['send_threading']
         else:

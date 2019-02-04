@@ -4,10 +4,15 @@ Copyright (c) 2017 by Jeff Bass.
 License: MIT, see LICENSE for more details.
 """
 
+import os
+import psutil
+import signal
 import logging
 import platform
 import threading
+import multiprocessing
 import numpy as np
+from time import sleep
 from tools.utils import interval_timer
 
 class HealthMonitor:
@@ -27,11 +32,19 @@ class HealthMonitor:
         self.send_q = send_q
         self.sys_type = self.get_sys_type()
         self.tiny_image = np.zeros((3,3), dtype="uint8")  # tiny blank image
-        self.heartbeat_event_text = ' |'.join([settings.nodename, 'Heartbeat'])
+        self.heartbeat_event_text = '|'.join([settings.nodename, 'Heartbeat'])
+        self.patience = settings.patience
         if settings.heartbeat:
             threading.Thread(daemon=True,
                 target=lambda: interval_timer(
                     settings.heartbeat, self.send_heartbeat)).start()
+        self.stall_p = None
+        if settings.stall_watcher:  # stall_watcher option set to True
+            pid = os.getpid()
+            self.stall_p = multiprocessing.Process(daemon=True,
+                               args=((pid, self.patience,)),
+                               target=self.stall_watcher)
+            self.stall_p.start()
 
     def send_heartbeat(self):
         """ send a heartbeat message to imagehub
@@ -39,6 +52,36 @@ class HealthMonitor:
         text = self.heartbeat_event_text
         text_and_image = (text, self.tiny_image)
         self.send_q.append(text_and_image)
+
+    def stall_watcher(self, pid, patience):
+        """ Watch the main process cpu_times.user; sys.exit() if not advancing
+
+        This function is started in a separate process. It sleeps for
+        'patience' seconds, then checks if main process cpu_times.user
+        has advanced at least 1 second. If not, it ends the imagenode
+        program by killing the main process and performing sys.exit().
+        If the main process cpu_times.user is advancing normally, it sleeps
+        and checks again forever.  This catches any network or other
+        "stalls" or "hangs". Ending the imagenode program will allow automatic
+        restarting (if it is enabled in the imagenode service). See the
+        "stall_watcher" option documentation for more details.
+
+        Parameters:
+            pid (int): process ID of the main imagenode process
+            patience (int): how long to wait for each check repeated check
+        """
+        p = psutil.Process(pid)
+        main_time = p.cpu_times().user
+        sleep_time = patience
+        sleep(sleep_time)
+        while True:
+            last_main_time = main_time
+            main_time = p.cpu_times().user
+            delta_time = round(abs(main_time - last_main_time))
+            if delta_time < 1:
+                os.kill(pid, signal.SIGTERM) # p.terminate() # or os.kill(pid, signal.SIGTERM)
+                sys.exit()
+            sleep(sleep_time)
 
     def get_sys_type(self):
         """ determine system type, e.g., RPi or Mac
