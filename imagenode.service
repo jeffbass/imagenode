@@ -1,3 +1,11 @@
+# imagenode service unit file
+# Jeff Bass, jeff@yin-yang-ranch.com
+# Defines imagenode.py as a systemd service
+# This file should be copied to /etc/systemd/system as root
+#   e.g. sudo cp imagenode.service /etc/systemd/system
+# Use usual systemctl start, stop, status restart, enable commands
+#   e.g. sudo systemctl start imagenode.service
+
 [Unit]
 Description=Imagenode Service
 After=multi-user.target
