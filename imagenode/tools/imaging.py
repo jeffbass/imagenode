@@ -357,9 +357,12 @@ class SendQueue:
         self.send_q.append(text_and_image)
 
     def send_messages_forever(self):
+        # this will run in a separate thread
+        # the "sleep()" calls allow main thread more time for image capture
         while self.keep_sending:
             if len(self.send_q) > 0:  # send until send_q is empty
                 text, image = self.send_q.popleft()
+                sleep(0.0000001) # sleep before sending
                 hub_reply = self.send_frame(text, image)
                 self.process_hub_reply(hub_reply)
             else:
