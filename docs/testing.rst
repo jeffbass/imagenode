@@ -170,7 +170,7 @@ stored in appropriate directories on the **imagehub** computer. The windows
 would not be shown on the hub computer because the send_test_images option
 would be set to False in the imagenode.yaml file.
 
-Press Ctrl-C to end the test programs on both the Mac and the RPi.
+Press Ctrl-C in each window to end both the test programs.
 
 Test 2: Testing **imagenode** running on a RPi with a test hub running on a Mac
 ===============================================================================
