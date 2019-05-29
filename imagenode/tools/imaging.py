@@ -19,7 +19,7 @@ from collections import deque
 import numpy as np
 import cv2
 import imutils
-from imutils.video import VideoStream
+from vidgear.gears import VideoGear
 sys.path.insert(0, '../../imagezmq/imagezmq') # for testing
 import imagezmq
 from tools.utils import interval_timer
@@ -489,16 +489,19 @@ class Camera:
             settings.nodename, self.viewname)
 
         if camera[0].lower() == 'p':  # this is a picam
-            # start PiCamera and warm up; inherits methods from VideoStream
-            self.cam = VideoStream(usePiCamera=True,
-                resolution=self.resolution,
-                framerate=self.framerate).start()
+            # start PiCamera and warm up; inherits methods from VideoGear
+            self.cam = VideoGear(enablePiCamera = True, resolution=self.resolution,
+                framerate=self.framerate,
+                colorspace = 'COLOR_BGR2HSV',
+                time_delay=1, logging = True).start() # define various attributes and start the stream
             # if an exposure mode has been set in yaml, set it
             if self.exposure_mode:
                 self.cam.camera.exposure_mode = self.exposure_mode
             self.cam_type = 'PiCamera'
         else:  # this is a webcam (not a picam)
-            self.cam = VideoStream(src=0).start()
+            self.cam = VideoGear(source=0, resolution=self.resolution,
+                framerate=self.framerate, colorspace = 'COLOR_BGR2HSV',
+                time_delay=1, logging = True).start() #Open live webcam video stream on first index(i.e. 0) USB device
             self.cam_type = 'webcam'
         sleep(2.0)  # allow camera sensor to warm up
 
