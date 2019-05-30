@@ -7,13 +7,12 @@ License: MIT, see LICENSE for more details.
 import os
 import psutil
 import signal
-import logging
 import platform
 import threading
 import multiprocessing
 import numpy as np
 from time import sleep
-from tools.utils import interval_timer
+from .utils import interval_timer
 
 class HealthMonitor:
     """ Methods and attributes to measure and tune network and system stability

@@ -1,4 +1,5 @@
-"""imaging: imagenode, camera, sensor and image processing classes
+"""
+imaging: imagenode, camera, sensor and image processing classes
 Also reads settings from imagenode.yaml file.
 
 Copyright (c) 2017 by Jeff Bass.
@@ -20,10 +21,9 @@ import numpy as np
 import cv2
 import imutils
 from vidgear.gears import VideoGear
-sys.path.insert(0, '../../imagezmq/imagezmq') # for testing
 import imagezmq
-from tools.utils import interval_timer
-from tools.nodehealth import HealthMonitor
+from .utils import interval_timer
+from .nodehealth import HealthMonitor
 
 class ImageNode:
     """ Contains all the attributes and methods of this imagenode
