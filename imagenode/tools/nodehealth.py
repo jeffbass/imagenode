@@ -1,6 +1,6 @@
 """nodehealth: network and system stability classes
 
-Copyright (c) 2017 by Jeff Bass.
+Copyright (c) 2019 by Kenny Dinh.
 License: MIT, see LICENSE for more details.
 """
 

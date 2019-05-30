@@ -1,9 +1,11 @@
 """
+
 imaging: imagenode, camera, sensor and image processing classes
 Also reads settings from imagenode.yaml file.
 
-Copyright (c) 2017 by Jeff Bass.
+Copyright (c) 2019 by Kenny Dinh.
 License: MIT, see LICENSE for more details.
+
 """
 
 import os

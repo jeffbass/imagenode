@@ -7,7 +7,7 @@ Works on other types of (non Raspberry Pi) computers with webcams.
 
 Typically run as a service or background process. See README.rst for details.
 
-Copyright (c) 2017 by Jeff Bass.
+Copyright (c) 2019 by Kenny Dinh.
 License: MIT, see LICENSE for more details.
 """
 
