@@ -8,27 +8,35 @@ Frames Per Second (FPS) tests
 Overview
 ========
 
-**imagenode** is can send images in 3 different ways:
+Testing and observation and interative improvement are the keys to improving
+imagenode. There are many alternatives that can (potentially) increase speed
+in terms of Frames per Second (FPS). This documentation page is about
+increasing FPS by changing how queued images are sent via imageZMQ.
+
+**imagenode** can send images in 3 different ways:
+
 1. No threading or multi-processing: Cameras grab images & images are sent in a
    single forever loop. If the network is slow and the REP from the hub via
    imageZMQ is slow, then the next camera frame grab is delayed. No threading
-   or multiprocessing is the default.
+   (or multiprocessing) is the default.
 2. "send_threading" option: the read camera & detection loop places images in
-   in the send_q, then grabs the next images. Images are sent from send_q in a
-   separate thread. See the class SendQueue for more details. But the camera-
+   in the send_q, then grabs the next image. Images are sent from send_q in a
+   separate thread. See the class SendQueue for more details. The camera-
    detection loop and the SendQueue thread are still running on the same core.
-3. "send_process" option: The read camera & detection loop places images in a
+3. "send_multiprocessing" option: The read camera & detection loop places images in a
    large "SharedMemory" numpy array buffer (a new feature in Python 3.8). A
    separate process, potentially running on a different core, empties the
-   numpy array buffer by sending the images via imageZMQ. Since RPi's have 4
-   cores, running the camera-detection loop and the send_frames loop in
-   different processes could speed things up. Sharing images between processes
-   needs to use SharedMemory to avoid "pickling" images as they would be if they
-   were passed in a multiprocessing.Queue.
+   "SharedMemory" numpy array buffer by sending the images via imageZMQ. Since
+   RPi's have 4 cores, running the camera-detection loop and the send_frames
+   loop in different processes could speed things up. Sharing images between
+   processes needs to use SharedMemory to avoid "pickling" images as they would
+   be if they were passed in a multiprocessing.Queue.
 
-The third "send_process" option is still in development. The first step is to
-develop repeatable test programs and protocols to compare the 3 different ways
-of sending images.
+The third "send_process" option is still in development. The first step in its
+development is to develop repeatable test programs and protocols to compare the
+3 different ways of sending images.
+
+Settings in the imagenode.yaml which are relevant to testing FPS:
 
 .. code-block:: yaml
 
@@ -40,7 +48,7 @@ of sending images.
     patience: 10
     stall_watcher: False
     send_threading: False  # or True
-    send_process: False  # or True
+    send_process: False  # or True  (name? send_multiprocessing? or ?)
     heartbeat: 10
     send_type: jpg
     print_settings: False
@@ -68,7 +76,7 @@ in the home directory. On a Raspberry Pi computer, this is typically the "pi"
 username's home directory. Edit the ``imagenode.yaml`` file to specify the
 address of your hub computer and set other required and optional settings.
 
-There is also a ``test.yaml`` file in the ``yaml`` folder. When doing the suggested
+There is also a ``FPStest.yaml`` file in the ``yaml`` folder. When doing the suggested
 tests (see installation and testing section) this yaml settings file allows
 the **imagenode** program imagenode.py to run on a Raspberry Pi computer while
 a simple **imagezmq** test hub program runs on the Mac or other Linux computer.
