@@ -359,16 +359,6 @@ set the ``src`` value to the next integer for each webcam. You may have to do
 some testing to determine which cv2.VideoCapture(src) value is assigned to which
 webcam.
 
-``send_debug`` is an optional setting.  Typically, each camera sends each image in
-its natural color state, with no intermediate computed images being sent. Examples
-of computed images include grayscale, motion difference, thresholded, etc. When
-tuning a detector, it is helpful to send computed images along with the natural
-color images. The ``send_debug`` setting allows choosing which computed image
-types to send. For example, ``send_debug = (grayscale, threshold)`` would send the
-computed grayscale and the computed threshold images in addition to the
-natural color images. The choices for computed images are different for each
-detector; see the detector section for more details.
-
 See the "Camera Detectors, ROI and Event Tuning" section below for details on
 how detectors, events and related settings are defined and implemented for each
 camera.
