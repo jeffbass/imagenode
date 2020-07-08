@@ -20,7 +20,7 @@ import numpy as np
 import cv2
 import imutils
 from imutils.video import VideoStream
-sys.path.insert(0, '../../imagezmq/imagezmq') # for testing
+# sys.path.insert(0, '../../imagezmq/imagezmq') # for testing
 import imagezmq
 from tools.utils import interval_timer
 from tools.nodehealth import HealthMonitor
