@@ -6,6 +6,8 @@ node:
   patience: 10
   heartbeat: 10
   send_type: jpg
+  send_threading: False  # sends images in separate thread
+  stall_watcher: True  # watches for stalled network or RPi power glitch
   print_settings: False
 hub_address:
   H1: tcp://jeff-macbook:5555
