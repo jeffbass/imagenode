@@ -73,8 +73,8 @@ Dependencies and Installation
 
 **imagenode** has been tested with:
 
-- Python 3.5 and 3.6
-- OpenCV 3.3
+- Python 3.5 and newer
+- OpenCV 4.0 and newer (but only a single line fix to revert to 3.x)
 - Raspbian Stretch and Raspbian Jessie
 - PyZMQ 16.0
 - RPi.GPIO 0.6.5  (imported only if using GPIO pins)

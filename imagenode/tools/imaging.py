@@ -853,7 +853,12 @@ class Detector:
                                     255,cv2.THRESH_BINARY)[1]
         thresholded = cv2.dilate(thresholded, None, iterations=2)
         # find contours in thresholded image
-        (_, contours, __) = cv2.findContours(thresholded.copy(),
+        # OpenCV version 3.x returns a 3 value tuple
+        # OpenCV version 4.x returns a 2 value tuple
+        # Using the OpenCV 4.x version in master git repository
+        #    but switching comment in below 2 lines reverts to OpenCV 3.x
+        # (_, contours, __) = cv2.findContours(thresholded.copy(),
+        (contours, __) = cv2.findContours(thresholded.copy(),
                             cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         state = 'still'
