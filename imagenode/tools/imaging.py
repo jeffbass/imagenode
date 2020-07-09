@@ -322,20 +322,29 @@ class ImageNode:
             self.send_q.stop_sending()
 
 class SendQueue:
-    """ Methods and attributes of a send_q replacement that uses threaded sends
+    """ Implements a send_q replacement that uses threaded sends
 
-    The default send_q is a deque that is written in a forever loop in
-    the imagenode.py main() event loop. It works, but has speed issues when
-    sending occurs while motion detection is actively occuring.
+    The default send_q is a deque that is filled in a read_cameras forever loop
+    in the imagenode.py main() event loop. When the default send_q tests True
+    because it contains images to send, the send_frame loop empties the send_q.
+    It works, but has speed issues when sending occurs while motion detection is
+    actively occuring at the same time.
 
     This class creates a drop-in replacement for send_q. This replacement
-    send_q will always return len() as if empty, so that the main() event loop
-    will loop forever in node.read_cameras() without ever sending anything.
-    Instead, this send_q replacement will append() as usual, but has a method
-    that continuously sends the message tuples from send_q in a separate thread.
+    send_q will always return len(send_q) as 0 as if empty, so that the main()
+    event loop will loop forever in node.read_cameras() without ever sending
+    anything. This is implemented by providing _bool_ and __len__ methods to
+    prevent read_cameras from ever reaching the send_frame portion of the main
+    imagenode.py event loop.
+
+    This send_q replacement append() method will operate in read_cameras just as
+    the deque did, but has a send_messages_forever method in a separate
+    thread to send (message, image tuples) to empty the send_q. This
+    implementation of send_q allows the imagenode.py main program to remain
+    unchanged when send_threading is not set to True in the yaml settings.
 
     Parameters:
-        maxlen (int): maximum length of deque
+        maxlen (int): maximum length of send_q deque
         send_frame (func): the ImageNode method that sends frames
         process_hub_reply (func): the ImageNode method that processes hub replies
 
