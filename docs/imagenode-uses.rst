@@ -98,9 +98,9 @@ image streams.
 
 The code for the Raspberry Pi **imagenode** program is in this Github repository.
 The code for the **imagezmq** communication software that allows the node
-computers to communicate with the hub computer is in the
-`**imagezmq** GitHub repository <https://github.com/jeffbass/imagezmq>`_.
-The **imagehub** program is in the
+computers to send images and messages to the hub computer is in the
+`imagezmq GitHub repository <https://github.com/jeffbass/imagezmq>`_.
+The Mac based **imagehub** program is in the
 `imagehub GitHub repository <https://github.com/jeffbass/imagehub>`_.
 See the `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_.
 for more details about the architecture of the
