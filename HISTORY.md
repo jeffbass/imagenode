@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changes and Bugfixes
 
-- Changed README.rst to show badges referenced in badge_fetch.rst.
+- Fixed broken cv2.findCountours() when upgrading to OpenCV 4.x
 - Changed README.rst to include pip install instructions.
 - Multiple fixes to all documentation files.
 
