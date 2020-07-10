@@ -38,6 +38,7 @@ import sys
 import time
 import imagezmq
 import traceback
+import numpy as np
 from imutils.video import FPS
 from collections import defaultdict
 
@@ -47,6 +48,12 @@ JPG = True  # or False if receiving images
 SHOW_IMAGES = True
 #################################################
 
+# instantiate image_hub
+image_hub = imagezmq.ImageHub()
+
+def receive_tuple():
+    pass
+    
 def receive_image():
     text, image = image_hub.recv_image()
     return text, image
@@ -59,8 +66,6 @@ if JPG:
     receive_tuple = receive_jpg
 else:
     receive_tuple = receive_image
-# instantiate image_hub
-image_hub = imagezmq.ImageHub()
 
 image_count = 0
 sender_image_counts = defaultdict(int)  # dict for counts by sender
@@ -68,7 +73,7 @@ first_image = True
 
 try:
     while True:  # receive images until Ctrl-C is pressed
-        sent_from, jpg_buffer = image_hub.recv_jpg()
+        sent_from, jpg_buffer = receive_tuple()
         if first_image:
             fps = FPS().start()  # start FPS timer after first image is received
             first_image = False
