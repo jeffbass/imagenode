@@ -204,7 +204,7 @@ Additional Documentation
 ========================
 - `How imagenode works <docs/imagenode-details.rst>`_.
 - `How imagenode is used in a larger project <docs/imagenode-uses.rst>`_.
-- `Release and Version History <docs/release-history.rst>`_.
+- `Release and Version History <HISTORY.md>`_.
 - `Research and Development Roadmap <docs/research-roadmap.rst>`_.
 - `The imagezmq classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_.
 - `The imagehub software that saves events and images <https://github.com/jeffbass/imagehub>`_.
