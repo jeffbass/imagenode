@@ -1,19 +1,19 @@
-"""FPS_receive_jpg_test.py -- receive jpg compressed images & print FPS stats
+"""FPS_receive_test.py -- receive (text, image) pairs & print FPS stats
 
 A test program to provide FPS statistics as different imagenode algorithms are
-being tested. This program receives images that have been jpg compressed and
-computes and prints FPS statistics. It requires a FPS_test.yaml file with
-appropriate options in the home directory of the receiving computer. There is a
-similar program that receives images rather than jpg compressed images.
+being tested. This program receives images OR images that have been jpg
+compressed, depending on the setting of the JPG option.
 
-1. Edit the FPS_test.yaml file and copy it to the home directory of the
-   receiving Mac.
+It computes and prints FPS statistics.
+
+1. Edit the options, such as the JPG option.
 
 2. Set the yaml options on the imagenode sending RPi in the imagenode.yaml
-   file at the home directory.
+   file at the home directory. Be sure that the jpg setting on the RPi matches
+   the setting of JPG below.
 
 2. Run this program in its own terminal window on the mac:
-   python FPS_receive_jpg_test.py.
+   python FPS_receive_test.py.
 
    This 'receive images' program must be running before starting
    the RPi image sending program.
@@ -22,9 +22,10 @@ similar program that receives images rather than jpg compressed images.
    python imagenode.py
 
 A cv2.imshow() window will only appear on the Mac that is receiving the
-tramsmitted images if the "show_images" option in the yaml file is set to True.
-The receiving program will run until the "number_of_images" option in the yaml
-file is reached or until Ctrl-C is pressed.
+tramsmitted images if the "show_images" option is set to True.
+
+The receiving program will run until the "number_of_images" option number is
+reached or until Ctrl-C is pressed.
 
 The imagenode program running on the RPi will end itself after a timeout or you
 can end it by pressing Ctrl-C.
@@ -32,16 +33,32 @@ can end it by pressing Ctrl-C.
 For details see the docs/FPS-tests.rst file.
 """
 
-import sys
-
-import time
-import traceback
-import numpy as np
 import cv2
-from collections import defaultdict
-from imutils.video import FPS
+import sys
+import time
 import imagezmq
+import traceback
+from imutils.video import FPS
+from collections import defaultdict
 
+#################################################
+# set options
+JPG = True  # or False if receiving images
+SHOW_IMAGES = True
+#################################################
+
+def receive_image():
+    text, image = image_hub.recv_image()
+    return text, image
+
+def receive_jpg():
+    text, jpg_buffer = image_hub.recv_jpg()
+    image = cv2.imdecode(np.frombuffer(jpg_buffer, dtype='uint8'), -1)
+
+if JPG:
+    receive_tuple = receive_jpg
+else:
+    receive_tuple = receive_image
 # instantiate image_hub
 image_hub = imagezmq.ImageHub()
 
@@ -55,16 +72,12 @@ try:
         if first_image:
             fps = FPS().start()  # start FPS timer after first image is received
             first_image = False
-        image = cv2.imdecode(np.frombuffer(jpg_buffer, dtype='uint8'), -1)
-        # see opencv docs for info on -1 parameter
         fps.update()
         image_count += 1  # global count of all images received
         sender_image_counts[sent_from] += 1  # count images for each RPi name
-        cv2.imshow(sent_from, image)  # display images 1 window per sent_from
-        cv2.waitKey(1)
-        # other image processing code, such as saving the image, would go here.
-        # often the text in "sent_from" will have additional information about
-        # the image that will be used in processing the image.
+        if SHOW_IMAGES:
+            cv2.imshow(sent_from, image)  # display images 1 window per sent_from
+            cv2.waitKey(1)
         image_hub.send_reply(b'OK')  # REP reply
 except (KeyboardInterrupt, SystemExit):
     pass  # Ctrl-C was pressed to end program; FPS stats computed below

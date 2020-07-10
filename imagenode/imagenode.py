@@ -33,12 +33,10 @@ def main():
         while True:
             # grab images and run detectors until there is something to send
             while not node.send_q:
-                A += 1
                 node.read_cameras()
             while len(node.send_q) > 0:  # send until send_q is empty
                 try:
                     with Patience(settings.patience):
-                        B += 1
                         text, image = node.send_q.popleft()
                         hub_reply = node.send_frame(text, image)
                 except Patience.Timeout:  # if no timely response from hub
