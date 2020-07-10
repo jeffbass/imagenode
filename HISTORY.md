@@ -8,47 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Ongoing Development
 
 - Improving documentation content, layout, arrangement.
-- Including additional Example programs and documentation.
-- Adding more questions to FAQs doc file.
+- Adding FPS timing modules to enable testing of different SendQueue
+  alternatives.
+- Adding the ability to capture images from files in an image directory as a
+  substitute for capturing images from a camera. Will allow testing and tuning
+  of options from real world images gathered by imagenodes scattered around the
+  farm. The existing stored image library is large and could potentially be used
+  for adding machine learning capability to the RPi imagenodes.
+- Developing a "large image buffer" using the new Python 3.8 SharedMemory
+  class. The idea: have the camera capture main thread put images in a very
+  large (up to available memory; could be 3GB on RPi 4 models). Then the sending
+  of images could occur in a separate process that empties the buffer by
+  sending images via **imageZMQ**. The advantage over the existing
+  ``send_threading`` option would be using a 2nd process (and a different
+  RPi core) rather than a 2nd thread running on the same core.
 
-## 1.1.1 - 2020-05-22
-
-### Improvements
-
-- Added `__enter__` and `__exit__` methods so that `ImageHub` and
-  `ImageSender` will work in a `with` statement.
-- Added history and keywords to setup.py.
-
-### Changes and Bugfixes
-
-- Multiple fixes to documentation files.
-
-## 1.1.0 - 2020-05-20
-
-### Improvements
-
-- Added `tests/unit_tests` directory to hold "tests of new imageZMQ features".
-  Also added README_Unit_Tests.rst in that directory to explain Unit Tests for
-  imageZMQ improvements going forward.
-- Added `close()` method in `ImageSender` and `ImageHub` classes. Added 2 test
-  programs to `tests/unit_tests` to test it. Added `close()` to API docs.
-- Added Advanced PUB/SUB example with multithreaded fast subscribers for
-  realtime processing. (@philipp-schmidt).
-- Added this `HISTORY.md` file to document version change history.
-- Fixed inconsistent spellings of `imageZMQ`.
-
-### Changes and Bugfixes
-
-- Multiple fixes to documentation files.
-- Fixed documentation of API, adding `connect()` method to ImageHub class docs.
-
-## 1.0.1 - 2020-02-11
+## 0.2.1 - 2020-07-10
 
 ### Improvements
 
-- Added setup.py, MANIFEST.in and PyPI_README.rst to enable pip installation and upload to PyPI.
-- Added new images /docs/image/various_badges.svg with static badge images to improve README.rst load time.
-- Reference as 1st Release in GitHub, PyPI (2020-02-05) and Zendodo (2020-02-12).
+- Added ``send_threading`` option to allow image sending to hub to happen in a
+  separate thread. When this option is specified in the yaml settings file,
+  camera capture and detection take place in the main thread and sending images
+  via **imageZMQ** happens in a separate thread.
+- Reorganized previous docs/release-history.rst into this more standardized
+  HISTORY.md file.
+- Updated Research and Development Roadmap.
 
 ### Changes and Bugfixes
 
@@ -56,37 +41,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed README.rst to include pip install instructions.
 - Multiple fixes to all documentation files.
 
-## 0.0.3 - 2019-08-23
+## 0.1.0 - 2019-01-30
 
 ### Improvements
 
-- Implementation of PUB/SUB ZMQ messaging pattern (@bigdaddymax).
-- Example of PUB/SUB ZMQ messaging pattern (@bigdaddymax).
-- Example of HTTP Steaming Example (@bigdaddymax).
-- Helpful fork: Add timeouts to `ImageSender` to fix restarts or non-response of `ImageHub` timeouts (@youngsoul).
+- Added ``stall_watcher`` option and functionality to monitor whether main
+  **imagenode** process has "stalled". End program if stall detected. Uses
+  systemd service unit to restart after exit. Added the ``imagenode.service``
+  example systemd service unit file to main repository directory.
+- Added Release and Version History.
+- Added Research and Development Roadmap.
 
 ### Changes and Bugfixes
 
 - Multiple fixes to all documentation files.
-- Substantial rewrite of API, to include and clean up PUB/SUB option docs.
 
-## 0.0.2 - 2019-02-09
+## 0.0.2 - 2018-12-15
 
 ### Improvements
 
-- More detail and uniform formatting for docstrings and code snippets in docs.
-- Additional tests and test docs.
+- Added ``exposure_mode`` option to allow choosing PiCamera exposure_mode.
+  Very helpful with Infrared PiCamera "Noir" and infrared lights.
 
 ### Changes and Bugfixes
 
+- Conditionally import GPIO only if needed. Fixes import error when GPIO pins
+  not used, or when running NOT on a Raspberry Pi.
+- Fixed a number of documentation broken links and formatting errors.
 - Multiple fixes to all documentation files.
 - Restructured test files & testing documentation to make them consistent.
 
-## 0.0.1 - 2018-03-03
+## 0.0.1 - 2018-11-15
 
-- First Commit of `imageZMQ` prototype to GitHub on Mar 3, 2018.
+- First commit to GitHub
+- Major refactoring after 13 months of testing previous version.
+- Includes motion detector, light detector, temperature sensor, LED light
+  control via GPIO pins.
 
-## 0.0.0 - 2016-01-09
+## 0.0.0 - 2017-10-09
 
-- First early prototype of `imageZMQ` posted as a GitHub Gist on Jan 9, 2016.
-- Gist is [here](https://gist.github.com/jeffbass/ebf877e964c9a0b84272).
+- First early prototype of `imagenode` running on 2 RPi's and 1 imagehub.
+
+[Return to main documentation page README](README.rst)
