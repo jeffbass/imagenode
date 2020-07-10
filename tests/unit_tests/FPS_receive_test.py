@@ -53,7 +53,7 @@ image_hub = imagezmq.ImageHub()
 
 def receive_tuple():
     pass
-    
+
 def receive_image():
     text, image = image_hub.recv_image()
     return text, image
@@ -61,11 +61,15 @@ def receive_image():
 def receive_jpg():
     text, jpg_buffer = image_hub.recv_jpg()
     image = cv2.imdecode(np.frombuffer(jpg_buffer, dtype='uint8'), -1)
+    return text, image
 
 if JPG:
     receive_tuple = receive_jpg
+    receive_type = 'jpg'
 else:
     receive_tuple = receive_image
+    receive_type = 'OpenCV BGR'
+print('Option set to receive ', receive_type, ' image type.')
 
 image_count = 0
 sender_image_counts = defaultdict(int)  # dict for counts by sender
@@ -73,15 +77,15 @@ first_image = True
 
 try:
     while True:  # receive images until Ctrl-C is pressed
-        sent_from, jpg_buffer = receive_tuple()
+        text, image = receive_tuple()
         if first_image:
             fps = FPS().start()  # start FPS timer after first image is received
             first_image = False
         fps.update()
         image_count += 1  # global count of all images received
-        sender_image_counts[sent_from] += 1  # count images for each RPi name
+        sender_image_counts[text] += 1  # count images for each RPi name
         if SHOW_IMAGES:
-            cv2.imshow(sent_from, image)  # display images 1 window per sent_from
+            cv2.imshow(text, image)  # display images 1 window per unique text
             cv2.waitKey(1)
         image_hub.send_reply(b'OK')  # REP reply
 except (KeyboardInterrupt, SystemExit):
@@ -95,21 +99,24 @@ finally:
     print()
     print('Test Program: ', __file__)
     print('Total Number of Images received: {:,g}'.format(image_count))
-    if first_image:  # never got images from any RPi
+    if first_image:  # never got images from any sender
         sys.exit()
     fps.stop()
-    print('Number of Images received from each RPi:')
-    for RPi in sender_image_counts:
-        print('    ', RPi, ': {:,g}'.format(sender_image_counts[RPi]))
-    compressed_size = len(jpg_buffer)
-    print('Size of last jpg buffer received: {:,g} bytes'.format(compressed_size))
+    print('Number of Images received for each text message type:')
+    for text_message in sender_image_counts:
+        print('    ', text_message, ': {:,g}'.format(sender_image_counts[text_message]))
+    if JPG:
+        compressed_size = len(image)
+        print('Size of last jpg buffer received: {:,g} bytes'.format(compressed_size))
+    else:
+        compressed_size = 1
     image_size = image.shape
     print('Size of last image received: ', image_size)
     uncompressed_size = 1
     for dimension in image_size:
         uncompressed_size *= dimension
     print('    = {:,g} bytes'.format(uncompressed_size))
-    print('Compression ratio: {:.2f}'.format(compressed_size / uncompressed_size))
+    print('Compression ratio: {:.8f}'.format(compressed_size / uncompressed_size))
     print('Elasped time: {:,.2f} seconds'.format(fps.elapsed()))
     print('Approximate FPS: {:.2f}'.format(fps.fps()))
     cv2.destroyAllWindows()  # closes the windows opened by cv2.imshow()
