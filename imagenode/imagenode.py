@@ -30,8 +30,6 @@ def main():
         settings = Settings()  # get settings for node cameras, ROIs, GPIO
         node = ImageNode(settings)  # start ZMQ, cameras and other sensors
         # forever event loop
-        A = 0
-        B = 0
         while True:
             # grab images and run detectors until there is something to send
             while not node.send_q:
@@ -56,7 +54,6 @@ def main():
         if 'node' in locals():
             node.closeall(settings) # close cameras, GPIO, files
         log.info('Exiting imagenode.py')
-        print("A:", A, "B:", B)
         sys.exit()
 
 def start_logging():
