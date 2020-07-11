@@ -15,23 +15,24 @@ order; all of these are ongoing experiments on differing timelines.
 
 .. contents::
 
-Receive and act on commands or requests from imagehub
------------------------------------------------------
-Right now, the imagehub returns "OK" after every message tuple is sent. The
-imagehub reply can be a "command word" instead that would cause imaghub to take
-an action such as change the exposure_mode of the PiCamera. Or send a dozen
-"live frames" from the camera (even though no detector has activated). Command
-words look like this (format is: CommandWord value):
-- OK  # that is the only one now and is sent back for every reply.
-- ReloadYaml  # reload the yaml file to get a change in one of the options.
-- SendFrames 10  # Send some frames now, even if no detector is activated.
-- SetResolution (640,480)  # set a new resolution value for the camera.
+Add ability to capture images from image files rather than from a camera
+------------------------------------------------------------------------
+For tracking photosynthesis hours and general weather tracking, it is helpful
 
-Add an option to send message tuples (text, image) in a thread
---------------------------------------------------------------
-Currently, all message tuples are sent in main event loop. Performance may be
-better (better speed, etc.) by putting the send message function in a separate
-thread. Early experiments show an increase in FPS speed.
+Adding the ability to capture images from files in an image directory as a
+substitute for capturing images from a camera will allow testing and tuning
+of options from real world images gathered by imagenodes scattered around the
+farm. The existing stored image library is large and could potentially be used
+for adding machine learning capability to the RPi imagenodes.
+
+Develop a "large memory buffer" using new Python 3.8 SharedMemory class
+-----------------------------------------------------------------------
+The idea: have the camera capture main thread put images in a very
+large (up to available memory; could be 3GB on RPi 4 models). Then the sending
+of images could occur in a separate process that empties the buffer by
+sending images via **imageZMQ**. The advantage of this over the existing
+``send_threading`` option would be using a 2nd process (and a different
+RPi core) rather than a 2nd thread running on the same core.
 
 Add a "color" detector to detect changes in sky color
 -----------------------------------------------------
@@ -57,8 +58,8 @@ hardware do these. Need to do some actual timing tests to see. It may not
 make enough of a difference to make all the if statements worth while, since
 non-PiCameras and Webcams don't have those GPU functions available.
 
-Add a "transmit only the Grayscale ROI" instead of entire image
----------------------------------------------------------------
+Add a "transmit only the Grayscale ROI" instead of entire image option
+----------------------------------------------------------------------
 In my current configuration, bandwidth is a limiting factor on performance. For
 some imagenode such as the water meter, the Grayscale ROI (of just the digits)
 has all the information needed. Perhaps add an option to transmit only the

@@ -31,10 +31,10 @@ def main():
         node = ImageNode(settings)  # start ZMQ, cameras and other sensors
         # forever event loop
         while True:
-            # grab images and run detectors until there is something to send
+            # read cameras and run detectors until there is something to send
             while not node.send_q:
                 node.read_cameras()
-            while len(node.send_q) > 0:  # send until send_q is empty
+            while len(node.send_q) > 0:  # send frames until send_q is empty
                 try:
                     with Patience(settings.patience):
                         text, image = node.send_q.popleft()
