@@ -126,9 +126,9 @@ computer you will be using **imagenode** on. You can use pip to install
 
 Directory Structure for running the tests
 -----------------------------------------
-Neither **imagenode** or **imagezmq** are far enough along in their development
-to be pip installable. So they should both be git-cloned to any computer that
-they will be running on. I have done all testing at the user home
+**imagenode** is not far enough along in development
+to be pip installable. So it should both be git-cloned to any computer that
+it will be running on. I have done all testing at the user home
 directory of every computer. Here is a simplified directory layout::
 
   ~ # user home directory
@@ -140,7 +140,7 @@ directory of every computer. Here is a simplified directory layout::
 This directory arrangement, including docs, imagenode code, tests, etc. is a
 common development directory arrangement on GitHub. Using git clone from your
 user home directory (either on a Mac, a RPi or other Linux computer) will
-put both the **imagenode** directories in the right place for testing.
+put the **imagenode** directories in the right place for testing.
 
 Test 1: Running **imagenode** and **imagezmq** together on a Mac
 -----------------------------------------------------------------
