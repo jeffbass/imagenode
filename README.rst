@@ -73,14 +73,15 @@ Dependencies and Installation
 
 **imagenode** has been tested with:
 
-- Python 3.5 and newer
+- Python 3.6 and newer
 - OpenCV 4.0 and newer (but only a single line fix to revert to 3.x)
-- Raspbian Stretch and Raspbian Jessie
-- PyZMQ 16.0
-- RPi.GPIO 0.6.5  (imported only if using GPIO pins)
-- picamera 1.13   (imported only if using PiCamera)
-- imagezmq 0.0.2
-- imutils 0.4.3 (used get to images from PiCamera)
+- Raspbian Stretch, Raspbian Jessie and Raspbian Buster
+- PyZMQ 16.0 and newer
+- RPi.GPIO 0.6 and newer (imported only if using GPIO pins)
+- picamera 1.13 (imported only if using PiCamera)
+- imagezmq 1.0.1 and newer
+- imutils 0.4.3 and newer (used get to images from PiCamera)
+- w1thermsensor 1.3 and newer (used to get temperature sensor readings)
 
 **imagenode** captures images and uses **imagezmq** to transfer the images.
 It is best to install and test **imagezmq** before installing **imagenode**.
