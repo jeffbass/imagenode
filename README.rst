@@ -121,8 +121,8 @@ called py3cv3.
 **imagenode** requires **imagezmq** be installed and working. Before running any
 tests with **imagenode**, be sure you have successfully installed **imagezmq**
 and run all of its tests. The **imagezmq** tests must run successfully on every
-computer you will be using **imagenode** on. You should then be able to run the
-tests below.
+computer you will be using **imagenode** on. You can use pip to install
+**imagezmq**.
 
 Directory Structure for running the tests
 -----------------------------------------
@@ -135,16 +135,12 @@ directory of every computer. Here is a simplified directory layout::
   +--- imagenode.yaml  # copied from one of the imagenode yaml files & edited
   |
   +--- imagenode    # the git-cloned directory for imagenode
-  |    +--- sub directories include docs, imagenode, tests, yaml
-  |
-  +--- imagezmq     # the git-cloned directory for imagezmq
-       +--- sub directories include docs, imagezmq, tests
+       +--- sub directories include docs, imagenode, tests, yaml
 
 This directory arrangement, including docs, imagenode code, tests, etc. is a
 common development directory arrangement on GitHub. Using git clone from your
 user home directory (either on a Mac, a RPi or other Linux computer) will
-put both the **imagenode** and **imagezmq** directories in the right place
-for testing.
+put both the **imagenode** directories in the right place for testing.
 
 Test 1: Running **imagenode** and **imagezmq** together on a Mac
 -----------------------------------------------------------------
