@@ -14,7 +14,7 @@ import cv2
 from imutils.video import VideoStream, FPS
 
 SHOW_IMAGES = False  # SHOW_IMAGES will slow down FPS; only use to check PiCamera
-NUM_FRAMES = 100  # How many frames to capture for this test
+NUM_FRAMES = 1000  # How many frames to capture for this test
 
 picam = VideoStream(usePiCamera=True,resolution=(320, 240),framerate=32).start()
 time.sleep(2.0)  # allow camera sensor to warm up
@@ -32,8 +32,9 @@ while frame_count <= NUM_FRAMES:  # send images as stream until Ctrl-C
 fps.stop()
 print('FPS Test Program: ', __file__)
 print('Option settings:')
-print('    Show Images? ', SHOW_IMAGES)
-print('    Number of Frames? ', NUM_FRAMES)
+print('    Show Images?', SHOW_IMAGES)
+print('    Requested Frames?', NUM_FRAMES)
+print('    Actual Frames Read:', frame_count)
 image_size = image.shape
 print('Size of last image received: ', image_size)
 uncompressed_size = 1
