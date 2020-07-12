@@ -6,7 +6,11 @@ compressed, depending on the setting of the JPG option.
 
 It computes and prints FPS statistics.
 
-1. Edit the options, such as the JPG option.
+Be sure to run this program and the imagenode.py program in virtual environments
+using Python 3.6 or newer.
+
+1. Edit the options in this python program, such as the JPG option.
+   Save it.
 
 2. Set the yaml options on the imagenode sending RPi in the imagenode.yaml
    file at the home directory. Be sure that the jpg setting on the RPi matches
@@ -33,26 +37,25 @@ can end it by pressing Ctrl-C.
 For details see the docs/FPS-tests.rst file.
 """
 
+########################################################################
+# EDIT THES OPTIONS BEFORE RUNNING PROGRAM
+JPG = True  # or False if receiving images
+SHOW_IMAGES = False
+TEST_DURATION = 99999999  # seconds or 0 to keep going until Ctrl-C
+########################################################################
+
 import cv2
 import sys
-import time
+import signal
 import imagezmq
 import traceback
 import numpy as np
+from time import sleep
 from imutils.video import FPS
 from collections import defaultdict
 
-#################################################
-# set options
-JPG = True  # or False if receiving images
-SHOW_IMAGES = True
-#################################################
-
 # instantiate image_hub
 image_hub = imagezmq.ImageHub()
-
-def receive_tuple():
-    pass
 
 def receive_image():
     text, image = image_hub.recv_image()
@@ -68,18 +71,28 @@ if JPG:
     receive_type = 'jpg'
 else:
     receive_tuple = receive_image
-    receive_type = 'OpenCV BGR'
-print('Option set to receive ', receive_type, ' image type.')
+    receive_type = 'native OpenCV'
 
 image_count = 0
 sender_image_counts = defaultdict(int)  # dict for counts by sender
 first_image = True
+text = None
+image = None
+if TEST_DURATION <= 0:
+    TEST_DURATION = 999999  # a large number so Ctrl-C is stopping method
 
-try:
+def receive_images_forever():
+    def timer_done(a, b):
+        sys.exit()
+
+    global image_count, sender_image_counts, first_image, text, image, fps
     while True:  # receive images until Ctrl-C is pressed
         text, image = receive_tuple()
         if first_image:
+            print('First Image Received. Starting FPS timer.')
             fps = FPS().start()  # start FPS timer after first image is received
+            signal.signal(signal.SIGALRM, timer_done)
+            signal.alarm(TEST_DURATION)
             first_image = False
         fps.update()
         image_count += 1  # global count of all images received
@@ -88,6 +101,15 @@ try:
             cv2.imshow(text, image)  # display images 1 window per unique text
             cv2.waitKey(1)
         image_hub.send_reply(b'OK')  # REP reply
+
+try:
+    print('FPS Test Program: ', __file__)
+    print('Option settings:')
+    print('    Receive Image Type: ', receive_type)
+    print('    Show Images? ', SHOW_IMAGES)
+    print('    Test Duration: ', TEST_DURATION, ' seconds')
+    receive_images_forever()
+    sys.exit()
 except (KeyboardInterrupt, SystemExit):
     pass  # Ctrl-C was pressed to end program; FPS stats computed below
 except Exception as ex:
@@ -97,9 +119,9 @@ except Exception as ex:
 finally:
     # stop the timer and display FPS information
     print()
-    print('Test Program: ', __file__)
     print('Total Number of Images received: {:,g}'.format(image_count))
     if first_image:  # never got images from any sender
+        print('Never got any images from imagenode. Ending program.')
         sys.exit()
     fps.stop()
     print('Number of Images received for each text message type:')

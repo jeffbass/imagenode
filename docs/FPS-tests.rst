@@ -56,7 +56,6 @@ Settings in the imagenode.yaml which are relevant to testing FPS:
     H1: tcp://jeff-macbook:5555
     H2: tcp://192.168.1.155:5555
 
-
 The above example is set up specifically for FPS testing using a PiCamera and
 RPi.
 
