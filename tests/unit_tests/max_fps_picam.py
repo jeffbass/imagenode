@@ -29,6 +29,7 @@ while frame_count <= NUM_FRAMES:  # send images as stream until Ctrl-C
         cv2.imshow('PiCamera', image)  # 1 window for each RPi
         cv2.waitKey(1)
 
+fps.stop()
 print('FPS Test Program: ', __file__)
 print('Option settings:')
 print('    Show Images? ', SHOW_IMAGES)
