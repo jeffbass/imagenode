@@ -43,5 +43,4 @@ print('    = {:,g} bytes'.format(uncompressed_size))
 print('Elasped time: {:,.2f} seconds'.format(fps.elapsed()))
 print('Approximate FPS: {:.2f}'.format(fps.fps()))
 cv2.destroyAllWindows()  # closes the windows opened by cv2.imshow()
-image_hub.close()  # closes ZMQ socket and context
 sys.exit()
