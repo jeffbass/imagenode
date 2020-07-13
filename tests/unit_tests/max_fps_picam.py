@@ -1,8 +1,13 @@
 """max_fps_picam.py -- determine maximum FPS for different PiCamera framerates
 
-Framerate settings don't seem to affect PiCamera capture_continuous method.
-This test program counts how many frames per second that the camera is able
-to capture.
+Framerate settings have little effect on frames per second measures of frames
+coming from the imutils VideoStream threaded camera capture class.
+
+This test program counts how many frames per second that the VideoStream is able
+to capture and send. Note that many of these frames will be duplicate sends of
+the frames already sent, because the framerate does affect how often the
+PiCamera capture_continuous method makes new frames available to the VideoStream
+update method.
 
 It computes and prints FPS statistics.
 """
@@ -17,7 +22,7 @@ from imutils.video import VideoStream
 SHOW_IMAGES = False  # SHOW_IMAGES will slow down FPS; only use to check PiCamera
 NUM_FRAMES = 10000  # How many frames to capture for this test
 
-picam = VideoStream(usePiCamera=False,resolution=(320, 240),framerate=1).start()
+picam = VideoStream(usePiCamera=True,resolution=(640, 480),framerate=32).start()
 time.sleep(2.0)  # allow camera sensor to warm up
 image = picam.read()  # read one image before loop to trap potential errors
 start = datetime.now()
