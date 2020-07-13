@@ -41,7 +41,7 @@ For details see the docs/FPS-tests.rst file.
 # EDIT THES OPTIONS BEFORE RUNNING PROGRAM
 JPG = True  # or False if receiving images
 SHOW_IMAGES = False
-TEST_DURATION = 99999999  # seconds or 0 to keep going until Ctrl-C
+TEST_DURATION = 90  # seconds or 0 to keep going until Ctrl-C
 ########################################################################
 
 import cv2
