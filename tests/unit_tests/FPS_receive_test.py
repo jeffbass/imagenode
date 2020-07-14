@@ -4,9 +4,10 @@ A test program to provide FPS statistics as different imagenode algorithms are
 being tested. This program receives images OR images that have been jpg
 compressed, depending on the setting of the JPG option.
 
-It computes and prints FPS statistics.
+It computes and prints FPS statistics. It is designed to be the receiver for the
+imagenode.py program or one of the test programs in the tests/unit_tests folder.
 
-Be sure to run this program and the imagenode.py program in virtual environments
+Be sure to run this program and the sending program in virtual environments
 using Python 3.6 or newer.
 
 1. Edit the options in this python program, such as the JPG option.
@@ -14,25 +15,27 @@ using Python 3.6 or newer.
 
 2. Set the yaml options on the imagenode sending RPi in the imagenode.yaml
    file at the home directory. Be sure that the jpg setting on the RPi matches
-   the setting of JPG below.
+   the setting of JPG below. (If using one of the test programs, use git
+   pull to bring a copy of the test program to the sending RPi)
 
 2. Run this program in its own terminal window on the mac:
    python FPS_receive_test.py.
 
-   This 'receive images' program must be running before starting
+   This 'receive the images' program must be running before starting
    the RPi image sending program.
 
 2. Run the imagenode image sending program on the RPi:
-   python imagenode.py
+   python imagenode.py  # OR run one of the send*test.py programs on the RPi
 
 A cv2.imshow() window will only appear on the Mac that is receiving the
 tramsmitted images if the "show_images" option is set to True.
 
-The receiving program will run until the "number_of_images" option number is
-reached or until Ctrl-C is pressed.
-
-The imagenode program running on the RPi will end itself after a timeout or you
-can end it by pressing Ctrl-C.
+The receiving program will run until the "TEST_DURATION" number of seconds is
+reached or until Ctrl-C is pressed. When the receiving program ends, it will
+computer and print FPS statistics and it will stop receiving images and sending
+ZMQ "REP" replies. That should cause the sending program on the RPi to "stall"
+and stop. Or you can end the sending program running on the RPi by pressing
+Ctrl-C.
 
 For details see the docs/FPS-tests.rst file.
 """
@@ -79,7 +82,7 @@ first_image = True
 text = None
 image = None
 if TEST_DURATION <= 0:
-    TEST_DURATION = 999999  # a large number so Ctrl-C is stopping method
+    TEST_DURATION = 999999  # a large number so Ctrl-C is only stopping method
 
 def receive_images_forever():
     def timer_done(a, b):
