@@ -44,7 +44,7 @@ For details see the docs/FPS-tests.rst file.
 # EDIT THES OPTIONS BEFORE RUNNING PROGRAM
 JPG = True  # or False if receiving images
 SHOW_IMAGES = False
-TEST_DURATION = 90  # seconds or 0 to keep going until Ctrl-C
+TEST_DURATION = 600  # seconds or 0 to keep going until Ctrl-C
 ########################################################################
 
 import cv2
@@ -108,9 +108,9 @@ def receive_images_forever():
 try:
     print('FPS Test Program: ', __file__)
     print('Option settings:')
-    print('    Receive Image Type: ', receive_type)
-    print('    Show Images? ', SHOW_IMAGES)
-    print('    Test Duration: ', TEST_DURATION, ' seconds')
+    print('    Receive Image Type:', receive_type)
+    print('    Show Images:', SHOW_IMAGES)
+    print('    Test Duration:', TEST_DURATION, ' seconds')
     receive_images_forever()
     sys.exit()
 except (KeyboardInterrupt, SystemExit):
@@ -136,14 +136,14 @@ finally:
     else:
         compressed_size = 1
     image_size = image.shape
-    print('Size of last image received: ', image_size)
+    print('Dimensions of last image received: ', image_size)
     uncompressed_size = 1
     for dimension in image_size:
         uncompressed_size *= dimension
-    print('    = {:,g} bytes'.format(uncompressed_size))
-    print('Compression ratio: {:.8f}'.format(compressed_size / uncompressed_size))
+    print('    = {:,} bytes'.format(uncompressed_size))
+    print('Compressed to Uncompressed ratio: {:.8f}'.format(compressed_size / uncompressed_size))
     print('Elasped time: {:,.2f} seconds'.format(fps.elapsed()))
-    print('Approximate FPS: {:.2f}'.format(fps.fps()))
+    print('Approximate FPS: {:,.2f}'.format(fps.fps()))
     cv2.destroyAllWindows()  # closes the windows opened by cv2.imshow()
     image_hub.close()  # closes ZMQ socket and context
     sys.exit()
