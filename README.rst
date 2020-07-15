@@ -204,6 +204,7 @@ of the imagenode.py program file.
 
 Additional Documentation
 ========================
+- `More details on running the tests <docs/testing.rst>`_.
 - `How imagenode works <docs/imagenode-details.rst>`_.
 - `How imagenode is used in a larger project <docs/imagenode-uses.rst>`_.
 - `Version History and Changelog <HISTORY.md>`_.
