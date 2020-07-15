@@ -140,12 +140,17 @@ directory of every computer. Here is a simplified directory layout::
 This directory arrangement, including docs, imagenode code, tests, etc. is a
 common development directory arrangement on GitHub. Using git clone from your
 user home directory (either on a Mac, a RPi or other Linux computer) will
-put the **imagenode** directories in the right place for testing.
+put the **imagenode** directories in the right place for testing. Each test
+described below requires you to copy the appropriate ``testN.yaml`` file to
+``imagenode.yaml`` in the user home directory as shown in the above directory
+diagram. The ``receive_test.py`` program acts as the image hub test receiver for
+each imagenode test. It must be started and running before running
+``imagenode.py.``
 
 Test 1: Running **imagenode** and **imagezmq** together on a Mac
 -----------------------------------------------------------------
 **The first test** runs both the sending program **imagenode** and the receiving
-program **imagezmq** timing_receive_jpg_buf.py (acting as a test hub) on
+program ``receive_test.py`` (acting as a test hub) on
 a Mac (or linux computer) with a webcam. It tests that the **imagenode** software
 is installed correctly and that the ``imagenode.yaml`` file has been copied and
 edited in a way that works. It uses the webcam on the Mac for testing. It uses a
@@ -153,7 +158,7 @@ edited in a way that works. It uses the webcam on the Mac for testing. It uses a
 
 Test 2: Sending a light detector stream of images from RPi PiCamera to a Mac
 ----------------------------------------------------------------------------
-**The second test** runs **imagenode** on a Raspberry Pi, using **imagezmq**
+**The second test** runs **imagenode** on a Raspberry Pi, using ``receive_test.py``
 (acting as a test hub) on a Mac (or Linux computer). It tests that the
 **imagenode** software is installed correctly on the RPi and that
 the ``imagenode.yaml`` file has been copied and edited in a way that works.
@@ -163,14 +168,14 @@ detector applied to a specified ROI.
 
 Test 3: Sending a motion detector stream of images from RPi PiCamera to a Mac
 -----------------------------------------------------------------------------
-**The third test** runs **imagenode** on a Raspberry Pi, using **imagezmq**
+**The third test** runs **imagenode** on a Raspberry Pi, using ``receive_test.py``
 (acting as a test hub) on a Mac (or Linux computer). It is very similar to Test
 2, except that it uses a "moving" versus "still" motion detector applied to a
 specified ROI.
 
 Test 4: Sending temperature readings from RPi temperature sensor to a Mac
 -------------------------------------------------------------------------
-**The fourth test** runs **imagenode** on a Raspberry Pi, using **imagezmq**
+**The fourth test** runs **imagenode** on a Raspberry Pi, using ``receive_test.py``
 (acting as a test hub) on a Mac (or Linux computer). It allows testing of the
 temperature sensor capabilities of **imagenode**. It requires setting up a
 DS18B20 temperature sensor and connecting it appropriately to RPi GPIO pin 4.

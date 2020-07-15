@@ -8,7 +8,7 @@ Frames Per Second (FPS) tests
 Overview
 ========
 
-Testing and observation and interative improvement are the keys to improving
+Testing and observation and iterative improvement are the keys to improving
 imagenode. There are many alternatives that can (potentially) increase speed
 in terms of Frames per Second (FPS). This documentation page is about
 increasing FPS by changing how queued images are sent via imageZMQ.
