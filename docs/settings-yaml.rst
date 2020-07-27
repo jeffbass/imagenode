@@ -190,6 +190,7 @@ There is 5 optional ``node`` settings:
   patience: maximum number of seconds to wait for a reply from imagehub
   stall_watcher: True or False to start a 'stall_watcher' sub-process
     (default is False)
+  send_threading: True or False to send images & messages in a separate thread
   queuemax: maximum size of the queue for images, messages, etc.
   print_settings: True or False to print the settings from imagenode.yaml
     (default is False)
@@ -240,6 +241,16 @@ The ``patience`` option (above) sets the number of seconds between "stall"
 checks. If no ``patience`` value is provided, the default is 10 seconds. If
 this option is set to ``False`` or is not present, there is no separate
 stall watching process started.
+
+If the ``send_threading`` setting is set to ``True``, then a separate thread
+is started to send (message, image) pairs to the **imagehub**. The default is
+``False``. When this setting is absent or ``False``, all camera reading and
+(message, image) sending is done serially in the same forever loop (see
+imagenode.py main loop). When the setting is ``True``, the ``send_q`` is an
+instance of the SendQueue class, which causes the ``node.read_cameras()`` while
+loop to run forever in the main program. No sending of (message, image) pairs is
+done in the main program. Instead, the sending of (message, image) pairs
+is done in a separate thread. This can result in somewhat higher FPS throughput.
 
 The ``queuemax`` setting sets the length of the queues used to hold images,
 messages, etc. Default is 50; setting it to a larger value will allow more
@@ -358,16 +369,6 @@ which is the first webcam detected. If you have more than one webcam, you should
 set the ``src`` value to the next integer for each webcam. You may have to do
 some testing to determine which cv2.VideoCapture(src) value is assigned to which
 webcam.
-
-``send_debug`` is an optional setting.  Typically, each camera sends each image in
-its natural color state, with no intermediate computed images being sent. Examples
-of computed images include grayscale, motion difference, thresholded, etc. When
-tuning a detector, it is helpful to send computed images along with the natural
-color images. The ``send_debug`` setting allows choosing which computed image
-types to send. For example, ``send_debug = (grayscale, threshold)`` would send the
-computed grayscale and the computed threshold images in addition to the
-natural color images. The choices for computed images are different for each
-detector; see the detector section for more details.
 
 See the "Camera Detectors, ROI and Event Tuning" section below for details on
 how detectors, events and related settings are defined and implemented for each

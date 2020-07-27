@@ -104,6 +104,6 @@ The Mac based **imagehub** program is in the
 `imagehub GitHub repository <https://github.com/jeffbass/imagehub>`_.
 See the `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_.
 for more details about the architecture of the
-imagenode <--> imagezmq <--> imagehub system.
+**imagenode <--> imagezmq <--> imagehub** system.
 
 `Return to main documentation page README.rst <../README.rst>`_

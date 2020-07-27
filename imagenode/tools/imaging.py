@@ -20,7 +20,7 @@ import numpy as np
 import cv2
 import imutils
 from imutils.video import VideoStream
-sys.path.insert(0, '../../imagezmq/imagezmq') # for testing
+# sys.path.insert(0, '../../imagezmq/imagezmq') # for testing
 import imagezmq
 from tools.utils import interval_timer
 from tools.nodehealth import HealthMonitor
@@ -49,8 +49,26 @@ class ImageNode:
         self.tiny_jpg = jpg_buffer # matching tiny blank jpeg
         self.jpeg_quality = 95
 
+        # open ZMQ link to imagehub
+        # use either of the formats below to specifiy address of display computer
+        # sender = imagezmq.ImageSender(connect_to='tcp://jeff-macbook:5555')
+        # self.sender = imagezmq.ImageSender(connect_to='tcp://192.168.1.190:5555')
+        self.sender = imagezmq.ImageSender(connect_to=settings.hub_address)
+
+        self.send_frame = self.send_jpg_frame # default send function is jpg
+        if settings.send_type == 'image':
+            self.send_frame = self.send_image_frame # set send function to image
+        else: # anything not spelled 'image' is set to jpg
+            self.send_frame = self.send_jpg_frame # set send function to jpg
+
         # set up message queue to hold (text, image) messages to be sent to hub
         self.send_q = deque(maxlen=settings.queuemax)
+        if settings.send_threading:  # use a threaded send_q sender instead
+            self.send_q = SendQueue(maxlen=settings.queuemax,
+                          send_frame=self.send_frame,
+                          process_hub_reply=self.process_hub_reply)
+            self.send_q.start()
+
         # start system health monitoring & get system type (RPi vs Mac etc)
         self.health = HealthMonitor(settings, self.send_q)
 
@@ -69,22 +87,10 @@ class ImageNode:
             if settings.lights:   # is there at least one light in yaml file
                 self.setup_lights(settings)
 
-        self.send_frame = self.send_jpg_frame # default send function is jpg
-        if settings.send_type == 'image':
-            self.send_frame = self.send_image_frame # set send function to image
-        else: # anything not spelled 'image' is set to jpg
-            self.send_frame = self.send_jpg_frame # set send function to jpg
-
         # set up and start camera(s)
         self.camlist = []  # need an empty list if there are no cameras
         if settings.cameras:  # is there at least one camera in yaml file
             self.setup_cameras(settings)
-
-        # open ZMQ link to imagehub
-        # use either of the formats below to specifiy address of display computer
-        # sender = imagezmq.ImageSender(connect_to='tcp://jeff-macbook:5555')
-        # self.sender = imagezmq.ImageSender(connect_to='tcp://192.168.1.190:5555')
-        self.sender = imagezmq.ImageSender(connect_to=settings.hub_address)
 
         # Read a test image from each camera to check and verify:
         # 1. test that all cameras can successfully read an image
@@ -277,7 +283,6 @@ class ImageNode:
         #
         sys.exit()
         return 'hub_reply'
-        pass
 
     def process_hub_reply(self, hub_reply):
         """ Process hub reply if it is other than "OK".
@@ -313,6 +318,75 @@ class ImageNode:
         if self.health.stall_p:
             self.health.stall_p.terminate()
             self.health.stall_p.join()
+        if settings.send_threading:
+            self.send_q.stop_sending()
+
+class SendQueue:
+    """ Implements a send_q replacement that uses threaded sends
+
+    The default send_q is a deque that is filled in a read_cameras forever loop
+    in the imagenode.py main() event loop. When the default send_q tests True
+    because it contains images to send, the send_frame loop empties the send_q.
+    It works, but has speed issues when sending occurs while motion detection is
+    actively occuring at the same time.
+
+    This class creates a drop-in replacement for send_q. This replacement
+    send_q will always return len(send_q) as 0 as if empty, so that the main()
+    event loop will loop forever in node.read_cameras() without ever sending
+    anything. This is implemented by providing _bool_ and __len__ methods to
+    prevent read_cameras from ever reaching the send_frame portion of the main
+    imagenode.py event loop.
+
+    This send_q replacement append() method will operate in read_cameras just as
+    the deque did, but has a send_messages_forever method in a separate
+    thread to send (message, image tuples) to empty the send_q. This
+    implementation of send_q allows the imagenode.py main program to remain
+    unchanged when send_threading is not set to True in the yaml settings.
+
+    Parameters:
+        maxlen (int): maximum length of send_q deque
+        send_frame (func): the ImageNode method that sends frames
+        process_hub_reply (func): the ImageNode method that processes hub replies
+
+    """
+    def __init__(self, maxlen=500, send_frame=None,
+                        process_hub_reply=None):
+        self.send_q = deque(maxlen=maxlen)
+        self.send_frame = send_frame
+        self.process_hub_reply = process_hub_reply
+        self.keep_sending = True
+
+    def __bool__(self):
+        return False  # so that the read loop keeps reading forever
+
+    def __len__(self):
+        return 0  # so that the main() send loop is never entered
+
+    def append(self, text_and_image):
+        self.send_q.append(text_and_image)
+
+    def send_messages_forever(self):
+        # this will run in a separate thread
+        # the "sleep()" calls allow main thread more time for image capture
+        while self.keep_sending:
+            if len(self.send_q) > 0:  # send until send_q is empty
+                text, image = self.send_q.popleft()
+                sleep(0.0000001) # sleep before sending
+                hub_reply = self.send_frame(text, image)
+                self.process_hub_reply(hub_reply)
+            else:
+                sleep(0.0000001) # sleep before checking send_q again
+
+    def start(self):
+        # start the thread to read frames from the video stream
+        t = threading.Thread(target=self.send_messages_forever)
+        print('Starting threading')
+        t.daemon = True
+        t.start()
+
+    def stop_sending(self):
+        self.keep_sending = False
+        sleep(0.0000001) # sleep to allow ZMQ to clear buffer
 
 class Sensor:
     """ Methods and attributes of a sensor, such as a temperature sensor
@@ -779,7 +853,12 @@ class Detector:
                                     255,cv2.THRESH_BINARY)[1]
         thresholded = cv2.dilate(thresholded, None, iterations=2)
         # find contours in thresholded image
-        (_, contours, __) = cv2.findContours(thresholded.copy(),
+        # OpenCV version 3.x returns a 3 value tuple
+        # OpenCV version 4.x returns a 2 value tuple
+        # Using the OpenCV 4.x version in master git repository
+        #    but switching comment in below 2 lines reverts to OpenCV 3.x
+        # (_, contours, __) = cv2.findContours(thresholded.copy(),
+        (contours, __) = cv2.findContours(thresholded.copy(),
                             cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         state = 'still'
@@ -930,6 +1009,10 @@ class Settings:
             self.stall_watcher = self.config['node']['stall_watcher']
         else:
             self.stall_watcher = False
+        if 'send_threading' in self.config['node']:
+            self.send_threading = self.config['node']['send_threading']
+        else:
+            self.send_threading = False
         if 'send_type' in self.config['node']:
             self.send_type = self.config['node']['send_type']
         else:

@@ -12,28 +12,28 @@ on multiple computers. The minimal system is one Raspberry Pi running
 **imagenode** and one larger computer (such as a Mac) running **imagehub**.
 You can see the overall design of such a system in the yin-yang-ranch
 Github repository  `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_.
-**imagenode** is dependent on having working copies of **imagezmq** on both the
-RPi computer and the display computer. Be sure to set up and test **imagezmq**
+**imagenode** is dependent on having working copies of **imageZMQ** on both the
+RPi computer and the display computer. Be sure to set up and test **imageZMQ**
 BEFORE you try to install and test **imagenode**. The instructions for
-installing and testing **imagezmq** are in the
-`imagezmq GitHub repository <https://github.com/jeffbass/imagezmq.git>`_
+installing and testing **imageZMQ** are in the
+`imageZMQ GitHub repository <https://github.com/jeffbass/imagezmq.git>`_
 
-Once you have run all the **imagezmq** test programs, the next step is to
+Once you have run all the **imageZMQ** test programs, the next step is to
 to test **imagenode** by running it on a Mac or other computer with a webcam.
 In all of the tests below, **imagenode** will be tested using the
-``timing_receive_jpg_buf.py `` program of **imagezmq** running on a Mac (or
-other display computer). The ``timing_receive_jpg_buf.py `` program running on
-the Mac acts as a test hub. In fact, it is the prototype for the **imagehub**
-program. Testing this way allows a test with of **imagenode** and **imagezmq**
-without the need for testing a separate image hub at the same time. It is best
-to do substantial testing with this combination before adding **imagehub** to
-the mix.
+``receive_test.py`` program running on a Mac (or
+other display computer). The ``receive_test.py`` program running on
+the Mac acts as a test hub. Testing this way tests both **imagenode** and
+**imageZMQ** together without the need for using a full image hub at the same
+time. It is best to do substantial testing with this combination before adding
+**imagehub** to the mix.
 
 Directory Structure for the Tests
 =================================
-Both **imagenode** and **imagezmq** should be git-cloned to any computer
-that they will be running on. I have done all testing at the user home
-directory of every computer the programs are used on::
+Both **imagenode** and **imageZMQ** should be git-cloned to any computer
+that they will be running on. **imageZMQ** is pip installable. See the link
+above to **imageZMQ** documentation for details. I have done all testing at the
+user home directory of every computer the programs are used on::
 
   ~  # user home directory
   +--- imagenode.yaml  # copied from test1.yaml file & edited as needed
@@ -52,18 +52,17 @@ directory of every computer the programs are used on::
   |         +--- picam-sensor-test.yaml
   |         +--- webcam-light-test.yaml
   |
-  +--- imagezmq   # the git-cloned directory for imagezmq
+  +--- imagezmq   # the git-cloned directory for imageZMQ
        +--- docs
        +--- imagezmq
        |    +--- imagezmq.py  # contains the imagezmq classes
        +--- tests
-            +--- timing_receive_jpg_buf.py  # to be run as a test hub
 
 
 Test 1: Running **imagenode** and a test hub with both running on a Mac
 =======================================================================
 **The first test** runs both the sending program **imagenode** and the receiving
-program **imagezmq** ``timing_receive_jpg_buf.py`` (acting as a test hub) on
+``receive_test.py`` program (acting as a test hub) on
 a Mac (or linux computer) with a webcam. It tests that the imagenode software
 is installed correctly and that ``imagenode.yaml`` file has been copied and edited
 in a way that works. It uses the webcam on the Mac for testing. The Mac will be
@@ -71,15 +70,15 @@ displaying the images received from its webcam as well as various Light Detector
 specific testing windows. It tests the Light Detector which detects "lighted"
 versus "dark" states in a specified ROI.
 
-1. Make sure **imagezmq.py** is installed and tested on your Mac or other
-   display computer. The link to the **imagezmq** GitHub repository is above.
+1. Make sure **imageZMQ** is installed and tested on your Mac or other
+   display computer. The link to the **imageZMQ** GitHub repository is above.
 2. Clone the **imagenode** GitHub repository onto your mac in your home
    directory::
 
      git clone https://github.com/jeffbass/imagenode.git
 
 3. Open 2 terminal windows on your Mac. One will be used for running
-   **imagenode** and the other will be used for running **imagezmq** as a test hub.
+   **imagenode** and the other will be used for running ``receive_test.py``.
 4. In one terminal window, copy ``imagenode/tests/test1.yaml`` to ``imagenode.yaml``
    in the home directory (~) using the command below. This test1.yaml file
    contains settings that will send a continuous stream of images from the webcam
@@ -103,15 +102,15 @@ versus "dark" states in a specified ROI.
      cd ~/imagenode/imagenode
 
 6. In the other terminal window, change to the ``tests`` directory in the
-   **imagezmq** repository: ~/imagezmq/tests::
+   **imagenode** repository: ~/imagenode/tests::
 
-     cd ~/imagezmq/tests
+     cd ~/imagenode/tests
 
-7. In this same terminal window, run the program ``timing_receive_jpg_buf.py``
+7. In this same terminal window, run the program ``receive_test.py``
    and leave it running::
 
      workon py3cv3  # my virtualenv name; use yours instead
-     python timing_receive_jpg_buf.py
+     python receive_test.py
 
 8. In the first terminal window (in directory ~/imagenode/imagenode), run the
    ``imagenode.py`` program::
@@ -156,7 +155,7 @@ the Light Detector.
    value to a different value.
 2. Rerun the imagenode.py program and watch what happens.
 
-You can leave the test hub program ``timing_receive_jpg_buf.py`` program
+You can leave the test hub program ``receive_test.py`` program
 running while you stop the ``imagenode.py`` program, change the yaml file,
 and restart the ``imagenode.py`` program.
 
@@ -170,13 +169,13 @@ stored in appropriate directories on the **imagehub** computer. The windows
 would not be shown on the hub computer because the send_test_images option
 would be set to False in the imagenode.yaml file.
 
-Press Ctrl-C to end the test programs on both the Mac and the RPi.
+Press Ctrl-C in each window to end both the test programs.
 
 Test 2: Testing **imagenode** running on a RPi with a test hub running on a Mac
 ===============================================================================
 
 **The second test** runs the sending program **imagenode** on an RPi with a
-PiCamera and the program **imagezmq** ``timing_receive_jpg_buf.py`` (acting as
+PiCamera and the program ``receive_test.py`` (acting as
 a test hub) on a Mac (or linux computer). The Mac will be displaying the images
 received from the RPi PiCamera as well as various detector specific testing
 windows. It tests that the imagenode software is installed correctly on the RPi
@@ -184,11 +183,11 @@ and that the ``imagenode.yaml`` file has been copied and edited in a way that
 works.  It tests the Light Detector which detects "lighted" versus "dark" states
 in a specified ROI in the field of view of the PiCamera.
 
-1. Make sure **imagezmq.py** is installed and tested on your Mac or other
-   display computer. The link to the **imagezmq** GitHub repository is above.
-2. Make sure **imagezmq.py** is installed and tested on your RPi that has a
+1. Make sure **imageZMQ** is installed and tested on your Mac or other
+   display computer. The link to the **imageZMQ** GitHub repository is above.
+2. Make sure **imageZMQ** is installed and tested on your RPi that has a
    PiCamera that will be sending images to test the Light Detector. The link to
-   the **imagezmq** GitHub repository is above.
+   the **imageZMQ** GitHub repository is above.
 3. Clone the **imagenode** GitHub repository onto your RPi in the home
    directory (typically the "pi" user home directory)::
 
@@ -197,8 +196,8 @@ in a specified ROI in the field of view of the PiCamera.
    Your directory structure on your RPi should be like the directory structure
    described above.
 4. Open 2 terminal windows on your Mac. One will be used for running
-   **imagenode** on RPi and the other will be used for running **imagezmq** as a
-   test hub on the Mac.
+   **imagenode** on RPi and the other will be used for running
+   ``receive_test.py`` as a test hub on the Mac.
 5. In one terminal window, ssh into the RPi. Copy ``imagenode/tests/test2.yaml``
    to ``imagenode.yaml`` in the home directory (~) using the command below.
    This ``test2.yaml`` file contains settings that will send a continuous stream of
@@ -232,15 +231,15 @@ in a specified ROI in the field of view of the PiCamera.
      cd ~/imagenode/imagenode
 
 7. In the other terminal window, which is going to be used to run the test hub
-   on the Mac, change to the ``tests`` directory in the **imagezmq** repository::
+   on the Mac, change to the ``tests`` directory in the **imagenode** repository::
 
-     cd ~/imagezmq/tests
+     cd ~/imagenode/tests
 
-8. In this same Mac terminal window (in the ``~/imagezmq/tests`` directory),
-   run the program ``timing_receive_jpg_buf.py`` and leave it running::
+8. In this same Mac terminal window (in the ``~/imagenode/tests`` directory),
+   run the program ``receive_test.py`` and leave it running::
 
      workon py3cv3  # my virtualenv name; use yours instead
-     python timing_receive_jpg_buf.py
+     python receive_test.py
 
 9. In the RPi terminal window (in directory ~/imagenode/imagenode), run the
    ``imagenode.py`` program::
@@ -289,7 +288,7 @@ Test 3: Testing **imagenode** running a motion detector on the RPi to Mac Hub
 =============================================================================
 
 **The third test** runs the sending program **imagenode** on an RPi with a
-PiCamera and the program **imagezmq** ``timing_receive_jpg_buf.py`` (acting as
+PiCamera and the ``receive_test.py`` (acting as
 a test hub) on a Mac (or linux computer). It is run exactly the same way as
 Test 2, above. The Mac will be displaying the images received from the RPi
 PiCamera as well as several motion detector specific testing windows. Test 3
@@ -345,7 +344,7 @@ Test 4: Testing **imagenode** temperature sensor on the RPi to Mac Hub
 
 **The fourth test** tests the capability of **imagenode** to capture and send
 temperature sensor readings. It also uses the Mac running the program
-``timing_receive_jpg_buf.py`` as a test hub as in the previous tests. To run
+``receive_test.py`` as a test hub as in the previous tests. To run
 this test you will need a DS18B20 temperature sensor appropriately attached
 to GPIO pin 4 of the RPi.
 
@@ -373,8 +372,8 @@ console after you press Ctrl-C in the RPi terminal window. That's normal.
 Testing **imagenode** running on one or more RPi's using **imagehub**
 =====================================================================
 
-After you have tested **imagenode** with the **imagezmq**
-``test_receive_images.py program``, the next step would be to add the
+After you have tested **imagenode** with ``receive_test.py`` running as a test
+hub, the next step would be to add a full
 **imagehub** program to the mix. In this arrangement, the **imagehub** program
 would be started on a Mac or Linux computer. One or more RPi's would have their
 ~/imagenode.yaml files changed to assign appropriate detectors and point to
@@ -382,6 +381,8 @@ appropriate hub address. In my production use cases, a single **imagehub** is ab
 to receive detector event messages and detector event images from 8 RPi's at
 a time without significantly impacting the framerates of the RPi's. To test
 the **imagenode** software with **imagehub**, git clone and then run the test
-programs in the **imagehub** GitHub repository ``(coming soon)``.
+programs in the **imagehub**
+`GitHub repository <https://github.com/jeffbass/imagehub>`_.
+
 
 `Return to main documentation page README.rst <../README.rst>`_
