@@ -858,9 +858,11 @@ class Detector:
         # Using the OpenCV 4.x version in master git repository
         #    but switching comment in below 2 lines reverts to OpenCV 3.x
         # (_, contours, __) = cv2.findContours(thresholded.copy(),
-        (contours, __) = cv2.findContours(thresholded.copy(),
+        # (contours, __) = cv2.findContours(thresholded.copy(),
+        #                    cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours_tuple = cv2.findContours(thresholded.copy(),
                             cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+        contours = contours_tuple[-2]  # captures contours value correctly for both versions of OpenCV
         state = 'still'
         area = 0
         for contour in contours:
