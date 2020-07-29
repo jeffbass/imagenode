@@ -15,6 +15,8 @@ cameras:
     resolution: (640, 480)
     resize_width: 80
     framerate: 32
+    iso: 800
+    exposure_mode: off
     vflip: False
     detectors:
       motion:
