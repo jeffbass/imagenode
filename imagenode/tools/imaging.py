@@ -166,7 +166,6 @@ class ImageNode:
                     print ('        digital_gain:', float(cam.cam.camera.digital_gain), '(read-only)')
                     print ('        exposure_speed:', cam.cam.camera.exposure_speed, '(microseconds - read-only)')
                 if versionCompare('1.9', picamversion) != 1:
-                    print ('        still_stats:', cam.cam.camera.still_stats, '(default = False)')
                     print ('        sensor_mode:', cam.cam.camera.sensor_mode, '(default = 0)')
                 if versionCompare('1.13', picamversion) != 1:
                     print ('        revision:', cam.cam.camera.revision, '(ov5647 = V1, imx219 = V2, imx477 = HQ)')
