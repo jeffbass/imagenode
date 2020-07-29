@@ -562,7 +562,7 @@ class Camera:
             picamversion = require('picamera')[0].version
         except:
             picamversion = '0'
-        
+
         if 'resolution' in cameras[camera]:
             self.resolution = literal_eval(cameras[camera]['resolution'])
         else:
@@ -626,7 +626,7 @@ class Camera:
                 self.sensor_mode = cameras[camera]['sensor_mode']
             else:
                 self.sensor_mode = 0  # default value
-            
+
         self.detectors = []
         if 'detectors' in cameras[camera]:  # is there at least one detector
             self.setup_detectors(cameras[camera]['detectors'],
@@ -664,7 +664,7 @@ class Camera:
             # if an sensor_mode has been set in yaml, set it
             if versionCompare('1.9', picamversion) != 1:
                 if self.sensor_mode:
-                    self.cam.camera.sensor_mode = self.sensor_mode                
+                    self.cam.camera.sensor_mode = self.sensor_mode
             self.cam_type = 'PiCamera'
         else:  # this is a webcam (not a picam)
             self.cam = VideoStream(src=0).start()
@@ -954,14 +954,9 @@ class Detector:
         # find contours in thresholded image
         # OpenCV version 3.x returns a 3 value tuple
         # OpenCV version 4.x returns a 2 value tuple
-        # Using the OpenCV 4.x version in master git repository
-        major = cv2.__version__.split('.')[0]
-        if major == '3':
-            (_, contours, __) = cv2.findContours(thresholded.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        else:
-            (contours, __) = cv2.findContours(thresholded.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-
+        contours_tuple = cv2.findContours(thresholded.copy(),
+                            cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = contours_tuple[-2]  # captures contours value correctly for both versions of OpenCV
         state = 'still'
         area = 0
         for contour in contours:

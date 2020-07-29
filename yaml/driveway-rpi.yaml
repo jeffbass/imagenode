@@ -1,0 +1,33 @@
+# Settings for imagenode.py picam motion detector 
+---
+node:
+  name: Driveway
+  queuemax: 50
+  patience: 10
+  stall_watcher: True
+  heartbeat: 10
+  send_type: jpg
+  print_settings: False
+hub_address:
+  # H1: tcp://jeff-macbook:5555
+  # H1: tcp://jeff-thinkpad:5555
+  H1: tcp://192.168.86.71:5555
+cameras:
+  P1:
+    viewname: Mailbox
+    resolution: (320, 240)
+    framerate: 16
+    vflip: True
+    exposure_mode: night
+    detectors:
+      motion:
+        ROI: (19,57),(85,72)
+        draw_roi: ((255,0,0),1)
+        send_frames: detected event # continuous 
+        send_count: 2
+        delta_threshold: 3
+        min_motion_frames: 2
+        min_still_frames: 2
+        min_area: 3  # minimum area of motion as percent of ROI
+        blur_kernel_size: 15  # Guassian Blur kernel size
+        send_test_images: False
