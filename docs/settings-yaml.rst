@@ -295,9 +295,12 @@ those shown below:
     resolution: (640,480)
     exposure_mode: night
     framerate: 8
+    iso: 800 # default = 0 for auto
+    shutter_speed: 1500 # microseconds - default = 0 for auto
     vflip: False
     resize_width: 80
     send_type: jpg   # or image
+    print_settings: True # default = False
     detectors:
       motion:
         ROI: (70,2),(100,25)
@@ -345,7 +348,60 @@ exposure_mode to a number of available choices, such as ``auto``, ``night``,
 and ``sports``. The details of these exposure modes are in the PiCamera
 readthedocs or you can type ``raspistill --help`` at a CLI prompt on a
 Raspberry Pi computer for a list. If no ``exposure_mode`` is specified, then
-the default is ``auto``.
+the default is ``auto``. The possible values are as follows:
+``off, auto, night, nightpreview, backlight, spotlight, sports, snow, beach, 
+verylong, fixedfps, antishake, fireworks``
+
+``awb_mode`` retrieves or sets the auto-white-balance mode of the camera.
+The default value is ``auto``.  The possible values are as follows:
+``off, auto, sunlight, cloudy, shade, tungsten, fluorescent, incandescent, 
+flash, horizon``
+
+``awb_gains`` is an optional setting for the auto-white-balance gains of the
+camera.  When queried, the output is expressed as Fraction instances of 
+the (red,blue) tuple. Typical values for the gains are between 0.9 and 1.9,
+and this attribute only has an effect when ``awb_mode`` is set to ``off``.
+
+``brightness`` is an optional setting for the brightness of the camera.
+The default value is ``50``, and the value can be set to an integer between 0 and 100.
+
+``contrast`` is another optional setting for the contrast of the camera.
+The default value is ``0``, and the value can be set to an integer between -100 and 100.
+
+``exposure_compensation`` is a optional setting for adjusting the exposure 
+compensation level. When set, the property adjusts the camera’s exposure 
+compensation level. Each increment represents 1/6th of a stop. Hence setting 
+the attribute to 6 increases exposure by 1 stop. The default value is ``0``, 
+and the value can be set to an integer value between -25 and 25.
+
+``iso`` retrieves or sets the apparent ISO setting of the camera. This setting
+effects the different camera module versions differently. Only V2 camera
+modules are calibrated against the ISO film speed standards. 
+The default is ``0`` for auto, but other settings include the following:
+``0, 100, 200, 320, 400, 500, 640, 800``
+
+``meter_mode`` this property is used to adjust the camera's mettering mode.
+All modes set up two regions: a center region, and an outer region. The major 
+difference between each mode is the size of the center region. The ``backlit`` 
+mode has the largest central region (30% of the width), while ``spot`` has the 
+smallest (10% of the width). The default value is ``average``, and the other possible
+include the following: ``average, spot, backlit, matrix``
+
+``saturation`` an optional setting to adjust the saturation of the camera.
+The default value is ``0``, and the value can be set to an integer between -100 and 100.
+
+``sensor_mode`` is an optional setting of the input mode of the camera's
+sensor.  The default mode is ``0``. Valid values are currently integers between 
+the 0 and 7.  Each of these modes effect the ``resolution`` and ``framerate`` 
+of camera. For more information of valid sensor mode details visit `Sensor Modes <https://picamera.readthedocs.io/en/release-1.13/fov.html#camera-modes>`_ section of 
+picamera documentation.
+
+``sharpness`` an optional setting to adjust the sharpness of the camera.
+The default value is ``0``, and the value can be set to an integer between -100 and 100.
+
+``shutter_speed`` an optional setting for shutter speed in microseconds.
+The default value is ``0`` for auto, and the value can range as an integer value from 0 to
+33,333 microseconds (depending on the camera module firmware).
 
 ``vflip`` is an optional setting. If the camera image needs to be vertically
 flipped, set ``vflip: True``. The default if not present is ``False``.
@@ -356,7 +412,7 @@ desired width. The width is an integer percentage value from 0 to 99.
 For example, ``resize_width: 80`` would reduce the width 80%, and the height
 proportionally, keeping the same aspect ratio.
 
-```send_frames`` is an optional setting. If set to ``continuous``, then images
+``send_frames`` is an optional setting. If set to ``continuous``, then images
 are sent continuously as they are read from the camera. If set to ``event``
 then images are sent when an event occurs, such as motion detected or a light
 level change detected. If set to ``none``, then images are never sent from the
@@ -369,6 +425,26 @@ which is the first webcam detected. If you have more than one webcam, you should
 set the ``src`` value to the next integer for each webcam. You may have to do
 some testing to determine which cv2.VideoCapture(src) value is assigned to which
 webcam.
+
+Read-Only Parameters
+====================
+
+The following read-only parameters can be evaluated by ``print_settings = True``
+in the ``node`` section of the ``imagenode.yaml`` file.
+
+``analog_gain`` retrieves the current analog gain of the camera. The value is
+returned as a ``Fraction`` instance (read-only).
+
+``digital_gain`` retrieves the current digital gain of the camera. This
+parameter returns the digital gain currently used by the camera. It provides
+valuable feedback on the effects of varing other picamera paramerters (read-only).
+
+``exposure_speed`` retrieves the current shutter speed of the camera.
+If the ``shutter_speed`` was set to a non-zero value, the ``eposure_speed`` will
+equal the ``shutter_speed``. The is returned in microseconds (read-only).
+
+``revision`` returns a string representing the revision of the Pi’s camera 
+module. ov5647 = V1, imx219 = V2, imx477 = HQ (read-only)
 
 See the "Camera Detectors, ROI and Event Tuning" section below for details on
 how detectors, events and related settings are defined and implemented for each
