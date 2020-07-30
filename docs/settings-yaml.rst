@@ -353,13 +353,13 @@ the default is ``auto``. The possible values are as follows:
 verylong, fixedfps, antishake, fireworks``
 
 ``awb_mode`` retrieves or sets the auto-white-balance mode of the camera.
-The default value is ``auto``.  The possible values are as follows:
+The default value is ``auto``.  The other possible values are as follows:
 ``off, auto, sunlight, cloudy, shade, tungsten, fluorescent, incandescent, 
 flash, horizon``
 
 ``awb_gains`` is an optional setting for the auto-white-balance gains of the
 camera.  When queried, the output is expressed as Fraction instances of 
-the (red,blue) tuple. Typical values for the gains are between 0.9 and 1.9,
+a (red,blue) tuple. Typical values for the gains are between 0.9 and 1.9,
 and this attribute only has an effect when ``awb_mode`` is set to ``off``.
 
 ``brightness`` is an optional setting for the brightness of the camera.
@@ -372,12 +372,12 @@ The default value is ``0``, and the value can be set to an integer between -100 
 compensation level. When set, the property adjusts the camera’s exposure 
 compensation level. Each increment represents 1/6th of a stop. Hence setting 
 the attribute to 6 increases exposure by 1 stop. The default value is ``0``, 
-and the value can be set to an integer value between -25 and 25.
+and the value can be set to an integer between -25 and 25.
 
 ``iso`` retrieves or sets the apparent ISO setting of the camera. This setting
 effects the different camera module versions differently. Only V2 camera
 modules are calibrated against the ISO film speed standards. 
-The default is ``0`` for auto, but other settings include the following:
+The default is ``0`` for auto, but other values include the following:
 ``0, 100, 200, 320, 400, 500, 640, 800``
 
 ``meter_mode`` this property is used to adjust the camera's mettering mode.
@@ -385,22 +385,22 @@ All modes set up two regions: a center region, and an outer region. The major
 difference between each mode is the size of the center region. The ``backlit`` 
 mode has the largest central region (30% of the width), while ``spot`` has the 
 smallest (10% of the width). The default value is ``average``, and the other possible
-include the following: ``average, spot, backlit, matrix``
+values include the following: ``average, spot, backlit, matrix``
 
 ``saturation`` an optional setting to adjust the saturation of the camera.
 The default value is ``0``, and the value can be set to an integer between -100 and 100.
 
 ``sensor_mode`` is an optional setting of the input mode of the camera's
-sensor.  The default mode is ``0``. Valid values are currently integers between 
+sensor.  Valid values are currently integers between 
 the 0 and 7.  Each of these modes effect the ``resolution`` and ``framerate`` 
 of camera. For more information of valid sensor mode details visit `Sensor Modes <https://picamera.readthedocs.io/en/release-1.13/fov.html#camera-modes>`_ section of 
-picamera documentation.
+picamera documentation. The default mode is ``0``. 
 
 ``sharpness`` an optional setting to adjust the sharpness of the camera.
 The default value is ``0``, and the value can be set to an integer between -100 and 100.
 
 ``shutter_speed`` an optional setting for shutter speed in microseconds.
-The default value is ``0`` for auto, and the value can range as an integer value from 0 to
+The default value is ``0`` for auto, and the value can range as an integer from 0 to
 33,333 microseconds (depending on the camera module firmware).
 
 ``vflip`` is an optional setting. If the camera image needs to be vertically
@@ -444,7 +444,7 @@ If the ``shutter_speed`` was set to a non-zero value, the ``eposure_speed`` will
 equal the ``shutter_speed``. The is returned in microseconds (read-only).
 
 ``revision`` returns a string representing the revision of the Pi’s camera 
-module. ov5647 = V1, imx219 = V2, imx477 = HQ (read-only)
+module. The read-only values returned include the following:  ``ov5647 = V1, imx219 = V2, imx477 = HQ``
 
 See the "Camera Detectors, ROI and Event Tuning" section below for details on
 how detectors, events and related settings are defined and implemented for each
