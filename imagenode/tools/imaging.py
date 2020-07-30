@@ -24,6 +24,8 @@ from imutils.video import VideoStream
 import imagezmq
 from tools.utils import interval_timer
 from tools.nodehealth import HealthMonitor
+from tools.utils import versionCompare
+from pkg_resources import require
 
 class ImageNode:
     """ Contains all the attributes and methods of this imagenode
@@ -141,7 +143,33 @@ class ImageNode:
             print('    Resize_width setting:', cam.resize_width)
             print('    Resolution after resizing:', cam.res_resized)
             if cam.cam_type == 'PiCamera':
-                print ('    PiCamera exposure_mode:', cam.cam.camera.exposure_mode)
+                # check picamera version
+                try:
+                    picamversion = require('picamera')[0].version
+                except:
+                    picamversion = '0'
+                print ('    PiCamera:')
+                print ('        awb_mode:', cam.cam.camera.awb_mode, '(default = auto - off,auto,sunlight,cloudy,shade,tungsten,fluorescent,incandescent,flash,horizon)')
+                print ('        brightness:', cam.cam.camera.brightness, '(default = 50, integer between 0 and 100)')
+                print ('        contrast:', cam.cam.camera.contrast, '(default = 0, integer between -100 and 100)')
+                print ('        exposure_compensation:', cam.cam.camera.exposure_compensation, '(default = 0, integer value between -25 and 25)')
+                print ('        exposure_mode:', cam.cam.camera.exposure_mode, '(default = auto - off,auto,night,nightpreview,backlight,spotlight,sports,snow,beach,verylong,fixedfps,antishake,fireworks)')
+                print ('        framerate:', cam.cam.camera.framerate, '(default = 30)')
+                print ('        iso:', cam.cam.camera.iso, '(default = 0 for auto - 0,100,200,320,400,500,640,800)')
+                print ('        meter_mode:', cam.cam.camera.meter_mode, '(default = average - averge,spot,backlit,matrix)')
+                print ('        saturation:', cam.cam.camera.saturation, '(default = 0, integer between -100 and 100)')
+                print ('        sharpness:', cam.cam.camera.sharpness, '(default = 0, integer between -100 and 100)')
+                print ('        shutter_speed:', cam.cam.camera.shutter_speed, '(microseconds - default = 0 for auto)')
+                if versionCompare('1.6', picamversion) != 1:
+                    print ('        analog_gain:', float(cam.cam.camera.analog_gain), '(read-only)')
+                    print ('        awb_gains:', cam.cam.camera.awb_gains, '(typical values for the gains are between 0.9 and 1.9 - when awb_mode = off)')
+                    print ('        digital_gain:', float(cam.cam.camera.digital_gain), '(read-only)')
+                    print ('        exposure_speed:', cam.cam.camera.exposure_speed, '(microseconds - read-only)')
+                if versionCompare('1.9', picamversion) != 1:
+                    print ('        sensor_mode:', cam.cam.camera.sensor_mode, '(default = 0)')
+                if versionCompare('1.13', picamversion) != 1:
+                    print ('        revision:', cam.cam.camera.revision, '(ov5647 = V1, imx219 = V2, imx477 = HQ)')
+
             for detector in cam.detectors:
                 print('    Detector:', detector.detector_type)
                 print('      ROI:', detector.roi_pct, '(in percents)')
@@ -159,6 +187,7 @@ class ImageNode:
                     print('      min_area:', detector.min_area, '(in percent)')
                     print('      min_area:', detector.min_area_pixels, '(in pixels)')
                     print('      blur_kernel_size:', detector.blur_kernel_size)
+                    print('      print_still_frames:', detector.print_still_frames)
         print()
 
     def setup_sensors(self, settings):
@@ -527,6 +556,12 @@ class Camera:
 
         self.cam = None
         self.jpeg_quality = 95  # 0 to 100, higher is better quality, 95 is cv2 default
+        # check picamera version
+        try:
+            picamversion = require('picamera')[0].version
+        except:
+            picamversion = '0'
+
         if 'resolution' in cameras[camera]:
             self.resolution = literal_eval(cameras[camera]['resolution'])
         else:
@@ -557,6 +592,40 @@ class Camera:
             self.exposure_mode = cameras[camera]['exposure_mode']
         else:
             self.exposure_mode = None
+        if 'iso' in cameras[camera]:
+            self.iso = cameras[camera]['iso']
+        else:
+            self.iso = 0  # default value
+        if 'shutter_speed' in cameras[camera]:
+            self.shutter_speed = cameras[camera]['shutter_speed']
+        else:
+            self.shutter_speed = 0  # default value
+        if 'sharpness' in cameras[camera]:
+            self.sharpness = cameras[camera]['sharpness']
+        else:
+            self.sharpness = 0  # default value
+        if 'contrast' in cameras[camera]:
+            self.contrast = cameras[camera]['contrast']
+        else:
+            self.contrast = 0  # default value
+        if 'brightness' in cameras[camera]:
+            self.brightness = cameras[camera]['brightness']
+        else:
+            self.brightness = 50  # default value
+        if 'exposure_compensation' in cameras[camera]:
+            self.exposure_compensation = cameras[camera]['exposure_compensation']
+        else:
+            self.exposure_compensation = 0  # 0 default value, integer value between -25 and 25
+        if 'awb_mode' in cameras[camera]:
+            self.awb_mode = cameras[camera]['awb_mode']
+        else:
+            self.awb_mode = 'auto'  # default value
+        if versionCompare('1.9', picamversion) != 1:
+            if 'sensor_mode' in cameras[camera]:
+                self.sensor_mode = cameras[camera]['sensor_mode']
+            else:
+                self.sensor_mode = 0  # default value
+
         self.detectors = []
         if 'detectors' in cameras[camera]:  # is there at least one detector
             self.setup_detectors(cameras[camera]['detectors'],
@@ -570,6 +639,31 @@ class Camera:
             # if an exposure mode has been set in yaml, set it
             if self.exposure_mode:
                 self.cam.camera.exposure_mode = self.exposure_mode
+            # if an iso has been set in yaml, set it
+            if self.iso:
+                self.cam.camera.iso = self.iso
+            # if an iso has been set in yaml, set it
+            if self.shutter_speed:
+                self.cam.camera.shutter_speed = self.shutter_speed
+            # if an sharpness has been set in yaml, set it
+            if self.sharpness:
+                self.cam.camera.sharpness = self.sharpness
+            # if an contrast has been set in yaml, set it
+            if self.contrast:
+                self.cam.camera.contrast = self.contrast
+            # if an brightness has been set in yaml, set it
+            if self.brightness:
+                self.cam.camera.brightness = self.brightness
+            # if an exposure_compensation has been set in yaml, set it
+            if self.exposure_compensation:
+                self.cam.camera.exposure_compensation = self.exposure_compensation
+            # if an awb_mode has been set in yaml, set it
+            if self.awb_mode:
+                self.cam.camera.awb_mode = self.awb_mode
+            # if an sensor_mode has been set in yaml, set it
+            if versionCompare('1.9', picamversion) != 1:
+                if self.sensor_mode:
+                    self.cam.camera.sensor_mode = self.sensor_mode
             self.cam_type = 'PiCamera'
         else:  # this is a webcam (not a picam)
             self.cam = VideoStream(src=0).start()
@@ -662,6 +756,10 @@ class Detector:
                 self.blur_kernel_size = detectors[detector]['blur_kernel_size']
             else:
                 self.blur_kernel_size = 15 # 15 is default blur_kernel_size
+            if 'print_still_frames' in detectors[detector]:
+                self.print_still_frames = detectors[detector]['print_still_frames']
+            else:
+                self.print_still_frames = True # True is default print_still_frames
 
         if 'ROI' in detectors[detector]:
             self.roi_pct = literal_eval(detectors[detector]['ROI'])
@@ -855,12 +953,9 @@ class Detector:
         # find contours in thresholded image
         # OpenCV version 3.x returns a 3 value tuple
         # OpenCV version 4.x returns a 2 value tuple
-        # Using the OpenCV 4.x version in master git repository
-        #    but switching comment in below 2 lines reverts to OpenCV 3.x
-        # (_, contours, __) = cv2.findContours(thresholded.copy(),
-        (contours, __) = cv2.findContours(thresholded.copy(),
+        contours_tuple = cv2.findContours(thresholded.copy(),
                             cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+        contours = contours_tuple[-2]  # captures contours value correctly for both versions of OpenCV
         state = 'still'
         area = 0
         for contour in contours:
@@ -917,6 +1012,8 @@ class Detector:
         #   by appending them to send_q
         if self.frame_count > 0:  # then need to send images of this event
             send_count = min(len(camera.cam_q), self.send_count)
+            if (self.current_state == 'still') and (self.print_still_frames == False):
+                send_count = 0
             for i in range(-send_count,-1):
                 text_and_image = (camera.text, camera.cam_q[i])
                 send_q.append(text_and_image)
