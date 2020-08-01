@@ -376,7 +376,7 @@ There a many camera settings available on PiCameras, including the ability to
 set an automatic exposure mode such as ``night`` or ``sports``. There are also
 a number of very "manual" PiCamera settings, such as ``iso`` and
 ``shutter_speed``. The details of these exposure modes are in the
-`PiCamera readthedocs<https://picamera.readthedocs.io/en/release-1.10/api_camera.html>`_.
+`PiCamera readthedocs <https://picamera.readthedocs.io/en/release-1.10/api_camera.html>`_.
 You can also type ``raspistill --help`` at a CLI prompt on a
 Raspberry Pi computer for a list of these settings and allowed values.
 
@@ -402,7 +402,7 @@ and 100.
 The default value is ``0``, and the value can be set to an integer between
 -100 and 100.
 
-``exposure_compensation`` is a optional setting for adjusting the exposure
+``exposure_compensation`` is an optional setting for adjusting the exposure
 compensation level. Each increment represents 1/6th of a stop. Hence, setting
 the attribute to 6 increases exposure by 1 stop. The default value is ``0``,
 and the value can be set to an integer between -25 and 25.
@@ -418,7 +418,7 @@ modules are calibrated against the ISO film speed standards.
 The default is ``0`` for automatic ISO setting. Allowed falues are:
 ``0, 100, 200, 320, 400, 500, 640, 800``.
 
-``meter_mode`` this property is used to adjust the camera's metering mode.
+``meter_mode`` is an optional setting used to adjust the camera's metering mode.
 All modes set up two regions: a center region, and an outer region. The major
 difference between each mode is the size of the center region. The ``backlit``
 mode has the largest central region (30% of the width), while ``spot`` has the
@@ -433,7 +433,7 @@ and 100.
 The default value is ``0``, and the value can be set to an integer between -100
 and 100.
 
-``shutter_speed`` an optional setting for shutter speed in microseconds.
+``shutter_speed`` is an optional setting for the shutter speed in microseconds.
 The default value is ``0`` for auto, and the value can range as an integer from
 0 to 33,333 microseconds (depending on the camera module firmware).
 
