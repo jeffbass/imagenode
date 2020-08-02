@@ -81,6 +81,7 @@ Dependencies and Installation
 - picamera 1.13 (imported only if using PiCamera)
 - imagezmq 1.0.1 and newer
 - imutils 0.4.3 and newer (used get to images from PiCamera)
+- psutils 5.7.2 and newer
 - w1thermsensor 1.3 and newer (used to get temperature sensor readings)
 
 **imagenode** captures images and uses **imagezmq** to transfer the images.
