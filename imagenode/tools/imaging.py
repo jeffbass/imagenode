@@ -165,8 +165,6 @@ class ImageNode:
                     print ('        awb_gains:', cam.cam.camera.awb_gains, '(typical values for the gains are between 0.9 and 1.9 - when awb_mode = off)')
                     print ('        digital_gain:', float(cam.cam.camera.digital_gain), '(read-only)')
                     print ('        exposure_speed:', cam.cam.camera.exposure_speed, '(microseconds - read-only)')
-                if versionCompare('1.9', picamversion) != 1:
-                    print ('        sensor_mode:', cam.cam.camera.sensor_mode, '(default = 0)')
                 if versionCompare('1.13', picamversion) != 1:
                     print ('        revision:', cam.cam.camera.revision, '(ov5647 = V1, imx219 = V2, imx477 = HQ)')
 
@@ -620,11 +618,6 @@ class Camera:
             self.awb_mode = cameras[camera]['awb_mode']
         else:
             self.awb_mode = 'auto'  # default value
-        if versionCompare('1.9', picamversion) != 1:
-            if 'sensor_mode' in cameras[camera]:
-                self.sensor_mode = cameras[camera]['sensor_mode']
-            else:
-                self.sensor_mode = 0  # default value
 
         self.detectors = []
         if 'detectors' in cameras[camera]:  # is there at least one detector
@@ -660,10 +653,6 @@ class Camera:
             # if an awb_mode has been set in yaml, set it
             if self.awb_mode:
                 self.cam.camera.awb_mode = self.awb_mode
-            # if an sensor_mode has been set in yaml, set it
-            if versionCompare('1.9', picamversion) != 1:
-                if self.sensor_mode:
-                    self.cam.camera.sensor_mode = self.sensor_mode
             self.cam_type = 'PiCamera'
         else:  # this is a webcam (not a picam)
             self.cam = VideoStream(src=0).start()
