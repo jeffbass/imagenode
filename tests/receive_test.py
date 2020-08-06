@@ -54,6 +54,7 @@ import traceback
 import numpy as np
 from time import sleep
 from imutils.video import FPS
+from threading import Event, Timer
 from collections import defaultdict
 
 # instantiate image_hub
@@ -84,17 +85,19 @@ if TEST_DURATION <= 0:
     TEST_DURATION = 999999  # a large number so Ctrl-C is only stopping method
 
 def receive_images_forever():
-    def timer_done(a, b):
-        sys.exit()
-
     global image_count, sender_image_counts, first_image, text, image, fps
-    while True:  # receive images until Ctrl-C is pressed
+    keep_going = threading.Event()
+    keep_going.set()
+
+    def timer_done():
+        keep_going.clear()
+
+    while keep_going.is_set():  # receive images until timer expires or Ctrl-C
         text, image = receive_tuple()
         if first_image:
             print('First Image Received. Starting FPS timer.')
             fps = FPS().start()  # start FPS timer after first image is received
-            signal.signal(signal.SIGALRM, timer_done)
-            signal.alarm(TEST_DURATION)
+            Timer(TEST_DURATION, timer_done).start()
             first_image = False
         fps.update()
         image_count += 1  # global count of all images received
