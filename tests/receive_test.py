@@ -43,7 +43,7 @@ Ctrl-C.
 # EDIT THES OPTIONS BEFORE RUNNING PROGRAM
 JPG = True  # or False if receiving images
 SHOW_IMAGES = True
-TEST_DURATION = 300  # seconds or 0 to keep going until Ctrl-C
+TEST_DURATION = 30  # seconds or 0 to keep going until Ctrl-C
 ########################################################################
 
 import cv2
@@ -54,7 +54,7 @@ import traceback
 import numpy as np
 from time import sleep
 from imutils.video import FPS
-from threading import Event, Timer
+from threading import Event, Thread
 from collections import defaultdict
 
 # instantiate image_hub
@@ -86,18 +86,20 @@ if TEST_DURATION <= 0:
 
 def receive_images_forever():
     global image_count, sender_image_counts, first_image, text, image, fps
-    keep_going = threading.Event()
+    keep_going = Event()
     keep_going.set()
 
-    def timer_done():
+    def timer(duration):
+        sleep(duration)
         keep_going.clear()
+        sleep(10)  # allow cleanup finally time
 
     while keep_going.is_set():  # receive images until timer expires or Ctrl-C
         text, image = receive_tuple()
         if first_image:
             print('First Image Received. Starting FPS timer.')
             fps = FPS().start()  # start FPS timer after first image is received
-            Timer(TEST_DURATION, timer_done).start()
+            Thread(target=timer, daemon=True, args=(TEST_DURATION,)).start()
             first_image = False
         fps.update()
         image_count += 1  # global count of all images received
