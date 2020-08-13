@@ -83,8 +83,6 @@ class ImageNode:
                 GPIO.setmode(GPIO.BCM)
                 GPIO.setwarnings(False)
             if settings.sensors:   # is there at least one sensor in yaml file
-                global W1ThermSensor  # for DS18B20 temperature sensor
-                from w1thermsensor import W1ThermSensor
                 self.setup_sensors(settings)
             if settings.lights:   # is there at least one light in yaml file
                 self.setup_lights(settings)
@@ -451,6 +449,10 @@ class Sensor:
             self.type = sensors[sensor]['type']
         else:
             self.type = 'Unknown'
+        if 'unit' in sensors[sensor]:
+            self.unit = sensors[sensor]['unit'].upper()
+        else:
+            self.unit = 'F'
         if 'read_interval_minutes' in sensors[sensor]:
             self.interval = sensors[sensor]['read_interval_minutes']
         else:
@@ -469,27 +471,62 @@ class Sensor:
         # self.event_text will have self.current_reading appended when events are sent
         self.event_text = '|'.join([settings.nodename, self.name]).strip()
 
-        # TODO add other sensor types as testing is completed for each sensor type
+        # Initialize last_reading and temp_sensor variables
+        self.last_reading_temp = -999  # will ensure first temp reading is a change
+        self.last_reading_humidity = -999  # will ensure first humidity reading is a change
+        self.temp_sensor = None
+
+        # Sensor types
         if self.type == 'DS18B20':
+            global W1ThermSensor  # for DS18B20 temperature sensor
+            from w1thermsensor import W1ThermSensor
             self.temp_sensor = W1ThermSensor()
-            self.last_reading = -999  # will ensure first reading is a change
+
+        if (self.type == 'DHT11') or (self.type == 'DHT22'):
+            global adafruit_dht  # for DHT11 & DHT22 temperature sensor
+            import adafruit_dht
+            if self.type == 'DHT11':
+                self.temp_sensor = adafruit_dht.DHT11(self.gpio)
+            if self.type == 'DHT22':
+                self.temp_sensor = adafruit_dht.DHT22(self.gpio)
+
+        if self.temp_sensor != None:
             self.check_temperature() # check one time, then start interval_timer
             threading.Thread(daemon=True,
                 target=lambda: interval_timer(
                     self.interval, self.check_temperature)).start()
 
     def check_temperature(self):
-        """ adds temperature value from a sensor to senq_q message queue
+        """ adds temperature & humidity (if available) value from a sensor to senq_q message queue
         """
-        temperature = int(self.temp_sensor.get_temperature(W1ThermSensor.DEGREES_F))
-        if abs(temperature - self.last_reading) >= self.min_difference:
+        if self.type == 'DS18B20':
+            if self.unit == 'C':
+                temperature = int(self.temp_sensor.get_temperature(W1ThermSensor.DEGREES_C))
+            else:
+                temperature = int(self.temp_sensor.get_temperature(W1ThermSensor.DEGREES_F))
+            humidity = -999
+        if (self.type == 'DHT11') or (self.type == 'DHT22'):
+            if self.unit == 'C':
+                temperature = self.temp_sensor.temperature
+            else:
+                temperature = self.temp_sensor.temperature * (9 / 5) + 32
+            humidity = self.temp_sensor.humidity
+        if abs(temperature - self.last_reading_temp) >= self.min_difference:
             # temperature has changed from last reported temperature, therefore
             # send an event message reporting temperature by appending to send_q
-            temp_text = str(temperature) + " F"
+            temp_text = str(temperature) + " " + self.unit
             text = '|'.join([self.event_text, temp_text])
             text_and_image = (text, self.tiny_image)
             self.send_q.append(text_and_image)
-            self.last_reading = temperature
+            self.last_reading_temp = temperature
+        if abs(humidity - self.last_reading_humidity) >= self.min_difference:
+            # humidity has changed from last reported humidity, therefore
+            # send an event message reporting humidity by appending to send_q
+            humidity_text = str(humidity) + " %"
+            text = '|'.join([self.event_text, humidity_text])
+            text_and_image = (text, self.tiny_image)
+            self.send_q.append(text_and_image)
+            self.last_reading_humidity = humidity
 
 class Light:
     """ Methods and attributes of a light controlled by an RPi GPIO pin
