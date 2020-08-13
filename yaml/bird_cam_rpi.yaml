@@ -1,0 +1,45 @@
+# Settings for imagenode.py bird detection YAML settings used with a
+# RPi HQ Camera Module with a StarDot LEN-2M1.55MMCS 1.55mm f/1.5
+# Fisheye Lens + RPi4 Model B with 2GB memory.  The min_area=0.006
+# is equivalent to watching 44 pixels of the ROI selected.
+---
+node:
+  name: SkyView
+  queuemax: 50
+  patience: 30
+  heartbeat: 10
+  send_type: jpg
+  send_threading: True  # sends images in separate thread
+  stall_watcher: True  # watches for stalled network or RPi power glitch
+  print_settings: True
+hub_address:
+  H1: tcp://10.0.0.111:5555
+cameras:
+  P1:
+    viewname: RPiCam1
+    resolution: (1920,1456)
+    exposure_mode: sports
+    iso: 0
+    shutter_speed: 0
+    sharpness: 0
+    contrast: 0
+    awb_mode: auto
+    brightness: 50
+    exposure_compensation: 0
+    resize_width: 100
+    framerate: 32
+    vflip: False
+    src: 0
+    detectors:
+      motion:
+        ROI: (35,5),(70,78)
+        draw_roi: ((255,0,0),1)
+        send_frames: detected event # continuous # or none or detected event
+        send_count: 6 # number of images to send when an event occurs
+        delta_threshold: 2 # The minimum intensity difference between the current image and the weighted average of past images - Typical values are 3 to 10
+        min_motion_frames: 8 # The minimum number of frames with detected motion to change the state to "moving"
+        min_still_frames: 5 # The minimum number of frames with no detected motion to change the state to "still"
+        min_area: 0.006  # How much of the ROI has to have pixels show motion to cause the change to the "moving" state
+        blur_kernel_size: 7  # Guassian Blur kernel size - integer and odd - Typical values are 5 to 23
+        send_test_images: False # Set True if used with receive_test.py on server
+        print_still_frames: False  # default = True
