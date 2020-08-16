@@ -14,6 +14,7 @@ import logging
 import itertools
 import threading
 from time import sleep
+from datetime import datetime
 from ast import literal_eval
 from collections import deque
 import numpy as np
@@ -64,12 +65,13 @@ class ImageNode:
             self.send_frame = self.send_jpg_frame # set send function to jpg
 
         # set up message queue to hold (text, image) messages to be sent to hub
-        self.send_q = deque(maxlen=settings.queuemax)
         if settings.send_threading:  # use a threaded send_q sender instead
             self.send_q = SendQueue(maxlen=settings.queuemax,
                           send_frame=self.send_frame,
                           process_hub_reply=self.process_hub_reply)
             self.send_q.start()
+        else:
+            self.send_q = deque(maxlen=settings.queuemax)
 
         # start system health monitoring & get system type (RPi vs Mac etc)
         self.health = HealthMonitor(settings, self.send_q)
@@ -126,6 +128,11 @@ class ImageNode:
                 if detector.detector_type == 'motion':
                     detector.min_area_pixels = (detector.roi_area
                                                 * detector.min_area) // 100
+                # location of timestamp based on image size
+                if detector.draw_time:
+                    time_x = detector.draw_time_org[0] * width // 100
+                    time_y = detector.draw_time_org[1] * height // 100
+                    detector.draw_time_org = (time_x, time_y)
 
         if settings.print_node:
             self.print_node_details(settings)
@@ -174,10 +181,10 @@ class ImageNode:
                 print('      send_test_images:', detector.send_test_images)
                 print('      send_count:', detector.send_count)
                 if detector.detector_type == 'light':
-                    print('      threshhold:', detector.threshold)
+                    print('      threshold:', detector.threshold)
                     print('      min_frames:', detector.min_frames)
                 elif detector.detector_type == 'motion':
-                    print('      delta_threshhold:', detector.delta_threshold)
+                    print('      delta_threshold:', detector.delta_threshold)
                     print('      min_motion_frames:', detector.min_motion_frames)
                     print('      min_still_frames:', detector.min_still_frames)
                     print('      min_area:', detector.min_area, '(in percent)')
@@ -287,6 +294,17 @@ class ImageNode:
                 detector.bottom_right,
                 detector.draw_color,
                 detector.draw_line_width)
+        # For troubleshooting purposes - print time on images
+        if detector.draw_time:
+            display_time = datetime.now().isoformat(sep=' ', timespec='microseconds')
+            cv2.putText(image,
+                display_time,
+                detector.draw_time_org,
+                cv2.FONT_HERSHEY_SIMPLEX,
+                detector.draw_time_fontScale,
+                detector.draw_time_color,
+                detector.draw_time_width,
+                cv2.LINE_AA)
         # detect state (light, etc.) and put images and events into send_q
         detector.detect_state(camera, image, self.send_q)
 
@@ -510,6 +528,7 @@ class Sensor:
                 temperature = self.temp_sensor.temperature
             else:
                 temperature = self.temp_sensor.temperature * (9 / 5) + 32
+            temperature = float(format(temperature,'.1f'))
             humidity = self.temp_sensor.humidity
         if abs(temperature - self.last_reading_temp) >= self.min_difference:
             # temperature has changed from last reported temperature, therefore
@@ -797,6 +816,21 @@ class Detector:
             self.draw_line_width = self.draw_roi[1]
         else:
             self.draw_roi = None
+        # draw timestamp on image
+        if 'draw_time' in detectors[detector]:
+            self.draw_time = literal_eval(detectors[detector]['draw_time'])
+            self.draw_time_color = self.draw_time[0]
+            self.draw_time_width = self.draw_time[1]
+            if 'draw_time_org' in detectors[detector]:
+                self.draw_time_org = literal_eval(detectors[detector]['draw_time_org'])
+            else:
+                self.draw_time_org = (0,0)
+            if 'draw_time_fontScale' in detectors[detector]:
+                self.draw_time_fontScale = detectors[detector]['draw_time_fontScale']
+            else:
+                self.draw_time_fontScale = 1
+        else:
+            self.draw_time = None
         send_frames = 'None Set'
         self.frame_count = 0
         # send_frames option can be 'continuous', 'detected event', 'none'
