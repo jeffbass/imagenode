@@ -5,6 +5,7 @@ License: MIT, see LICENSE for more details.
 """
 
 import os
+import sys
 import psutil
 import signal
 import logging
