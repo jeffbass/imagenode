@@ -219,8 +219,25 @@ Contributing
 ============
 **imagenode** is in early development and testing. I welcome open issues and
 pull requests, but because the programs are still rapidly evolving, it is best
-to open an issue with some discussion before submitting any pull requests or
-code changes.
+to open an issue for some discussion before submitting pull requests. We can
+exchange ideas about your potential pull request how to best test your code.
+
+Contributors
+============
+Thanks for all contributions big and small. Some significant ones:
+
++--------------------------+-----------------+----------------------------------------------+
+| **Contribution**         | **Name**        | **GitHub**                                   |
++--------------------------+-----------------+----------------------------------------------+
+| Initial code & docs      | Jeff Bass       | `@jeffbass <https://github.com/jeffbass>`_   |
++--------------------------+-----------------+----------------------------------------------+
+| Added code and           |                 |                                              |
+| documentation for        |                 |                                              |
+| PiCamera settings        | Stephen Kirby   | `@sbkirby <https://github.com/sbkirby>`_     |
++--------------------------+-----------------+----------------------------------------------+
+| Added DHT11 & DHT22      |                 |                                              |
+| sensor capability        | Stephen Kirby   | `@sbkirby <https://github.com/sbkirby>`_     |
++--------------------------+-----------------+----------------------------------------------+
 
 Acknowledgments
 ===============
