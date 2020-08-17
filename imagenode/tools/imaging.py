@@ -985,6 +985,10 @@ class Detector:
         Adrian Rosebrock on PyImageSearch.com. See README.rst for details.
         """
 
+        #####
+        # Branch to fix duplicate frames; see GitHub issues #15 (&#12)
+        #####
+
         # if we are sending images continuously, append current image to send_q
         if self.frame_count == -1:  # -1 code ==> send all frames continuously
             text_and_image = (camera.text, image)
