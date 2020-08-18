@@ -618,9 +618,11 @@ class PiCameraUnthreadedStream():
         return self.frame
 
     def stop(self):
-        self.camera.close()
+        self.close()
 
     def close(self):
+        self.stream.close()
+        self.rawCapture.close()
         self.camera.close()
 
 class Camera:
