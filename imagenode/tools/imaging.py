@@ -592,6 +592,38 @@ class Light:
         """
         GPIO.output(self.gpio, False)  # turn off light
 
+class PiCameraUnthreadedStream():
+    """ Rreads the PiCamera without threading.
+
+    The PiVideoStream class within imutils.VideoStream provides a threaded way
+    to read the PiCamera images. This class provides a way to read the PiCamera
+    without threading, primarily intended for testing. For compatibility, the
+    method names are the same as imutils.VideoStream.
+    """
+	def __init__(self, resolution=(320, 240), framerate=32, **kwargs):
+        from picamera.array import PiRGBArray
+        from picamera import PiCamera
+		self.camera = PiCamera()
+		self.camera.resolution = resolution
+		self.camera.framerate = framerate
+		self.rawCapture = PiRGBArray(self.camera, size=resolution)
+		self.stream = self.camera.capture_continuous(self.rawCapture,
+			format="bgr", use_video_port=True)
+		self.frame = None
+
+	def read(self):
+        f = next(self.stream)  # or f = self.stream.read()?
+        self.frame = f.array
+		self.rawCapture.truncate(0)
+		return self.frame
+
+	def stop(self):
+		self.camera.close()
+
+    def close(self):
+        self.camera.close()
+
+
 class Camera:
     """ Methods and attributes of a camera
 
@@ -616,6 +648,10 @@ class Camera:
         except:
             picamversion = '0'
 
+        if 'threaded_read' in cameras[camera]:  # threaded on non-threaded camera reading
+            self.threaded_read = cameras[camera]['threaded_read']
+        else:
+            self.threaded_read = True
         if 'resolution' in cameras[camera]:
             self.resolution = literal_eval(cameras[camera]['resolution'])
         else:
@@ -682,9 +718,16 @@ class Camera:
 
         if camera[0].lower() == 'p':  # this is a picam
             # start PiCamera and warm up; inherits methods from VideoStream
-            self.cam = VideoStream(usePiCamera=True,
-                resolution=self.resolution,
-                framerate=self.framerate).start()
+            # unless threaded_read is False; if threaded_read is True,
+            # inherits from PiCamera to read the PiCamera in an unthreaded way
+            if self.threaded_read:
+                self.cam = VideoStream(usePiCamera=True,
+                    resolution=self.resolution,
+                    framerate=self.framerate).start()
+            else:
+                self.cam = PiCameraUnthreadedStream(
+                    resolution=self.resolution,
+                    framerate=self.framerate)
             # if an exposure mode has been set in yaml, set it
             if self.exposure_mode:
                 self.cam.camera.exposure_mode = self.exposure_mode
@@ -713,7 +756,7 @@ class Camera:
         else:  # this is a webcam (not a picam)
             self.cam = VideoStream(src=0).start()
             self.cam_type = 'webcam'
-        sleep(2.0)  # allow camera sensor to warm up
+        sleep(3.0)  # allow camera sensor to warm up
 
         # self.text is the text label for images from this camera.
         # Each image that is sent is sent with a text label so the hub can
