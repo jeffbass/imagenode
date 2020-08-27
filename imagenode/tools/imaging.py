@@ -442,11 +442,6 @@ class Sensor:
         sensors (dict): dictionary of all the sensors in the YAML file
         settings (Settings object): settings object created from YAML file
 
-    TODO Make imports of GPIO and W1ThermSensor conditional on actual need for
-    them. For now, they are imported every time whether needed or not.
-
-    TODO This is coded for a single DS18B20 temperature sensor. Add
-    code for DHT22 sensors and for multiple DS18B20 sensors.
     """
 
     def __init__(self, sensor, sensors, settings, tiny_image, send_q):
@@ -484,11 +479,12 @@ class Sensor:
         # self.event_text is the text message for this sensor that is
         #   sent when the sensor value changes
         # example: Barn|Temperaure|85 F
+        # example: Barn|Humidity|42 %
         # example: Garage|Temperature|71 F
         # example: Compost|Moisture|95 %
         # self.event_text will have self.current_reading appended when events are sent
-        self.event_text = '|'.join([settings.nodename, self.name]).strip()
-
+        # self.event_text = '|'.join([settings.nodename, self.name]).strip()
+        self.event_text = settings.nodename
         # Initialize last_reading and temp_sensor variables
         self.last_reading_temp = -999  # will ensure first temp reading is a change
         self.last_reading_humidity = -999  # will ensure first humidity reading is a change
@@ -496,6 +492,7 @@ class Sensor:
 
         # Sensor types
         if self.type == 'DS18B20':
+            # note that DS18B20 requires GPIO pin 4 (unless kernel is modified)
             global W1ThermSensor  # for DS18B20 temperature sensor
             from w1thermsensor import W1ThermSensor
             self.temp_sensor = W1ThermSensor()
@@ -524,17 +521,25 @@ class Sensor:
                 temperature = int(self.temp_sensor.get_temperature(W1ThermSensor.DEGREES_F))
             humidity = -999
         if (self.type == 'DHT11') or (self.type == 'DHT22'):
-            if self.unit == 'C':
-                temperature = self.temp_sensor.temperature
-            else:
-                temperature = self.temp_sensor.temperature * (9 / 5) + 32
-            temperature = float(format(temperature,'.1f'))
-            humidity = self.temp_sensor.humidity
+            for i in range(5):  # try for valid readings 5 times; break if valid
+                try:
+                    if self.unit == 'C':
+                        temperature = self.temp_sensor.temperature
+                    else:
+                        temperature = self.temp_sensor.temperature * (9 / 5) + 32
+                    temperature = float(format(temperature,'.1f'))
+                    humidity = self.temp_sensor.humidity
+                    humidity = float(format(humidity,'.1f'))
+                    break  # break out of for loop if got valid readings
+                except RuntimeError:
+                    sleep(3)  # wait 3 seconds and try again
+                    pass  # this will retry up to 5 times before exiting the for loop
+
         if abs(temperature - self.last_reading_temp) >= self.min_difference:
             # temperature has changed from last reported temperature, therefore
             # send an event message reporting temperature by appending to send_q
             temp_text = str(temperature) + " " + self.unit
-            text = '|'.join([self.event_text, temp_text])
+            text = '|'.join([self.event_text, 'Temp', temp_text])
             text_and_image = (text, self.tiny_image)
             self.send_q.append(text_and_image)
             self.last_reading_temp = temperature
@@ -542,7 +547,7 @@ class Sensor:
             # humidity has changed from last reported humidity, therefore
             # send an event message reporting humidity by appending to send_q
             humidity_text = str(humidity) + " %"
-            text = '|'.join([self.event_text, humidity_text])
+            text = '|'.join([self.event_text, 'Humidity', humidity_text])
             text_and_image = (text, self.tiny_image)
             self.send_q.append(text_and_image)
             self.last_reading_humidity = humidity
