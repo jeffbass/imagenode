@@ -547,7 +547,9 @@ class Sensor:
             # humidity has changed from last reported humidity, therefore
             # send an event message reporting humidity by appending to send_q
             humidity_text = str(humidity) + " %"
-            text = '|'.join([self.event_text, 'Humidity', humidity_text])
+            # Spelling of humidity all lower case is intentional to avoid
+            # first letter test of "Heartbeat" in imagehub
+            text = '|'.join([self.event_text, 'humidity', humidity_text])
             text_and_image = (text, self.tiny_image)
             self.send_q.append(text_and_image)
             self.last_reading_humidity = humidity
