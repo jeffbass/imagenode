@@ -79,7 +79,7 @@ Dependencies and Installation
 - PyZMQ 16.0 and newer
 - RPi.GPIO 0.6 and newer (imported only if using GPIO pins)
 - picamera 1.13 (imported only if using PiCamera)
-- imagezmq 1.0.1 and newer
+- imagezmq 1.1.1 and newer
 - imutils 0.4.3 and newer (used get to images from PiCamera)
 - psutils 5.7.2 and newer
 - w1thermsensor 1.3 and newer (used to get temperature sensor readings)
