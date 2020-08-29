@@ -734,41 +734,52 @@ Settings for Sensor Detectors, including temperature and humidity sensors
 
 Raspberry Pi computers can have various sensors attached to the GPIO pins.
 The two types I have used are the DS18B20 "1 wire" temperature sensors and the
-DHT temperature / humidity sensors. There is ongoing testing with DHT22 temperature
-and humidity combined sensors and other sensors such as PIR (passive infrared)
-sensors for motion detection. That code will be added to the repository when it
-has been more thoroughly tested. Sensors use the RPi.GPIO module and can only
-be run on Raspberry Pi computers.
+DHT temperature / humidity sensors. There is ongoing testing other kinds of
+sensors such as PIR (passive infrared) sensors for motion detection. That code
+will be added to the repository when it has been more thoroughly tested. Sensors
+use the RPi.GPIO module and can only be run on Raspberry Pi computers.
 
-There are 5 options to set up reading the temperature DS18B20 sensor:
+There are 5 options to set when using DS18B20 or DHT22 sensors:
 
 .. code-block:: yaml
 
-  name: Temperature
-  type: DS18B20
-  gpio: 4
-  read_interval_minutes: 30
-  min_difference: 1
+  sensors:
+    T1:
+      name: Temperature
+      type: DS18B20
+      gpio: 4  # note that the DS18B20 can only be used on GPIO pin 4
+      read_interval_minutes: 10  # check temperature every X minutes
+      min_difference: 1  # send reading when changed by X degrees
+    T2:
+      name: Temperature & Humidity
+      type: DHT22
+      gpio: 18
+      read_interval_minutes: 10  # check temperature every X minutes
+      min_difference: 1  # send reading when changed by X degrees
 
-1. name: The name you specify here will be the name that is put into the event
-   log messages recorded by the hub.
-2. type: DS18B20 is the only choice for now; others are in testing
-3. gpio: Which GPIO pin reads the sensor. Pin 4 is the one most commonly
-   used for "one-wire" sensors like the DS18B20
+
+1. name: This is a descriptive name for the sensor.
+2. type: DS18B20, DHT11 and DHT22 are the currently supported sensors.
+3. gpio: Which GPIO pin reads the sensor. Pin 4 must be
+   used for "one-wire" sensors like the DS18B20. Any GPIO pin can be used for
+   DHT11 or DHT22 sensors.
 4. read_interval_minutes: How often the sensor measurements should be read,
    specified in minutes
-5. min_difference: The minimum temperature change from the last reading that
+5. min_difference: The minimum change from the last reading that
    will cause an event message to be sent to the hub. Typically set to 1 or 2
-   degrees.
+   degrees. The setting will apply to humidity minimum change on DHT11 or DHT22
+   sensors.
 
 When the sensor takes a reading that meets the ``min_difference`` requirement,
 a message of this format is placed into the ``send_q`` for sending to the hub::
 
   Barn |temperature | 75 F
+  Deck |temperature | 75.4 F
+  Deck |humidity | 48.4 %
 
 The temperature readings are not taken during the main event loop that captures,
-processes and sends images. Instead, the check_temperature() function uses a
-separate Python thread that reads the temperature probe
+processes and sends images. Instead, the check_temperature() function runs in  a
+separate Python thread that reads the temperature sensor
 at intervals specified by the ``read_interval_minutes`` option.
 
 ===============================================
