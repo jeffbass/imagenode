@@ -363,6 +363,7 @@ class ImageNode:
             self.health.stall_p.join()
         if settings.send_threading:
             self.send_q.stop_sending()
+        self.sender.close()
 
 class SendQueue:
     """ Implements a send_q replacement that uses threaded sends
