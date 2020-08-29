@@ -82,7 +82,8 @@ Dependencies and Installation
 - imagezmq 1.1.1 and newer
 - imutils 0.4.3 and newer (used get to images from PiCamera)
 - psutils 5.7.2 and newer
-- w1thermsensor 1.3 and newer (used to get temperature sensor readings)
+- w1thermsensor 1.3 and newer (if using DS18S20 temperature sensor)
+- adafruit-circuitpython-dht 3.4.2 and newer (if using DHT11 or DHT22 sensor)
 
 **imagenode** captures images and uses **imagezmq** to transfer the images.
 It is best to install and test **imagezmq** before installing **imagenode**.
