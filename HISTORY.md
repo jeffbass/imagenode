@@ -1,33 +1,45 @@
 # Version History and Changelog
 
-All notable changes the **imageZMQ** project will be documented in this file.
+All notable changes the **imagenode** project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Ongoing Development
 
-- Improving documentation content, layout, arrangement.
-- Adding FPS timing modules to enable testing of different SendQueue
-  alternatives.
-- Making the detect_motion method work with both OpenCV v3.x and v4.x
-  `findContours()` method return tuples (2 or 3 values returned depending on
-  openCV version).
-- Adding more PiCamera settings to the yaml file settings and documenting them,
-  including awb_mode, awb_gains, brightness, contrast, exposure_compensation,
-  iso, meter_mode, saturation, sharpness, and shutter_speed.
-- Adding the ability to capture images from files in an image directory as a
+- Improving documentation content, layout, arrangement and flow.
+- Developing a "large image buffer" using the new Python 3.8 SharedMemory
+  class. The idea: have the camera capture main thread put images in a very
+  large (up to available memory; could be 3GB on RPi 4 models). Allow sending
+  of images in a separate `multiprocessing` process that empties the buffer by
+  sending images via **imageZMQ**. The advantage over the existing
+  `send_threading` option would be using a 2nd process (and a different
+  RPi core) rather than a 2nd thread running on the same core to send images.
+- Refactoring `stall_watcher` to eliminate to eliminate dependency on Linux
+  signal SIGALRM, which isn't Windows friendly. New algorithm needs to work
+  well with 1) simple main capture-send loop, 2) threaded SendQueue and
+  3) fully buffered SendQueue. Must reliably catch "REP-not-received-promptly"
+  at least as well as the existing signal SIGALRM did.
+- Adding the sending of 1) startup event message and 2) startup image to enable
+  the new yin-yang-ranch design. In the new design, the librarian sends control
+  commands directly to the imagenodes, bypassing the imagehub for those
+  commands. This is a major design change that makes the imagehub simpler and
+  faster.
+- Adding the ability to capture images from stored image files as a
   substitute for capturing images from a camera. Will allow testing and tuning
   of options from real world images gathered by imagenodes scattered around the
   farm. The existing stored image library is large and could potentially be used
   for adding machine learning capability to the RPi imagenodes.
-- Developing a "large image buffer" using the new Python 3.8 SharedMemory
-  class. The idea: have the camera capture main thread put images in a very
-  large (up to available memory; could be 3GB on RPi 4 models). Then the sending
-  of images could occur in a separate process that empties the buffer by
-  sending images via **imageZMQ**. The advantage over the existing
-  `send_threading` option would be using a 2nd process (and a different
-  RPi core) rather than a 2nd thread running on the same core.
+- Adding code and docs to support DHT11 & DHT22 temperature / humidity sensors
+  (done. Thanks to @sbkirby.)
+- Adding yaml options, code and docs for the full range of PiCamera settings
+  (done. Thanks to @sbkirby.)
+- Adding a `receive_test.py` program to enable FPS timed testing of different
+  SendQueue alternatives. Make the `receive_test.py` Windows friendly by
+  eliminating dependence on Linux signal SIGALRM (done).
+- Making the detect_motion method work with both OpenCV v3.x and v4.x
+  `findContours()` method return tuples (2 or 3 values returned depending on
+  openCV version) (done).
 
 ## 0.2.1 - 2020-07-10
 
