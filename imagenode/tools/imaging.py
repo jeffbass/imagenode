@@ -58,6 +58,10 @@ class ImageNode:
         # self.sender = imagezmq.ImageSender(connect_to='tcp://192.168.1.190:5555')
         self.sender = imagezmq.ImageSender(connect_to=settings.hub_address)
 
+        # TODO: if settings.stall_watcher is True, pick send_frame function
+        #   with appropriate time recording of REQ and REP
+        #   and call self.fix_comm_link() accordingly
+        #
         self.send_frame = self.send_jpg_frame # default send function is jpg
         if settings.send_type == 'image':
             self.send_frame = self.send_image_frame # set send function to image
