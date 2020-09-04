@@ -1,23 +1,33 @@
-"""send_3_ways_test.py -- send PiCamera jpg stream 3 ways for relatving timing
+"""send_4_ways_test.py -- send PiCamera jpg stream 4 ways for relatving timing
 
 Intended to be run on a Raspberry Pi. It uses imagezmq to send image frames from
 the PiCamera continuously to a receiving program on a Mac that will display the
 images as a video stream. Images are converted to jpg format before sending.
 
+The design of imagnode depends on using the REQ/REP ZMQ messaging protocol.
+There are a lot of advantages of REQ/REP over PUB/SUB for the "many imagenodes
+sending to a single imagehub" design. BUT, if the imagehub restarts, some
+imagenodes will "stall" by never receiving a REP for its last REQ sent. This means
+that each and every imagenode needs to 1) detect when the REP is not received
+after a reasonable amount of time and then 2) restart.
+
+The first design of imagenode used the Posix SIGALRM signal to set an alarm
+right before sending each image. The SIGALRM method below is a version of this.
+But SIGALRM has some disadvantages: 1) It cannot be used in threads, only in the
+main Python program and 2) it does not exist and cannot be used on Windows.
+
 The purpose of this progam is to understand how much time it adds to the
-imagezmq.ImageSender send_jpg method to wrap the send in either the operating
-system SIGALRM timer or a threading.Timer. After multiple experiments,
-neither one adds a significant amount of time. The operating system SIGALRM can
-only be used in the main Python thread (or a separate process? Not sure.),
-while the threading.Timer can be used in threads that are not the main thread.
-The downside is that it adds another running thread.
+imagezmq.ImageSender.send_jpg method to wrap the send in either the operating
+system SIGALRM timer or the Python Standard Library threading.Timer, or a custom
+timer that stores the current time just before and just after sending each
+image. The three different methods are implemented below.
 
 The receiving program run on the Mac is called FPS_receive_test.py.
 
 This program requires that the image receiving program be running first.
 
-There are 3 ways to send images: no-stall-test, signal.alrm stall test and
-threaded_timer stall test.
+There are 4 ways to send images: no-stall-test, signal.alrm stall test and
+threaded_timer stall test and deque_times stall test.
 
 By running each of these while keeping the other settings the same, it is
 possible to determine the relative time performance of each.
@@ -31,6 +41,10 @@ Quick Summary of results.
    to send_jpg() sending time.
 2. Could never get the ThreadedTimer to time_out. It sent images, but just
    hung until interrrupted when it did not get a REP. Won't be using it.
+3. The deque_times algorithm appends the current time right before and just
+   after each image send. In the actual imagenode code, a thread would be run
+   to compare the times. But this timing test only measures how much time impact
+   there is for appending the current time twice for each image sent.
 
 """
 
@@ -40,15 +54,18 @@ import time
 import signal
 import imagezmq
 import traceback
-from imutils.video import VideoStream
 from threading import Timer
+from datetime import datetime
+from collections import deque
+from imutils.video import VideoStream
 
 SIGALRM = 'SIGALRM'
 threaded_timer = 'threaded_timer'
+deque_times = 'deque_times'
 
 ################################################################################
 # EDIT THES OPTIONS BEFORE RUNNING PROGRAM
-SEND_METHOD_CHECKING = threaded_timer  # None or SIGALRM or threaded_timer
+SEND_METHOD_CHECKING = threaded_timer  # None or SIGALRM or threaded_timer or deque_times
 # connect_to='tcp://jeff-macbook:5555'      # pick and edit one of these
 # connect_to='tcp://192.168.1.190:5555'
 connect_to='tcp://127.0.0.1:5555'
@@ -139,6 +156,16 @@ def send_with_sigalrm(picam, sender, jpeg_quality, patience_seconds):
             print('Ending sending program.')
             sys.exit()
 
+def send_with_deque_times(picam, sender, jpeg_quality, patience_seconds):
+    global REQ_sent_time, REP_recd_time
+    while True:  # send images as stream until Ctrl-C
+        image = picam.read()
+        ret_code, jpg_buffer = cv2.imencode(
+            ".jpg", image, [int(cv2.IMWRITE_JPEG_QUALITY), jpeg_quality])
+        REQ_sent_time.append(datetime.now())
+        reply = sender.send_jpg("deque_times", jpg_buffer)
+        REP_recd_time.append(datetime.now())
+
 def send_with_timer(picam, sender, jpeg_quality, patience_seconds):
     while True:  # send images as stream until Ctrl-C or until stall out
         image = picam.read()
@@ -162,11 +189,16 @@ if not SEND_METHOD_CHECKING:  # No stall checking
     send_method = send_with_no_checking
     print("Sending with no stall checking.")
     print("...therefore MUST end by Ctrl-C.")
-elif SEND_METHOD_CHECKING == 'SIGALRM':
+elif SEND_METHOD_CHECKING == SIGALRM:
     send_method = send_with_sigalrm
     print("Sending with SIGALRM checking.")
-elif SEND_METHOD_CHECKING == 'threaded_timer':
+elif SEND_METHOD_CHECKING == threaded_timer:
     send_method = send_with_timer
+    print("Sending with threaded_timer checking.")
+elif SEND_METHOD_CHECKING == deque_times:
+    send_method = send_with_deque_times
+    REQ_sent_time = deque(maxlen=1)
+    REP_recd_time = deque(maxlen=1)
     print("Sending with threaded_timer checking.")
 else:
     print("No valid send method. Ending program.")
