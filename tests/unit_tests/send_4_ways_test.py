@@ -55,7 +55,7 @@ import signal
 import imagezmq
 import traceback
 from threading import Timer
-from datetime import datetime
+from datetime import datetime.utcnow
 from collections import deque
 from imutils.video import VideoStream
 
@@ -162,9 +162,9 @@ def send_with_deque_times(picam, sender, jpeg_quality, patience_seconds):
         image = picam.read()
         ret_code, jpg_buffer = cv2.imencode(
             ".jpg", image, [int(cv2.IMWRITE_JPEG_QUALITY), jpeg_quality])
-        REQ_sent_time.append(datetime.now())
+        REQ_sent_time.append(datetime.utcnow())  # utcnow tests 2x faster than now
         reply = sender.send_jpg("deque_times", jpg_buffer)
-        REP_recd_time.append(datetime.now())
+        REP_recd_time.append(datetime.utcnow())
 
 def send_with_timer(picam, sender, jpeg_quality, patience_seconds):
     while True:  # send images as stream until Ctrl-C or until stall out
