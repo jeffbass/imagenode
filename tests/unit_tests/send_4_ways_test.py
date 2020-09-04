@@ -55,7 +55,7 @@ import signal
 import imagezmq
 import traceback
 from threading import Timer
-from datetime import datetime.utcnow
+from datetime import datetime
 from collections import deque
 from imutils.video import VideoStream
 
@@ -65,7 +65,7 @@ deque_times = 'deque_times'
 
 ################################################################################
 # EDIT THES OPTIONS BEFORE RUNNING PROGRAM
-SEND_METHOD_CHECKING = threaded_timer  # None or SIGALRM or threaded_timer or deque_times
+SEND_METHOD_CHECKING = deque_times  # None or SIGALRM or threaded_timer or deque_times
 # connect_to='tcp://jeff-macbook:5555'      # pick and edit one of these
 # connect_to='tcp://192.168.1.190:5555'
 connect_to='tcp://127.0.0.1:5555'
@@ -199,7 +199,7 @@ elif SEND_METHOD_CHECKING == deque_times:
     send_method = send_with_deque_times
     REQ_sent_time = deque(maxlen=1)
     REP_recd_time = deque(maxlen=1)
-    print("Sending with threaded_timer checking.")
+    print("Sending with deque_times checking.")
 else:
     print("No valid send method. Ending program.")
     sys.exit()
