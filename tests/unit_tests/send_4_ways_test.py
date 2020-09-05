@@ -26,8 +26,13 @@ The receiving program run on the Mac is called FPS_receive_test.py.
 
 This program requires that the image receiving program be running first.
 
-There are 4 ways to send images: no-stall-test, signal.alrm stall test and
+There are 4 ways to send images: no-stall-test, signal.SIGALRM stall test and
 threaded_timer stall test and deque_times stall test.
+
+The 3 stall checking methods kill the program with an error message. Since
+sys.exit() does not kill a program from within a thread, killing the program
+is done with os.kill(pid, signal.SIGTERM), which kills the program gracefully
+even when called from threads.
 
 By running each of these while keeping the other settings the same, it is
 possible to determine the relative time performance of each.
@@ -41,20 +46,19 @@ Quick Summary of results.
    to send_jpg() sending time.
 2. Could never get the ThreadedTimer to time_out. It sent images, but just
    hung until interrrupted when it did not get a REP. Won't be using it.
-3. The deque_times algorithm appends the current time right before and just
-   after each image send. In the actual imagenode code, a thread would be run
-   to compare the times. But this timing test only measures how much time impact
-   there is for appending the current time twice for each image sent.
-
+3. The deque_times algorithm appends the current time to 2 time tracking deques
+   just before and just after each image send. To check on the timely receipt of
+   a REP after a REQ has been sent, a REP_watcher function runs in a thread.
 """
 
+import os
 import sys
 import cv2
 import time
 import signal
 import imagezmq
 import traceback
-from threading import Timer
+from threading import Timer, Thread
 from datetime import datetime
 from collections import deque
 from imutils.video import VideoStream
@@ -132,6 +136,46 @@ class ThreadedTimer:
         self.timer.cancel()
         raise ThreadedTimer.Timeout()
 
+def REP_watcher():
+    """ check that a timely REP was received after a REQ; exit program if not
+
+    Runs in a thread; both REQ_sent_time & REP_recd_time are deque(maxlen=1)
+    Although REPs and REQs can be filling the deques continuously in the main
+    thread, we only need to occasionally check recent REQ / REP times. Anytime
+    there has not been a timely REP after a REQ, we have a stall and need to
+    exit.
+    """
+    global REQ_sent_time, REP_recd_time, pid, patience_seconds
+    while True:
+        sleep(patience_seconds)  # how often to check
+        try:
+            recent_REQ_sent_time = REQ_sent_time.popleft()
+            # if we got here; we have a recent_REQ_sent_time
+            sleep(patience_seconds)  # allow time for receipt of the REP
+            try:
+                recent_REP_recd_time = REP_recd_time.popleft()
+                # if we got here; we have a recent_REP_recd_time
+                interval = recent_REP_recd_time - recent_REQ_sent_time
+                if  interval <= 0.0:
+                    # recent_REP_recd_time is not later than recent_REQ_sent_time
+                    print('After image send in REP_watcher test,')
+                    print('No REP received within', patience_seconds, 'seconds.')
+                    print('Ending sending program.')
+                    oskill(pid, signal.SIGTERM)
+                    pass
+                continue  # Got REP after REQ so continue to next REQ
+            except IndexError:  # there was a REQ, but no timely REP
+                print('After image send in REP_watcher test,')
+                print('No REP received within', patience_seconds, 'seconds.')
+                print('Ending sending program.')
+                oskill(pid, signal.SIGTERM)
+                pass
+        except IndexError: # there wasn't a time in REQ_sent_time
+            # so there is no REP expected,
+            # ... continue to loop until there is a time in REQ_sent_time
+            pass
+
+
 def send_method():  # this will be replaced by send_method chosen above
     pass
 
@@ -143,6 +187,7 @@ def send_with_no_checking(picam, sender, jpeg_quality, patience_seconds):
         reply = sender.send_jpg("no_checking", jpg_buffer)
 
 def send_with_sigalrm(picam, sender, jpeg_quality, patience_seconds):
+    global pid
     while True:  # send images as stream until Ctrl-C or until stall out
         image = picam.read()
         ret_code, jpg_buffer = cv2.imencode(
@@ -152,12 +197,13 @@ def send_with_sigalrm(picam, sender, jpeg_quality, patience_seconds):
                 reply = sender.send_jpg(SIGALRM, jpg_buffer)
         except Patience.Timeout:  # if no timely response from hub
             print('During image send in SIGALRM test,')
-            print('No REP received back for', patience_seconds, 'seconds.')
+            print('No REP received within', patience_seconds, 'seconds.')
             print('Ending sending program.')
-            sys.exit()
+            os.kill(pid, signal.SIGTERM)
 
 def send_with_deque_times(picam, sender, jpeg_quality, patience_seconds):
     global REQ_sent_time, REP_recd_time
+    Thread(daemon=True, target=REP_watcher).start()
     while True:  # send images as stream until Ctrl-C
         image = picam.read()
         ret_code, jpg_buffer = cv2.imencode(
@@ -167,6 +213,7 @@ def send_with_deque_times(picam, sender, jpeg_quality, patience_seconds):
         REP_recd_time.append(datetime.utcnow())
 
 def send_with_timer(picam, sender, jpeg_quality, patience_seconds):
+    global pid
     while True:  # send images as stream until Ctrl-C or until stall out
         image = picam.read()
         ret_code, jpg_buffer = cv2.imencode(
@@ -178,13 +225,14 @@ def send_with_timer(picam, sender, jpeg_quality, patience_seconds):
             print('During image send in threaded_timer test,')
             print('No REP received back for', patience_seconds, 'seconds.')
             print('Ending sending program.')
-            sys.exit()
+            os.kill(pid, signal.SIGTERM)
 
 sender = imagezmq.ImageSender(connect_to=connect_to)
 picam = VideoStream(usePiCamera=usePiCamera,
                     resolution=(640, 480),framerate=32).start()
 time.sleep(2.0)  # allow camera sensor to warm up
 jpeg_quality = 95  # 0 to 100, higher is better quality, 95 is cv2 default
+pid = os.getpid()  # get process ID of this program, so can terminate it later
 if not SEND_METHOD_CHECKING:  # No stall checking
     send_method = send_with_no_checking
     print("Sending with no stall checking.")
