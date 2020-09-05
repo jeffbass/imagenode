@@ -137,9 +137,9 @@ class ThreadedTimer:
         raise ThreadedTimer.Timeout()
 
 def REP_watcher():
-    """ check that a timely REP was received after a REQ; exit program if not
+    """ check that a REP was received after a REQ; exit program if not
 
-    Runs in a thread; both REQ_sent_time & REP_recd_time are deque(maxlen=1)
+    Runs in a thread; both REQ_sent_time & REP_recd_time are deque(maxlen=1).
     Although REPs and REQs can be filling the deques continuously in the main
     thread, we only need to occasionally check recent REQ / REP times. Anytime
     there has not been a timely REP after a REQ, we have a stall and need to
@@ -147,28 +147,28 @@ def REP_watcher():
     """
     global REQ_sent_time, REP_recd_time, pid, patience_seconds
     while True:
-        sleep(patience_seconds)  # how often to check
+        time.sleep(patience_seconds)  # how often to check
         try:
             recent_REQ_sent_time = REQ_sent_time.popleft()
             # if we got here; we have a recent_REQ_sent_time
-            sleep(patience_seconds)  # allow time for receipt of the REP
+            time.sleep(patience_seconds)  # allow time for receipt of the REP
             try:
                 recent_REP_recd_time = REP_recd_time.popleft()
                 # if we got here; we have a recent_REP_recd_time
                 interval = recent_REP_recd_time - recent_REQ_sent_time
-                if  interval <= 0.0:
+                if  interval.total_seconds() <= 0.0:
                     # recent_REP_recd_time is not later than recent_REQ_sent_time
                     print('After image send in REP_watcher test,')
                     print('No REP received within', patience_seconds, 'seconds.')
                     print('Ending sending program.')
-                    oskill(pid, signal.SIGTERM)
+                    os.kill(pid, signal.SIGTERM)
                     pass
                 continue  # Got REP after REQ so continue to next REQ
             except IndexError:  # there was a REQ, but no timely REP
                 print('After image send in REP_watcher test,')
                 print('No REP received within', patience_seconds, 'seconds.')
                 print('Ending sending program.')
-                oskill(pid, signal.SIGTERM)
+                os.kill(pid, signal.SIGTERM)
                 pass
         except IndexError: # there wasn't a time in REQ_sent_time
             # so there is no REP expected,
