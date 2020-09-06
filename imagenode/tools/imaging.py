@@ -58,15 +58,24 @@ class ImageNode:
         # self.sender = imagezmq.ImageSender(connect_to='tcp://192.168.1.190:5555')
         self.sender = imagezmq.ImageSender(connect_to=settings.hub_address)
 
-        # TODO: if settings.stall_watcher is True, pick send_frame function
-        #   with appropriate time recording of REQ and REP
-        #   and call self.fix_comm_link() accordingly
-        #
-        self.send_frame = self.send_jpg_frame # default send function is jpg
-        if settings.send_type == 'image':
-            self.send_frame = self.send_image_frame # set send function to image
-        else: # anything not spelled 'image' is set to jpg
-            self.send_frame = self.send_jpg_frame # set send function to jpg
+        # If settings.REP_watcher is True, pick the send_frame function
+        #  that does time recording of each REQ and REP. Start REP_watcher
+        #  thread.
+        self.patience = settings.patience  # how long to wait in seconds
+        if settings.send_type == 'image':  # set send function to image
+            if settings.REP_watcher:
+                self.send_frame = self.send_image_frame_REP_watcher
+            else:
+                self.send_frame = self.send_image_frame
+        else: # anything not spelled 'image' sets send function to jpg
+            if settings.REP_watcher:
+                self.send_frame = self.send_jpg_frame_REP_watcher
+            else:
+                self.send_frame = self.send_jpg_frame
+        if self.REP_watcher:  # set up deques & start thread to watch for REP
+            threading Thread(daemon=True, target=self.REP_watcher).start()
+            self.REQ_sent_time = deque(maxlen=1)
+            self.REP_recd_time = deque(maxlen=1)
 
         # set up message queue to hold (text, image) messages to be sent to hub
         if settings.send_threading:  # use a threaded send_q sender instead
@@ -240,6 +249,47 @@ class ImageNode:
             cam = Camera(camera, settings.cameras, settings)  # create a Camera instance
             self.camlist.append(cam)  # add it to the list of cameras
 
+    def REP_watcher(self):
+        """ checks that a REP was received after a REQ; fix_comm_link() if not
+
+        When running in production, watching for a stalled ZMQ channel is required.
+        The REP_watcher yaml option enables checking that REP is received after REQ.
+
+        Runs in a thread; both REQ_sent_time & REP_recd_time are deque(maxlen=1).
+        Although REPs and REQs can be filling the deques continuously in the main
+        thread, we only need to occasionally check recent REQ / REP times. Anytime
+        there has not been a timely REP after a REQ, we have a broken ZMQ
+        communications channel and need to call fix_comm_link().
+        """
+        while True:
+            time.sleep(self.patience)  # how often to check
+            try:
+                recent_REQ_sent_time = self.REQ_sent_time.popleft()
+                # if we got here; we have a recent_REQ_sent_time
+                time.sleep(self.patience)  # allow time for receipt of the REP
+                try:
+                    recent_REP_recd_time = self.REP_recd_time.popleft()
+                    # if we got here; we have a recent_REP_recd_time
+                    interval = recent_REP_recd_time - recent_REQ_sent_time
+                    if  interval.total_seconds() <= 0.0:
+                        # recent_REP_recd_time is not later than recent_REQ_sent_time
+                        print('After image send in REP_watcher test,')
+                        print('No REP received within', patience_seconds, 'seconds.')
+                        print('Ending sending program.')
+                        self.fix_comm_link()
+                        pass
+                    continue  # Got REP after REQ so continue to next REQ
+                except IndexError:  # there was a REQ, but no REP was received
+                    print('After image send in REP_watcher test,')
+                    print('No REP received within', patience_seconds, 'seconds.')
+                    print('Ending sending program.')
+                    self.fix_comm_link()
+                    pass
+            except IndexError: # there wasn't a time in REQ_sent_time
+                # so there is no REP expected,
+                # ... continue to loop until there is a time in REQ_sent_time
+                pass
+
     def send_jpg_frame(self, text, image):
         """ Compresses image as jpg before sending
 
@@ -259,6 +309,34 @@ class ImageNode:
         """
 
         hub_reply = self.sender.send_image(text, image)
+        return hub_reply
+
+
+    def send_jpg_frame_REP_watcher(self, text, image):
+        """ Compresses image as jpg before sending; sends with RPI_watcher deques
+
+        Function self.send_frame() is set to this function if jpg option chosen
+        and if REP_watcher option is True. See REP_watcher method for details.
+        """
+
+        ret_code, jpg_buffer = cv2.imencode(
+            ".jpg", image, [int(cv2.IMWRITE_JPEG_QUALITY),
+            self.jpeg_quality])
+        self.REQ_sent_time.append(datetime.utcnow())  # utcnow 2x faster than now
+        hub_reply = self.sender.send_jpg(text, jpg_buffer)
+        self.REP_recd_time.append(datetime.utcnow())
+        return hub_reply
+
+    def send_image_frame_REP_watcher(self, text, image):
+        """ Sends uncompressed OpenCV image; sends with RPI_watcher deques
+
+        Function self.send_frame() is set to this function if image option chosen
+        and if REP_watcher option is True. See REP_watcher method for details.
+        """
+
+        self.REQ_sent_time.append(datetime.utcnow())  # utcnow 2x faster than now
+        hub_reply = self.sender.send_image(text, image)
+        self.REP_recd_time.append(datetime.utcnow())
         return hub_reply
 
     def read_cameras(self):
@@ -319,17 +397,13 @@ class ImageNode:
         """
         # TODO add some of the ongoing experiments to this code when
         #      have progressed in development and testing
-        # Currently in testing:
-        #     1. Just wait longer one time and try sending again:
-        #        hub_reply = node.send_frame(text, image) # again
-        #     2. Doing 1 repeatedly with exponential time increases
-        #     3. Stopping and closing ZMQ context; restarting and sending
-        #            last message
-        #     4. Check WiFi ping; stop and restart WiFi service
-        #     5. Reboot RPi; allow startup to restart imagenode.py
         #
-        sys.exit()
-        return 'hub_reply'
+        # For now, have chosen to use systemctl imagenode service, so
+        #     terminating the program using signal.SIGTERM is the most reliable
+        #     way to recover from comm_link issues. It has worked very well
+        #     in production for over a year.
+        os.kill(pid, signal.SIGTERM)
+        return 'hub_reply'  # this statement may be reached if
 
     def process_hub_reply(self, hub_reply):
         """ Process hub reply if it is other than "OK".
@@ -1221,11 +1295,15 @@ class Settings:
         if 'heartbeat' in self.config['node']:
             self.heartbeat = self.config['node']['heartbeat']
         else:
-            self.heartbeat = 0
+            self.heartbeat = None
         if 'stall_watcher' in self.config['node']:
             self.stall_watcher = self.config['node']['stall_watcher']
         else:
             self.stall_watcher = False
+        if 'REP_watcher' in self.config['node']:
+            self.REP_watcher = self.config['node']['REP_watcher']
+        else:
+            self.REP_watcher = False
         if 'send_threading' in self.config['node']:
             self.send_threading = self.config['node']['send_threading']
         else:
