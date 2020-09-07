@@ -22,7 +22,7 @@ import numpy as np
 import cv2
 import imutils
 from imutils.video import VideoStream
-# sys.path.insert(0, '../../imagezmq/imagezmq') # for testing
+import zmq  # needed to use zmq.LINGER in ImageNode.closall methods
 import imagezmq
 from tools.utils import interval_timer
 from tools.nodehealth import HealthMonitor
@@ -456,6 +456,7 @@ class ImageNode:
             self.health.stall_p.join()
         if settings.send_threading:
             self.send_q.stop_sending()
+        imagehub.zmq_socket.setsockopt(zmq.LINGER, 0)  # prevents ZMQ hang
         self.sender.close()
 
 class SendQueue:
