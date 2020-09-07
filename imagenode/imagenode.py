@@ -18,7 +18,7 @@ import logging
 import logging.handlers
 import traceback
 from tools.utils import clean_shutdown_when_killed
-from tools.imaging import Settings, ImageNode, REP_TimeoutError
+from tools.imaging import Settings, ImageNode
 
 def main():
     # set up controlled shutdown when Kill Process or SIGTERM received
@@ -41,8 +41,6 @@ def main():
         log.warning('Ctrl-C was pressed.')
     except SystemExit:
         log.warning('SIGTERM was received.')
-    except REP_TimeoutError:
-        log.warning('Timeout while waiting for REP from ImageHub.')
     except Exception as ex:  # traceback will appear in log
         log.exception('Unanticipated error with no Exception handler.')
     finally:

@@ -28,9 +28,6 @@ from tools.nodehealth import HealthMonitor
 from tools.utils import versionCompare
 from pkg_resources import require
 
-class REP_TimeoutError(Exception):
-    pass
-
 class ImageNode:
     """ Contains all the attributes and methods of this imagenode
 
@@ -260,7 +257,7 @@ class ImageNode:
         Although REPs and REQs can be filling the deques continuously in the main
         thread, we only need to occasionally check recent REQ / REP times. When
         we have not received a timely REP after a REQ, we have a broken ZMQ
-        communications channel and raise REP_TimeoutError.
+        communications channel and call fix_comm_link().
 
         """
         while True:
@@ -275,7 +272,7 @@ class ImageNode:
                     print('A: After image send in REP_watcher test,')
                     print('No REP received within', self.patience, 'seconds.')
                     print('Ending sending program.')
-                    raise REP_TimeoutError
+                    fix_comm_link()
                 # if we got here; we have a recent_REP_recd_time
                 interval = recent_REP_recd_time - recent_REQ_sent_time
                 if  interval.total_seconds() <= 0.0:
@@ -283,7 +280,7 @@ class ImageNode:
                     print('B: After image send in REP_watcher test,')
                     print('No REP received within', self.patience, 'seconds.')
                     print('Ending sending program.')
-                    raise REP_TimeoutError
+                    fix_comm_link()
             except IndexError: # there wasn't a time in REQ_sent_time
                 # so there is no REP expected,
                 # ... continue to loop until there is a time in REQ_sent_time
@@ -395,9 +392,32 @@ class ImageNode:
         Perhaps in future: Close and restart imageZMQ if possible, else restart
         program or reboot computer.
 
-        For now, just raise an exception that will cause imagenode.py to exit.
+        For now, just call a function that will cause imagenode.py to exit.
         """
-        raise REP_TimeoutError
+        shudown_imagenode()
+        sys.exit()
+
+    def shutdown_imagenode(self):
+        """ Start a process that shuts down the imagenode.py program.
+
+        It is very difficult to shutdown the imagenode.py program from
+        within a thread since sys.exit() only exits the thread. And most other
+        techniques that will end a program immediately don't close resources
+        appropriately. But creating a subprocess that kills the imagenode.py
+        parent process works cleanly. There really should be an easier way to
+        end a Python program from a thread, but after lots of searching, this
+        works. And, yes, it is messy. Please find a better one and send a
+        pull request!
+
+        """
+        multiprocessing.Process(daemon=True,
+                   args=((self.pid,)),
+                   target=self.shutdown_process_by_pid).start()
+        sys.exit()
+
+    def shutdown_process_by_pid(self, pid):
+        os.kill(pid, signal.SIGTERM)
+        sys.exit()
 
     def process_hub_reply(self, hub_reply):
         """ Process hub reply if it is other than "OK".
