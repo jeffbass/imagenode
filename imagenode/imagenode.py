@@ -11,6 +11,7 @@ Copyright (c) 2017 by Jeff Bass.
 License: MIT, see LICENSE for more details.
 """
 
+import os
 import sys
 import signal
 import logging
@@ -45,7 +46,7 @@ def main():
         if 'node' in locals():
             node.closeall(settings) # close cameras, GPIO, files
         log.info('Exiting imagenode.py')
-        sys.exit()
+        os.kill(os.getpid(), signal.SIGTERM)  # more reliable than sys.exit()
 
 def start_logging():
     log = logging.getLogger()

@@ -51,16 +51,14 @@ class ImageNode:
             ".jpg", self.tiny_image, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
         self.tiny_jpg = jpg_buffer # matching tiny blank jpeg
         self.jpeg_quality = 95
+        self.pid = os.getpid()  # get process ID of this program
 
         # open ZMQ link to imagehub
-        # use either of the formats below to specifiy address of display computer
-        # sender = imagezmq.ImageSender(connect_to='tcp://jeff-macbook:5555')
-        # self.sender = imagezmq.ImageSender(connect_to='tcp://192.168.1.190:5555')
         self.sender = imagezmq.ImageSender(connect_to=settings.hub_address)
 
         # If settings.REP_watcher is True, pick the send_frame function
         #  that does time recording of each REQ and REP. Start REP_watcher
-        #  thread.
+        #  thread. Set up deques to track REQ and REP times.
         self.patience = settings.patience  # how long to wait in seconds
         if settings.send_type == 'image':  # set send function to image
             if settings.REP_watcher:
@@ -402,8 +400,8 @@ class ImageNode:
         #     terminating the program using signal.SIGTERM is the most reliable
         #     way to recover from comm_link issues. It has worked very well
         #     in production for over a year.
-        os.kill(pid, signal.SIGTERM)
-        return 'hub_reply'  # this statement may be reached if
+        os.kill(self.pid, signal.SIGTERM)
+        return 'hub_reply'  # won't be executed if os.kill() is being used
 
     def process_hub_reply(self, hub_reply):
         """ Process hub reply if it is other than "OK".
