@@ -48,11 +48,8 @@ def versionCompare(v1, v2):
     		return -1
     return 0
 
-def clean_shutdown_when_killed(signum, *args):
+def clean_shutdown_when_killed(signum=signal.SIGTERM, *args):
     """Close all connections cleanly and log shutdown
-    This function will be called when SIGTERM is received from OS
-    or if the program is killed by "kill" command. It then raises
-    KeyboardInterrupt to close all resources and log the shutdown.
     """
     logging.warning('SIGTERM detected, shutting down')
     os.kill(os.getpid(), signal.SIGTERM)
