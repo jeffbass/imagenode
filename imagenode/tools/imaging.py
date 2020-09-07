@@ -71,7 +71,7 @@ class ImageNode:
             else:
                 self.send_frame = self.send_jpg_frame
         if self.REP_watcher:  # set up deques & start thread to watch for REP
-            threading Thread(daemon=True, target=self.REP_watcher).start()
+            threading.Thread(daemon=True, target=self.REP_watcher).start()
             self.REQ_sent_time = deque(maxlen=1)
             self.REP_recd_time = deque(maxlen=1)
 
