@@ -28,6 +28,9 @@ from tools.nodehealth import HealthMonitor
 from tools.utils import versionCompare
 from pkg_resources import require
 
+class REP_TimeoutError(Exception):
+    pass
+
 class ImageNode:
     """ Contains all the attributes and methods of this imagenode
 
@@ -255,23 +258,24 @@ class ImageNode:
 
         Runs in a thread; both REQ_sent_time & REP_recd_time are deque(maxlen=1).
         Although REPs and REQs can be filling the deques continuously in the main
-        thread, we only need to occasionally check recent REQ / REP times. Anytime
-        there has not been a timely REP after a REQ, we have a broken ZMQ
-        communications channel and need to call fix_comm_link().
+        thread, we only need to occasionally check recent REQ / REP times. When
+        we have not received a timely REP after a REQ, we have a broken ZMQ
+        communications channel and raise REP_TimeoutError.
+
         """
         while True:
             sleep(self.patience)  # how often to check
             try:
                 recent_REQ_sent_time = self.REQ_sent_time.popleft()
                 # if we got here; we have a recent_REQ_sent_time
-                sleep(1.0)  # allow time for receipt of the REP
+                sleep(1.0)  # allow time for receipt of a REP
                 try:
                     recent_REP_recd_time = self.REP_recd_time.popleft()
                 except IndexError:  # there was a REQ, but no REP was received
                     print('A: After image send in REP_watcher test,')
                     print('No REP received within', self.patience, 'seconds.')
                     print('Ending sending program.')
-                    self.fix_comm_link()
+                    raise REP_TimeoutError
                 # if we got here; we have a recent_REP_recd_time
                 interval = recent_REP_recd_time - recent_REQ_sent_time
                 if  interval.total_seconds() <= 0.0:
@@ -279,7 +283,7 @@ class ImageNode:
                     print('B: After image send in REP_watcher test,')
                     print('No REP received within', self.patience, 'seconds.')
                     print('Ending sending program.')
-                    self.fix_comm_link()
+                    raise REP_TimeoutError
             except IndexError: # there wasn't a time in REQ_sent_time
                 # so there is no REP expected,
                 # ... continue to loop until there is a time in REQ_sent_time
@@ -388,17 +392,12 @@ class ImageNode:
     def fix_comm_link(self):
         """ Evaluate, repair and restart communications link with hub.
 
-        Restart link if possible, else restart program or reboot computer.
+        Perhaps in future: Close and restart imageZMQ if possible, else restart
+        program or reboot computer.
+
+        For now, just raise an exception that will cause imagenode.py to exit.
         """
-        # TODO add some of the ongoing experiments to this code when
-        #      have progressed in development and testing
-        #
-        # For now, have chosen to use systemctl imagenode service, so
-        #     terminating the program using signal.SIGTERM is the most reliable
-        #     way to recover from comm_link issues. It has worked very well
-        #     in production for over a year.
-        os.kill(self.pid, signal.SIGTERM)
-        return 'hub_reply'  # won't be executed if os.kill() is being used
+        raise REP_TimeoutError
 
     def process_hub_reply(self, hub_reply):
         """ Process hub reply if it is other than "OK".

@@ -18,8 +18,7 @@ import logging
 import logging.handlers
 import traceback
 from tools.utils import clean_shutdown_when_killed
-from tools.imaging import Settings
-from tools.imaging import ImageNode
+from tools.imaging import Settings, ImageNode, REP_TimeoutError
 
 def main():
     # set up controlled shutdown when Kill Process or SIGTERM received
@@ -38,15 +37,18 @@ def main():
                 text, image = node.send_q.popleft()
                 hub_reply = node.send_frame(text, image)
                 node.process_hub_reply(hub_reply)
-    except (KeyboardInterrupt, SystemExit):
-        log.warning('Ctrl-C was pressed or SIGTERM was received.')
+    except KeyboardInterrupt:
+        log.warning('Ctrl-C was pressed.')
+    except SystemExit:
+        log.warning('SIGTERM was received.')
+    except REP_TimeoutError:
+        log.warning('Timeout while waiting for REP from ImageHub.')
     except Exception as ex:  # traceback will appear in log
         log.exception('Unanticipated error with no Exception handler.')
     finally:
         if 'node' in locals():
             node.closeall(settings) # close cameras, GPIO, files
         log.info('Exiting imagenode.py')
-        os.kill(os.getpid(), signal.SIGTERM)  # more reliable than sys.exit()
 
 def start_logging():
     log = logging.getLogger()

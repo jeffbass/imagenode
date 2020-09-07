@@ -52,7 +52,7 @@ def clean_shutdown_when_killed(signum=signal.SIGTERM, *args):
     """Close all connections cleanly and log shutdown
     """
     logging.warning('SIGTERM detected, shutting down')
-    os.kill(os.getpid(), signal.SIGTERM)
+    sys.exit()
 
 def interval_timer(interval, action):
     """ Call the function 'action' every 'interval' seconds
