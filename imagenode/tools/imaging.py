@@ -394,7 +394,7 @@ class ImageNode:
 
         For now, just call a function that will cause imagenode.py to exit.
         """
-        shudown_imagenode()
+        self.shudown_imagenode()
         sys.exit()
 
     def shutdown_imagenode(self):
