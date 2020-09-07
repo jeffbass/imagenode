@@ -260,11 +260,11 @@ class ImageNode:
         communications channel and need to call fix_comm_link().
         """
         while True:
-            time.sleep(self.patience)  # how often to check
+            sleep(self.patience)  # how often to check
             try:
                 recent_REQ_sent_time = self.REQ_sent_time.popleft()
                 # if we got here; we have a recent_REQ_sent_time
-                time.sleep(self.patience)  # allow time for receipt of the REP
+                sleep(self.patience)  # allow time for receipt of the REP
                 try:
                     recent_REP_recd_time = self.REP_recd_time.popleft()
                     # if we got here; we have a recent_REP_recd_time
