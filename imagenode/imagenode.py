@@ -23,7 +23,7 @@ from tools.imaging import ImageNode
 
 def main():
     # set up controlled shutdown when Kill Process or SIGTERM received
-    signal.signal(signal.SIGTERM, clean_shutdown_when_killed)
+    signal.signal(signal.SIGTERM, os.kill(os.getpid(), signal.SIGTERM))
     log = start_logging()
     try:
         log.info('Starting imagenode.py')
