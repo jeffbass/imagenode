@@ -264,25 +264,22 @@ class ImageNode:
             try:
                 recent_REQ_sent_time = self.REQ_sent_time.popleft()
                 # if we got here; we have a recent_REQ_sent_time
-                sleep(self.patience)  # allow time for receipt of the REP
+                sleep(1.0)  # allow time for receipt of the REP
                 try:
                     recent_REP_recd_time = self.REP_recd_time.popleft()
-                    # if we got here; we have a recent_REP_recd_time
-                    interval = recent_REP_recd_time - recent_REQ_sent_time
-                    if  interval.total_seconds() <= 0.0:
-                        # recent_REP_recd_time is not later than recent_REQ_sent_time
-                        print('After image send in REP_watcher test,')
-                        print('No REP received within', patience_seconds, 'seconds.')
-                        print('Ending sending program.')
-                        self.fix_comm_link()
-                        pass
-                    continue  # Got REP after REQ so continue to next REQ
                 except IndexError:  # there was a REQ, but no REP was received
-                    print('After image send in REP_watcher test,')
-                    print('No REP received within', patience_seconds, 'seconds.')
+                    print('A: After image send in REP_watcher test,')
+                    print('No REP received within', self.patience, 'seconds.')
                     print('Ending sending program.')
                     self.fix_comm_link()
-                    pass
+                # if we got here; we have a recent_REP_recd_time
+                interval = recent_REP_recd_time - recent_REQ_sent_time
+                if  interval.total_seconds() <= 0.0:
+                    # recent_REP_recd_time is not later than recent_REQ_sent_time
+                    print('B: After image send in REP_watcher test,')
+                    print('No REP received within', self.patience, 'seconds.')
+                    print('Ending sending program.')
+                    self.fix_comm_link()
             except IndexError: # there wasn't a time in REQ_sent_time
                 # so there is no REP expected,
                 # ... continue to loop until there is a time in REQ_sent_time
