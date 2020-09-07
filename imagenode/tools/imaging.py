@@ -272,7 +272,7 @@ class ImageNode:
                     print('A: After image send in REP_watcher test,')
                     print('No REP received within', self.patience, 'seconds.')
                     print('Ending sending program.')
-                    fix_comm_link()
+                    self.fix_comm_link()
                 # if we got here; we have a recent_REP_recd_time
                 interval = recent_REP_recd_time - recent_REQ_sent_time
                 if  interval.total_seconds() <= 0.0:
@@ -280,7 +280,7 @@ class ImageNode:
                     print('B: After image send in REP_watcher test,')
                     print('No REP received within', self.patience, 'seconds.')
                     print('Ending sending program.')
-                    fix_comm_link()
+                    self.fix_comm_link()
             except IndexError: # there wasn't a time in REQ_sent_time
                 # so there is no REP expected,
                 # ... continue to loop until there is a time in REQ_sent_time
