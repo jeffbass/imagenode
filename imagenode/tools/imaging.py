@@ -258,7 +258,7 @@ class ImageNode:
         Although REPs and REQs can be filling the deques continuously in the main
         thread, we only need to occasionally check recent REQ / REP times. When
         we have not received a timely REP after a REQ, we have a broken ZMQ
-        communications channel and call fix_comm_link().
+        communications channel and call self.fix_comm_link().
 
         """
         while True:
@@ -270,21 +270,15 @@ class ImageNode:
                 try:
                     recent_REP_recd_time = self.REP_recd_time.popleft()
                 except IndexError:  # there was a REQ, but no REP was received
-                    print('A: After image send in REP_watcher test,')
-                    print('No REP received within', self.patience, 'seconds.')
-                    print('Ending sending program.')
                     self.fix_comm_link()
                 # if we got here; we have a recent_REP_recd_time
                 interval = recent_REP_recd_time - recent_REQ_sent_time
                 if  interval.total_seconds() <= 0.0:
                     # recent_REP_recd_time is not later than recent_REQ_sent_time
-                    print('B: After image send in REP_watcher test,')
-                    print('No REP received within', self.patience, 'seconds.')
-                    print('Ending sending program.')
                     self.fix_comm_link()
             except IndexError: # there wasn't a time in REQ_sent_time
                 # so there is no REP expected,
-                # ... continue to loop until there is a time in REQ_sent_time
+                # ... so continue to loop until there is a time in REQ_sent_time
                 pass
 
     def send_jpg_frame(self, text, image):
@@ -313,7 +307,11 @@ class ImageNode:
         """ Compresses image as jpg before sending; sends with RPI_watcher deques
 
         Function self.send_frame() is set to this function if jpg option chosen
-        and if REP_watcher option is True. See REP_watcher method for details.
+        and if REP_watcher option is True. For each (text, jpg_buffer) that is
+        sent, the current time is appended to a deque before and after the send.
+        This allows comparing times to check if a REP has been received after
+        the (text, jpg_buffer) REQ has been set. See self.REP_watcher() method
+        for details.
         """
 
         ret_code, jpg_buffer = cv2.imencode(
@@ -328,7 +326,11 @@ class ImageNode:
         """ Sends uncompressed OpenCV image; sends with RPI_watcher deques
 
         Function self.send_frame() is set to this function if image option chosen
-        and if REP_watcher option is True. See REP_watcher method for details.
+        and if REP_watcher option is True. For each (text, jpg_buffer) that is
+        sent, the current time is appended to a deque before and after the send.
+        This allows comparing times to check if a REP has been received after
+        the (text, jpg_buffer) REQ has been set. See self.REP_watcher() method
+        for details.
         """
 
         self.REQ_sent_time.append(datetime.utcnow())  # utcnow 2x faster than now
@@ -456,7 +458,7 @@ class ImageNode:
             self.health.stall_p.join()
         if settings.send_threading:
             self.send_q.stop_sending()
-        imagehub.zmq_socket.setsockopt(zmq.LINGER, 0)  # prevents ZMQ hang
+        self.sender.zmq_socket.setsockopt(zmq.LINGER, 0)  # prevents ZMQ hang on exit
         self.sender.close()
 
 class SendQueue:
@@ -518,7 +520,6 @@ class SendQueue:
     def start(self):
         # start the thread to read frames from the video stream
         t = threading.Thread(target=self.send_messages_forever)
-        print('Starting threading')
         t.daemon = True
         t.start()
 
