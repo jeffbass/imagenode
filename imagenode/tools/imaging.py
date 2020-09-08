@@ -821,8 +821,8 @@ class Camera:
             settings.nodename, self.viewname)
 
         if camera[0].lower() == 'p':  # this is a picam
-            # start PiCamera and warm up; inherits methods from VideoStream
-            # unless threaded_read is False; then uses class
+            # start PiCamera and warm up; inherits methods from
+            # imutils.VideoStream unless threaded_read is False; then uses class
             # PiCameraUnthreadedStream to read the PiCamera in an unthreaded way
             if self.threaded_read:
                 self.cam = VideoStream(usePiCamera=True,

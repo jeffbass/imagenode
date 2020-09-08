@@ -377,16 +377,25 @@ camera's images would be named 'JeffOffice door'.
 
 ``resolution`` is an optional setting. It is specified as a tuple as shown
 above. Typical values are (320, 240) and (640, 480). The default if none is
-specified is (320, 240).
-
-``vflip`` is an optional setting. If the camera image needs to be vertically
-flipped, set ``vflip: True``. The default if not present is ``False``.
+specified is (320, 240). It is important to select a resolution that is native
+to your camera (piCamera or webcam) as results can be unpredictable for
+non-native resolution sizes, depending on the camera. Native resolution sizes
+can be obtained from the camera's documentation.
 
 ``resize_width`` is an optional setting. It allows for resizing the image,
 keeping the same aspect ratio, but reducing the image size by specifying the
 desired width. The width is an integer percentage value from 0 to 99.
 For example, ``resize_width: 80`` would reduce the width 80%, and the height
-proportionally, keeping the same aspect ratio.
+proportionally, keeping the same aspect ratio. Note that resizing uses the
+OpenCV resize method with CV2.INTER_AREA which is best for shrinking image
+sizes rather than increasing them. Resizing is computationally expensive and
+will slow down Frames per Second (FPS) rates. Setting a resolution (see above)
+is a more computationally friendly way select an image size. Resizing can also
+be done at the image receiving end to avoid the resizing computation load on the
+imagenode.
+
+``vflip`` is an optional setting. If the camera image needs to be vertically
+flipped, set ``vflip: True``. The default if not present is ``False``.
 
 ``send_frames`` is an optional setting. If set to ``continuous``, then images
 are sent continuously as they are read from the camera. If set to ``event``
@@ -395,6 +404,14 @@ level change detected. If set to ``none``, then images are never sent from the
 camera. For example, if ``send_frames`` is set to ``none``, and a motion
 detector is specified, then motion event messages will be sent when motion is
 detected, but images will not be sent.
+
+``threaded_read`` is an optional setting. If set to ``True``, then capturing
+camera images is done in a separate thread and will result in higher Frames per
+Second (FPS). The imutils.VideoStream module is used to do threaded camera
+reading. If set to ``False``, then the PiCamera is read a single frame at a
+time by the ImageNode.read_cameras() method. The ``False`` setting only
+applies to PiCameras and is normally used for testing an imagenode. The default
+setting is ``True``.
 
 ``src`` is an optional setting that only applies to webcams, not PiCameras. If
 a webcam is being specified, ``src`` is set to 0 or 1 or 2, etc. This value is
@@ -553,18 +570,38 @@ For example, if the original image size is 640 x 480, then:
   and 85 percent from the top of the frame. In pixels, that would be
   ((96,144),(448,408)) for an original image size of 640 x 480.
 
-A detector can also draw the ROI rectangle onto the images that are sent by
+A detector can also **draw the ROI rectangle** onto the images that are sent by
 specifying the color of the rectangle and the pixel width of the drawing line.
 For example:
 
 .. code-block:: yaml
 
-  draw_roi: ((255,0,0),5)
+  draw_roi: ((255,0,0),5)  # specifies a blue ROI box with a line 5 pixels wide
 
 would draw the ROI rectangle on the sent images as a blue line that is 5 pixels
 wide. The syntax for specifying the rectangle color and line width is the same
 as the cv2.rectangle() drawing function. The cv2.rectangle() drawing function
 is used to draw the rectangle on each image before sending.
+
+There are optional detector settings to **draw an image capture timestamp value**
+directly on the image. These options are typically used for testing and
+debugging of detector settings as they can significantly slow down FPS in
+production. The syntax for specifying the rectangle color and line width is the
+same as the cv2.rectangle() drawing function. To draw a timestamp of capture
+time directly on the image, use these detector section options:
+
+.. code-block:: yaml
+
+  draw_time: ((255,0,0),1)  # the timestamp text is blue with 1 pixel line width
+  draw_time_org: (1,1)  # the timestamp text starts at pixel (1,1)
+  draw_time_fontScale: 1  # the timestamp fontScale factor is 1
+
+The timestamp option uses the OpenCV cv2.putText() method, and the options above
+are the same as the settings for that method. You can read more about the
+settings in the OpenCV cv2.putText() documentation. Note that the timestamp is
+formatted to microseconds using the datetime.isoformat(timespec='microseconds')
+that was added in Python 3.6, so you will need to be running Python version 3.6
+or later to used the ``draw_time`` option.
 
 Settings for the **light** detector
 ===================================
