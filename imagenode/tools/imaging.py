@@ -149,6 +149,19 @@ class ImageNode:
         if settings.print_node:
             self.print_node_details(settings)
 
+        # send an imagenode startup event message
+        print("Startup message:")
+        text = '|'.join([settings.nodename,
+                        'Restart',
+                        self.health.hostname,  # need to create this
+                        self.health.ipaddress, # need to create this
+                        self.health.time_since_restart  # power failture maybe?
+                        self.health.sys_type,  # already have this
+                        self.health.ram_size]) # need to create this
+        text_and_image = (text, self.tiny_image)
+        sys.exit()  # for testing, stop here.
+        self.send_q.append(text_and_image)
+
     def print_node_details(self, settings):
         print('Node details after setup and camera test read:')
         print('  Node name:', settings.nodename)

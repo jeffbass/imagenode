@@ -8,12 +8,14 @@ import os
 import sys
 import psutil
 import signal
+import socket
 import logging
 import platform
 import threading
 import multiprocessing
 import numpy as np
 from time import sleep
+from datetime import datetime
 from tools.utils import interval_timer
 
 class HealthMonitor:
@@ -32,6 +34,14 @@ class HealthMonitor:
     def __init__(self, settings, send_q):
         self.send_q = send_q
         self.sys_type = self.get_sys_type()
+        self.hostname = socket.gethostname()
+        self.ipaddress = socket.gethostbyname(self.hostname)
+        boot_time = datetime.fromtimestamp(psutil.boot_time())
+        now = datetime.now()
+        self.time_since_restart = round(((now-boot_time).total_seconds()
+                                     / 3600), 2)  # = hours
+        self.ram_size = round(psutil.virtual_memory().total
+                              / (1024.0*1024.0), 2)  # = MB
         self.tiny_image = np.zeros((3,3), dtype="uint8")  # tiny blank image
         self.heartbeat_event_text = '|'.join([settings.nodename, 'Heartbeat'])
         self.patience = settings.patience
@@ -80,8 +90,7 @@ class HealthMonitor:
             main_time = p.cpu_times().user
             delta_time = round(abs(main_time - last_main_time))
             if delta_time < 1:
-                os.kill(pid, signal.SIGTERM) # p.terminate() # or os.kill(pid, signal.SIGTERM)
-                sys.exit()
+                os.kill(pid, signal.SIGTERM) # kill the main process
             sleep(sleep_time)
 
     def get_sys_type(self):
@@ -100,22 +109,23 @@ class HealthMonitor:
                 else:
                     return 'Linux'
         else:
-            return 'Unknown'
-
-    def reboot_this_computer(self):
-        if self.sys_type == 'RPi':  # reboot only if RPi
-            print('This is a mock reboot.')
-
-    def check_ping(self, address='192.168.1.1'):
-        return 'OK'  # for testing
+            return platform.system()
 
 def main():
-    settings = None
-    health = HealthMonitor(settings)
+    class Settings:
+        pass
+    settings = Settings()
+    settings.nodename = 'mock_for_testing'
+    settings.patience = 10
+    settings.heartbeat = None
+    settings.stall_watcher = None
+    health = HealthMonitor(settings, None)
+    print('Test of System Values:')
     print('This computer is ', health.sys_type)
-    ping_OK = health.check_ping()
-    print('Ping Check is ', ping_OK)
-    health.reboot_this_computer()
+    print('Hostname:', health.hostname)
+    print('IP address:', health.ipaddress)
+    print('Time Since Restart:', health.time_since_restart, 'hours')
+    print('RAM size:', round(health.ram_size), 'MB')
 
 if __name__ == '__main__' :
     main()
