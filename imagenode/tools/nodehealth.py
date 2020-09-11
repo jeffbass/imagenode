@@ -35,7 +35,7 @@ class HealthMonitor:
         self.send_q = send_q
         self.sys_type = self.get_sys_type()
         self.hostname = socket.gethostname()
-        self.ipaddress = socket.gethostbyname(self.hostname)
+        self.ipaddress = self.get_ipaddress()
         boot_time = datetime.fromtimestamp(psutil.boot_time())
         now = datetime.now()
         self.time_since_restart = str(round(((now-boot_time).total_seconds()
@@ -111,6 +111,16 @@ class HealthMonitor:
         else:
             return platform.system()
 
+    def get_ipaddress(self):
+        valid_prefix = '192.168'  # set to your own IP address valid prefix
+        ipaddress = valid_prefix + 'x.y'
+        iface_dict = psutil.net_if_addrs()  # dictionary of interfaces
+        for iface in iface_dict.values():   # list of interface addresses
+            for nic in iface:
+                if valid_prefix in nic.address:
+                    ipaddress = nic.address
+        return ipaddress
+
 def main():
     class Settings:
         pass
@@ -125,7 +135,7 @@ def main():
     print('Hostname:', health.hostname)
     print('IP address:', health.ipaddress)
     print('Time Since Restart:', health.time_since_restart, 'hours')
-    print('RAM size:', round(health.ram_size), 'MB')
+    print('RAM size:', health.ram_size, 'MB')
 
 if __name__ == '__main__' :
     main()
