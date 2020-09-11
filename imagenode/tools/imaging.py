@@ -149,18 +149,15 @@ class ImageNode:
         if settings.print_node:
             self.print_node_details(settings)
 
-        # send an imagenode startup event message
-        print("Startup message:")
+        # send an imagenode startup event message with system values
         text = '|'.join([settings.nodename,
                         'Restart',
                         self.health.hostname,
                         self.health.sys_type,
                         self.health.ipaddress,
-                        self.health.time_since_restart,
-                        self.health.ram_size])
-        print(text)
+                        self.health.ram_size,
+                        self.health.time_since_restart])
         text_and_image = (text, self.tiny_image)
-        sys.exit()  # for testing, stop here.
         self.send_q.append(text_and_image)
 
     def print_node_details(self, settings):
