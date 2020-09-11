@@ -158,6 +158,7 @@ class ImageNode:
                         self.health.ipaddress,
                         self.health.time_since_restart,
                         self.health.ram_size])
+        print(text)
         text_and_image = (text, self.tiny_image)
         sys.exit()  # for testing, stop here.
         self.send_q.append(text_and_image)

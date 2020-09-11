@@ -38,10 +38,10 @@ class HealthMonitor:
         self.ipaddress = socket.gethostbyname(self.hostname)
         boot_time = datetime.fromtimestamp(psutil.boot_time())
         now = datetime.now()
-        self.time_since_restart = round(((now-boot_time).total_seconds()
-                                     / 3600), 2)  # = hours
-        self.ram_size = round(psutil.virtual_memory().total
-                              / (1024.0*1024.0), 2)  # = MB
+        self.time_since_restart = str(round(((now-boot_time).total_seconds()
+                                     / 3600), 2))  # = hours
+        self.ram_size = str(round(psutil.virtual_memory().total
+                              / (1024.0*1024.0), 2))  # = MB
         self.tiny_image = np.zeros((3,3), dtype="uint8")  # tiny blank image
         self.heartbeat_event_text = '|'.join([settings.nodename, 'Heartbeat'])
         self.patience = settings.patience
