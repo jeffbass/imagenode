@@ -153,11 +153,11 @@ class ImageNode:
         print("Startup message:")
         text = '|'.join([settings.nodename,
                         'Restart',
-                        self.health.hostname,  # need to create this
-                        self.health.ipaddress, # need to create this
-                        self.health.time_since_restart  # power failture maybe?
-                        self.health.sys_type,  # already have this
-                        self.health.ram_size]) # need to create this
+                        self.health.hostname,
+                        self.health.sys_type,
+                        self.health.ipaddress,
+                        self.health.time_since_restart,
+                        self.health.ram_size])
         text_and_image = (text, self.tiny_image)
         sys.exit()  # for testing, stop here.
         self.send_q.append(text_and_image)
