@@ -56,6 +56,7 @@ class ImageNode:
 
         # open ZMQ link to imagehub
         self.sender = imagezmq.ImageSender(connect_to=settings.hub_address)
+        self.sender.zmq_socket.setsockopt(zmq.LINGER, 0)  # prevents ZMQ hang on exit
 
         # If settings.REP_watcher is True, pick the send_frame function
         #  that does time recording of each REQ and REP. Start REP_watcher
