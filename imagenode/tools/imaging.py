@@ -374,6 +374,7 @@ class ImageNode:
         self.sender.close()
 
 
+
 class SendQueue:
     """ Implements a send_q replacement that uses threaded sends
 
@@ -610,6 +611,7 @@ class Light:
         GPIO.output(self.gpio, False)  # turn off light
 
 
+
 class PiCameraUnthreadedStream():
     """ Rreads the PiCamera without threading.
 
@@ -643,6 +645,7 @@ class PiCameraUnthreadedStream():
         self.stream.close()
         self.rawCapture.close()
         self.camera.close()
+
 
 
 class Camera:
@@ -748,6 +751,7 @@ class Camera:
             else:
                 self.cam = PiCameraUnthreadedStream(resolution=self.resolution,
                                                     framerate=self.framerate)
+
             # if an exposure mode has been set in yaml, set it
             if self.exposure_mode:
                 self.cam.camera.exposure_mode = self.exposure_mode
