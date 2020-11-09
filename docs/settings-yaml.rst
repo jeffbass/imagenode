@@ -728,6 +728,82 @@ affect how it is recorded:
    these additional test images improves tuning the options to the desired
    motion detection level.
 
+Specifying **Multiple** Camera Detectors of the Same Type
+=========================================================
+Multiple Regions of Interest (ROI) are capable with the same detector. For example,
+if a region, such as the sidewalk approaching your front door, is of special interest,
+this region can be defined and named in order to generate log notifications for that
+specific ROI.
+
+.. image:: images/multiple-roi-image.jpg
+
+In the example yaml file below, a log event will be generated indicating motion at the
+FrontDoor (e.g. "2020-10-16 20:53:39,727 ~ StreetView RPiCam6|motion|moving|FrontDoor").
+When using duplicate detector types, such as motion, each detector entry must be preceeded
+by a '-' and space as shown below. Each detector section must have a ``roi_name`` and 
+``log_roi_name`` parameter.  Log events these ROIs will have the ``roi_name`` concatenated 
+to the end of each associated event in the log file if the ``log_roi_name`` is 
+enabled (default: False).
+
+.. code-block:: yaml
+
+	# Settings for imagenode.py webcam motion detector testing
+	---
+	node:
+	  name: StreetView
+	  queuemax: 50
+	  patience: 15
+	  heartbeat: 1
+	  send_type: jpg
+	  #send_threading: True  # sends images in separate thread
+	  #stall_watcher: True  # watches for stalled network or RPi power glitch
+	  print_settings: True
+	hub_address:
+	  H1: tcp://10.0.0.228:5555
+	cameras:
+	  P1:
+		viewname: RPiCam6
+		resolution: (640,480)
+		exposure_mode: auto
+		framerate: 30
+		detectors:
+		  - motion:
+			 ROI: (4,21),(86,51)
+			 roi_name: Street
+			 log_roi_name: False # default False
+			 draw_roi: ((0,255,0),1)
+			 send_frames: detected event # continuous, none or detected event
+			 send_count: 7 # number of images to send when an event occurs
+			 delta_threshold: 7
+			 min_motion_frames: 5
+			 min_still_frames: 5
+			 min_area: 3
+			 blur_kernel_size: 21
+			 send_test_images: False
+			 print_still_frames: False  # default = True
+			 draw_time: ((0,200,0),1)
+			 draw_time_org: (5,5)
+			 draw_time_fontScale: 0.5
+		  - motion:
+			 ROI: (23,52),(81,90)
+			 roi_name: FrontDoor
+			 log_roi_name: True  # default False
+			 draw_roi: ((0,255,0),1)
+			 send_frames: detected event # continuous, none or detected event
+			 send_count: 7 # number of images to send when an event occurs
+			 delta_threshold: 7
+			 min_motion_frames: 5
+			 min_still_frames: 5
+			 min_area: 3  # minimum area of motion as percent of ROI
+			 blur_kernel_size: 21  # Guassian Blur kernel size - integer and odd
+			 send_test_images: False
+			 print_still_frames: False  # default = True
+
+Note:  If multiple detectors are used of different types (e.g. motion and light), 
+then the '-' and space is not required. However, mixed syntax is not allowed. In other words, 
+each detector must have a '-' and space or NOT, unless duplicate types are used, 
+and in that case each detector must have a '-' and space preceding each entry.
+
 =========================================================================
 Settings for Sensor Detectors, including temperature and humidity sensors
 =========================================================================
