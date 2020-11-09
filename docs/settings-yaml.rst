@@ -188,7 +188,7 @@ There is 5 optional ``node`` settings:
 
   heartbeat: an integer number of minutes; how often to send a heartbeat to hub
   patience: maximum number of seconds to wait for a reply from
-  REP_watcher: True of False to start a REP_watcher thread
+  REP_watcher: True or False to start a REP_watcher thread
   stall_watcher: True or False to start a 'stall_watcher' sub-process
     (default is False)
   send_threading: True or False to send images & messages in a separate thread
@@ -220,7 +220,7 @@ can recover from brief network outages almost all of the time. But some network
 outages (e.g., brief power outages that confuse routers or wifi hubs) can cause
 the ZMQ protocol to hang. The ``patience`` setting specifies how long to wait
 in seconds. The options ``REP_watcher`` and ``stall_watcher`` use the
-``patience`` value to determine how long to wait if they detect a failture.  If
+``patience`` value to determine how long to wait if they detect a failure.  If
 you do not specify a ``patience`` value, the default is 10 seconds.
 
 If the ``REP_watcher`` setting is set to ``True``, then a thread is
@@ -233,7 +233,7 @@ imagehub restarts itself or the ZMQ link gets out of sync, a REP may never be
 received and the send_frame function will stall forever. Setting
 this option to ``True`` will start a thread that tracks the time
 of each REQ and each REP. Then, if a REP is not received for ``patience``
-seconds, the fix_comm_link() method can be called.
+seconds, the fix_comm_link() method will be called.
 
 If the ``stall_watcher`` setting is set to ``True``, then a sub-process is
 started that watches the main imagenode process for "slow downs" or "stalls".
@@ -274,8 +274,8 @@ above "reliability" options. Here are the settings that have worked best for me:
    simple as "no REP after a REQ". Using ``stall_watcher`` has helped me
    identify RPi's that were slowly failing due to electronic issues, heat
    issues, SD card issues, etc. If ``stall_watcher`` is set, it is still
-   necessary to set ``REP_watcher`` as well; they check for different kinds of
-   stalls.
+   necessary to set ``REP_watcher`` as well because they check for different
+   kinds of stalls.
 
 If the ``send_threading`` setting is set to ``True``, then a separate thread
 is started to send (message, image) pairs to the **imagehub**. The default is
