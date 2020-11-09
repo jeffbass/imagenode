@@ -43,7 +43,7 @@ Ctrl-C.
 # EDIT THES OPTIONS BEFORE RUNNING PROGRAM
 JPG = True  # or False if receiving images
 SHOW_IMAGES = True
-TEST_DURATION = 30  # seconds or 0 to keep going until Ctrl-C
+TEST_DURATION = 300  # seconds or 0 to keep going until Ctrl-C
 ########################################################################
 
 import cv2
