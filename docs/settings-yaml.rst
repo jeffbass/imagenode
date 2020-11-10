@@ -4,7 +4,6 @@ imagenode Settings and the imagenode.yaml file
 
 .. contents::
 
-========
 Overview
 ========
 
@@ -730,7 +729,7 @@ affect how it is recorded:
 
 Specifying **Multiple** Camera Detectors of the Same Type
 =========================================================
-Multiple Regions of Interest (ROI) are capable with the same detector. For example,
+Multiple Regions of Interest (ROI) are possible with the same detector. For example,
 if a region, such as the sidewalk approaching your front door, is of special interest,
 this region can be defined and named in order to generate log notifications for that
 specific ROI.
@@ -738,11 +737,11 @@ specific ROI.
 .. image:: images/multiple-roi-image.jpg
 
 In the example yaml file below, a log event will be generated indicating motion at the
-FrontDoor (e.g. "2020-10-16 20:53:39,727 ~ StreetView RPiCam6|motion|moving|FrontDoor").
+FrontDoor (e.g. "**2020-10-16 20:53:39,727 ~ StreetView RPiCam6|motion|moving|FrontDoor**").
 When using duplicate detector types, such as motion, each detector entry must be preceeded
-by a '-' and space as shown below. Each detector section must have a ``roi_name`` and 
-``log_roi_name`` parameter.  Log events these ROIs will have the ``roi_name`` concatenated 
-to the end of each associated event in the log file if the ``log_roi_name`` is 
+by a '-' and space as shown below. Each detector section must have a ``roi_name`` and
+``log_roi_name`` parameter.  Log events these ROIs will have the ``roi_name`` concatenated
+to the end of each associated event in the log file if the ``log_roi_name`` is
 enabled (default: False).
 
 .. code-block:: yaml
@@ -799,9 +798,9 @@ enabled (default: False).
 			 send_test_images: False
 			 print_still_frames: False  # default = True
 
-Note:  If multiple detectors are used of different types (e.g. motion and light), 
-then the '-' and space is not required. However, mixed syntax is not allowed. In other words, 
-each detector must have a '-' and space or NOT, unless duplicate types are used, 
+Note:  If multiple detectors are used of different types (e.g. motion and light),
+then the '-' and space is not required. However, mixed syntax is not allowed. In other words,
+each detector must have a '-' and space or NOT, unless duplicate types are used,
 and in that case each detector must have a '-' and space preceding each entry.
 
 =========================================================================

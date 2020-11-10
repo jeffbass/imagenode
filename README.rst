@@ -240,6 +240,10 @@ Thanks for all contributions big and small. Some significant ones:
 | Added DHT11 & DHT22      |                 |                                              |
 | sensor capability        | Stephen Kirby   | `@sbkirby <https://github.com/sbkirby>`_     |
 +--------------------------+-----------------+----------------------------------------------+
+| Added multiple detector  |                 |                                              |
+| per camera capability    | Stephen Kirby   | `@sbkirby <https://github.com/sbkirby>`_     |
++--------------------------+-----------------+----------------------------------------------+
+
 
 Acknowledgments
 ===============
