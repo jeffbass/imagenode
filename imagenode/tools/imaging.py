@@ -330,7 +330,10 @@ class ImageNode:
             ".jpg", image, [int(cv2.IMWRITE_JPEG_QUALITY),
             self.jpeg_quality])
         self.REQ_sent_time.append(datetime.utcnow())  # utcnow 2x faster than now
-        hub_reply = self.sender.send_jpg(text, jpg_buffer)
+        try:
+            hub_reply = self.sender.send_jpg(text, jpg_buffer)
+        except:  # add more specific exception, e.g. ZMQError, after testing
+            print("Exception at sender.send_jpg in REP_watcher function.")
         self.REP_recd_time.append(datetime.utcnow())
         return hub_reply
 
