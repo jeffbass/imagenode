@@ -334,6 +334,7 @@ class ImageNode:
             hub_reply = self.sender.send_jpg(text, jpg_buffer)
         except:  # add more specific exception, e.g. ZMQError, after testing
             print("Exception at sender.send_jpg in REP_watcher function.")
+            self. fix_comm_link()
         self.REP_recd_time.append(datetime.utcnow())
         return hub_reply
 
