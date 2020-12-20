@@ -15,31 +15,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sending images via **imageZMQ**. The advantage over the existing
   `send_threading` option would be using a 2nd process (and a different
   RPi core) rather than a 2nd thread running on the same core to send images.
-- Refactoring `stall_watcher` to eliminate to eliminate dependency on Linux
-  signal SIGALRM, which isn't Windows friendly. New algorithm needs to work
-  well with 1) simple main capture-send loop, 2) threaded SendQueue and
-  3) fully buffered SendQueue. Must reliably catch "REP-not-received-promptly"
-  at least as well as the existing signal SIGALRM did.
-- Adding the sending of 1) startup event message and 2) startup image to enable
-  the new yin-yang-ranch design. In the new design, the librarian sends control
-  commands directly to the imagenodes, bypassing the imagehub for those
-  commands. This is a major design change that makes the imagehub simpler and
-  faster.
 - Adding the ability to capture images from stored image files as a
   substitute for capturing images from a camera. Will allow testing and tuning
   of options from real world images gathered by imagenodes scattered around the
   farm. The existing stored image library is large and could potentially be used
   for adding machine learning capability to the RPi imagenodes.
-- Adding code and docs to support DHT11 & DHT22 temperature / humidity sensors
-  (done. Thanks to @sbkirby.)
-- Adding yaml options, code and docs for the full range of PiCamera settings
-  (done. Thanks to @sbkirby.)
-- Adding a `receive_test.py` program to enable FPS timed testing of different
-  SendQueue alternatives. Make the `receive_test.py` Windows friendly by
-  eliminating dependence on Linux signal SIGALRM (done).
-- Making the detect_motion method work with both OpenCV v3.x and v4.x
-  `findContours()` method return tuples (2 or 3 values returned depending on
-  openCV version) (done).
+
+## 0.3.0 - 2020-12-19
+
+### Improvements
+
+- Added a `REP_watcher` yaml option which tests for REP-sent-but-no-timely-REQ
+  received. This eliminated the need for `signal.SIGALRM`, which does not work
+  in Python threads, such as when the `send_threading` yaml option is used. The
+  new `REP_watcher` option defaults to `True`.
+- Added the sending of a startup event message that is sent each time the
+  imagenode is restarted.
+- Added code and docs to support DHT11 & DHT22 temperature / humidity sensors
+  (Thanks to @sbkirby.)
+- Added yaml options, code and docs for the full range of PiCamera settings
+  (Thanks to @sbkirby.)
+- Added a `receive_test.py` program to enable FPS timed testing of different
+  SendQueue alternatives. Made the `receive_test.py` Windows friendly by
+  eliminating dependence on Linux signal SIGALRM.
+
+### Changes and Bugfixes
+
+- Made the detect_motion method work with both OpenCV v3.x and v4.x
+  `findContours()` method. This method returns tuples of 2 or 3 values
+  depending on the openCV version. The imagenode detect_motion method now works
+  correctly with both OpenCV versions.
 
 ## 0.2.1 - 2020-07-10
 
