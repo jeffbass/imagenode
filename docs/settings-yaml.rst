@@ -187,7 +187,7 @@ There is 5 optional ``node`` settings:
 
   heartbeat: an integer number of minutes; how often to send a heartbeat to hub
   patience: maximum number of seconds to wait for a reply from
-  REP_watcher: True or False to start a REP_watcher thread
+  REP_watcher: True or False to start a REP_watcher thread (default is True)
   stall_watcher: True or False to start a 'stall_watcher' sub-process
     (default is False)
   send_threading: True or False to send images & messages in a separate thread
@@ -232,7 +232,8 @@ imagehub restarts itself or the ZMQ link gets out of sync, a REP may never be
 received and the send_frame function will stall forever. Setting
 this option to ``True`` will start a thread that tracks the time
 of each REQ and each REP. Then, if a REP is not received for ``patience``
-seconds, the fix_comm_link() method will be called.
+seconds, the fix_comm_link() method will be called. The default for
+``REP_watcher`` is ``True``.
 
 If the ``stall_watcher`` setting is set to ``True``, then a sub-process is
 started that watches the main imagenode process for "slow downs" or "stalls".
@@ -249,7 +250,7 @@ the ``stall_watcher`` option is set to ``True``, the 2nd process will end the
 service can restart **imagenode**. An example **imagenode.service** file that
 provides for restarting (using systemd / systemctl) is in the main directory.
 The ``patience`` option (above) sets the number of seconds between "stall"
-checks.
+checks. The default for ``stall_watcher`` is ``False``.
 
 All 4 of the above options are about longer term reliability of **imagenodes** when
 running for long periods of time in a production environment. My **imagenodes** are

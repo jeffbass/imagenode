@@ -1378,7 +1378,7 @@ class Settings:
         if 'REP_watcher' in self.config['node']:
             self.REP_watcher = self.config['node']['REP_watcher']
         else:
-            self.REP_watcher = False
+            self.REP_watcher = True
         if 'send_threading' in self.config['node']:
             self.send_threading = self.config['node']['send_threading']
         else:
