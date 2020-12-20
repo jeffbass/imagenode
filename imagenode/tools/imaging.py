@@ -350,7 +350,11 @@ class ImageNode:
         """
 
         self.REQ_sent_time.append(datetime.utcnow())  # utcnow 2x faster than now
-        hub_reply = self.sender.send_image(text, image)
+        try:
+            hub_reply = self.sender.send_image(text, image)
+        except:  # add more specific exception, e.g. ZMQError, after testing
+            print("Exception at sender.send_image in REP_watcher function.")
+            self. fix_comm_link()
         self.REP_recd_time.append(datetime.utcnow())
         return hub_reply
 
