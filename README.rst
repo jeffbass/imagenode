@@ -31,7 +31,7 @@ Overview
 **imagenode** is the image capture and sending portion of a computer vision
 pipeline that is typically run on multiple computers. For example, a Raspberry
 Pi computer runs **imagenode** to capture images with a PiCamera and perform
-some simple image processing. The images are transferred by **imagezmq** (see
+some simple image processing. The images are transferred by **imageZMQ** (see
 reference) to a hub computer running **imagehub** (often a Mac) for further
 image processing. The real benefit of **imagenode** is that it can use the
 the processing power of the Raspberry Pi to:
@@ -40,8 +40,8 @@ the processing power of the Raspberry Pi to:
 - Analyze the images to detect events (e.g., water meter started flowing)
 - When a detected event occurs:
 
-  - Send an event message about the event to the imagehub
-  - Send a select few "detected state change" images to the imagehub
+  - Send an event message about the event to the **imagehub**
+  - Send a select few "detected state change" images to the **imagehub**
 
 So, instead of 36,000 images an hour being sent from our water meter cam to our
 **imagehub**, only about 20 images are sent each time the water starts flowing
@@ -56,14 +56,14 @@ See `Using imagenode in distributed computer vision projects <docs/imagenode-use
 for a more detailed explanation of the overall project design. See the
 `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_
 for more details about the architecture of the
-**imagenode** <--> **imagezmq** <--> **imagehub** system.
+**imagenode** <--> **imageZMQ** <--> **imagehub** system.
 
 Imagenode Capabilities
 ======================
 
 - Continuously captures images using PiCameras or USB webcams.
 - Performs image transformation and motion, light or color detection.
-- Sends detected events and relevant images to an image hub using **imagezmq**.
+- Sends detected events and relevant images to an image hub using **imageZMQ**.
 - Can capture and send other sensor data gathered using the GPIO pins.
 - Can control lighting (e.g., white LED or Infrared LED area lights).
 - Sends event messages (e.g., water is flowing) as well as images.
@@ -79,17 +79,17 @@ Dependencies and Installation
 - PyZMQ 16.0 and newer
 - RPi.GPIO 0.6 and newer (imported only if using GPIO pins)
 - picamera 1.13 (imported only if using PiCamera)
-- imagezmq 1.1.1 and newer
+- imageZMQ 1.1.1 and newer
 - imutils 0.4.3 and newer (used get to images from PiCamera)
 - psutil 5.7.2 and newer
 - PyYAML 5.3 and newer
 - w1thermsensor 1.3 and newer (if using DS18S20 temperature sensor)
 - adafruit-circuitpython-dht 3.4.2 and newer (if using DHT11 or DHT22 sensor)
 
-**imagenode** captures images and uses **imagezmq** to transfer the images.
-It is best to install and test **imagezmq** before installing **imagenode**.
-The instructions for installing and testing **imagezmq** are in the
-`imagezmq GitHub repository <https://github.com/jeffbass/imagezmq.git>`_.
+**imagenode** captures images and uses **imageZMQ** to transfer the images.
+It is best to install and test **imageZMQ** before installing **imagenode**.
+The instructions for installing and testing **imageZMQ** are in the
+`imageZMQ GitHub repository <https://github.com/jeffbass/imagezmq.git>`_.
 
 **imagenode** is still in early development, so it is not yet in PyPI. Get it by
 cloning the GitHub repository::
@@ -98,7 +98,7 @@ cloning the GitHub repository::
 
 Once you have cloned **imagenode** to a directory on your local machine,
 you can run the tests using the instructions below. The instructions assume you
-have cloned both **imagehub** and **imagezmq** to the user home directory.
+have cloned **imagehub** to the user home directory.
 
 Imagenode settings via YAML files
 =================================
@@ -117,15 +117,15 @@ Running the Tests
 functionality. The tests are numbered in the order in which they should be run
 to determine if **imagenode** is running correctly on your systems.
 
-Test **imagenode** in the same virtualenv in which you tested **imagenzmq**. For
-the **imagezmq** testing and for the **imagenode** testing, my virtualenv is
+Test **imagenode** in the same virtualenv in which you tested **imagenZMQ**. For
+the **imageZMQ** testing and for the **imagenode** testing, my virtualenv is
 called py3cv3.
 
-**imagenode** requires **imagezmq** be installed and working. Before running any
-tests with **imagenode**, be sure you have successfully installed **imagezmq**
-and run all of its tests. The **imagezmq** tests must run successfully on every
+**imagenode** requires **imageZMQ** be installed and working. Before running any
+tests with **imagenode**, be sure you have successfully installed **imageZMQ**
+and run all of its tests. The **imageZMQ** tests must run successfully on every
 computer you will be using **imagenode** on. You can use pip to install
-**imagezmq**.
+**imageZMQ**.
 
 Directory Structure for running the tests
 -----------------------------------------
@@ -150,7 +150,7 @@ diagram. The ``receive_test.py`` program acts as the image hub test receiver for
 each imagenode test. It must be started and running before running
 ``imagenode.py.``
 
-Test 1: Running **imagenode** and **imagezmq** together on a Mac
+Test 1: Running **imagenode** and **imageZMQ** together on a Mac
 -----------------------------------------------------------------
 **The first test** runs both the sending program **imagenode** and the receiving
 program ``receive_test.py`` (acting as a test hub) on
@@ -165,7 +165,7 @@ Test 2: Sending a light detector stream of images from RPi PiCamera to a Mac
 (acting as a test hub) on a Mac (or Linux computer). It tests that the
 **imagenode** software is installed correctly on the RPi and that
 the ``imagenode.yaml`` file has been copied and edited in a way that works.
-It tests that the **imagezmq** communication is working between the Raspberry Pi
+It tests that the **imageZMQ** communication is working between the Raspberry Pi
 and the Mac. It also tests the Picamera. It uses a "lighted" versus "dark"
 detector applied to a specified ROI.
 
@@ -188,22 +188,22 @@ The details of running the 4 tests are `here <docs/testing.rst>`_.
 Running **imagenode** in production
 ===================================
 Running the test programs requires that you leave a terminal window open, which
-is helpful for testing, but not for production runs. I have provided an example
-imagenode.sh shell script that shows how I start imagenodes for the production
-programs observing my small farm. The key is to start the imagenode.py program
-1) in the correct virtualenv and 2) as a background task that allows the program
-to keep running when the terminal window is closed. There are multiple ways to
-start the imagenode.sh program when the RPi starts: use cron, use screen, or use
-the systemctl / systemd service protocol that linux currently uses for startup.
-The best one to use is the one that you prefer and are familiar with, so I won't
-make a specific recommendation here.
+is helpful for testing, but not for production runs. I use systemctl / systemd
+to start **imagenode** in production. I have provided an example
+``imagenode.service`` unit configuration file that shows how I start
+**imagenode** for the production programs observing my small farm. I have found
+the systemctl / systemd system to be best way to start / stop / restart and
+check the running status of **imagenode** over several years of testing. For
+those who prefer using a shell script to start **imagenode**, I have included an
+example ``imagenode.sh``. It is important to run **imagenode** in the right
+virtualenv in production, regardless of your choice of program startup tools.
 
 In production, you would want to set the test options used to print settings
-to false; they are only helpful during testing. All errors and information
-are sent to imagenode.log in the same directory as imagenode.py. You will
-probably want the log to be in a different directory for production; the log
-file location can be set by changing it in the logging function at the bottom
-of the imagenode.py program file.
+to ``False``; they are only helpful during testing. All errors and **imagenode**
+event messages are saved in the file ``imagehub.log`` which defaults to the
+same directory as imagenode.py. You might want the log to be in a different
+directory for production; the log file location can be set by changing it in the
+logging function at the bottom of the imagenode.py program file.
 
 Additional Documentation
 ========================
@@ -212,17 +212,18 @@ Additional Documentation
 - `How imagenode is used in a larger project <docs/imagenode-uses.rst>`_.
 - `Version History and Changelog <HISTORY.md>`_.
 - `Research and Development Roadmap <docs/research-roadmap.rst>`_.
-- `The imagezmq classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_.
+- `The imageZMQ classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_.
 - `The imagehub software that saves events and images <https://github.com/jeffbass/imagehub>`_.
 - `The larger farm automation / computer vision project <https://github.com/jeffbass/yin-yang-ranch>`_.
-  This project also shows the overall system architecture.
+  This project shows the overall system architecture. It also contains
+  links to my **PyCon 2020** talk video and slides explaining the project.
 
 Contributing
 ============
 **imagenode** is in early development and testing. I welcome open issues and
 pull requests, but because the programs are still rapidly evolving, it is best
 to open an issue for some discussion before submitting pull requests. We can
-exchange ideas about your potential pull request how to best test your code.
+exchange ideas about your potential pull request and how to best test your code.
 
 Contributors
 ============
@@ -249,7 +250,7 @@ Acknowledgments
 ===============
 - **ZeroMQ** is a great messaging library with great documentation
   at `ZeroMQ.org <http://zeromq.org/>`_.
-- **PyZMQ** serialization examples provided a starting point for **imagezmq**.
+- **PyZMQ** serialization examples provided a starting point for **imageZMQ**.
   See the
   `PyZMQ documentation <https://pyzmq.readthedocs.io/en/latest/index.html>`_.
 - **OpenCV** and its Python bindings provide great scaffolding for computer
