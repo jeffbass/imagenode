@@ -86,7 +86,9 @@ Dependencies and Installation
 - imutils 0.4.3 and newer (used get to images from PiCamera)
 - psutil 5.7.2 and newer
 - PyYAML 5.3 and newer
-- w1thermsensor 1.3 and newer (if using DS18S20 temperature sensor)
+- w1thermsensor 1.3 (if using DS18S20 temperature sensor)
+
+  - NOT yet compatible with w1thermsensor version 2 which uses a new API
 - adafruit-circuitpython-dht 3.4.2 and newer (if using DHT11 or DHT22 sensor)
 
 **imagenode** captures images and uses **imageZMQ** to transfer the images.
