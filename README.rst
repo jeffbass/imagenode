@@ -75,7 +75,10 @@ Dependencies and Installation
 
 - Python 3.6 and newer
 - OpenCV 3.3 and 4.0 and newer
-- Raspbian Stretch, Raspbian Jessie and Raspbian Buster
+- Raspberry Pi OS Buster, Raspbian Stretch and Raspbian Jessie
+
+  - NOT yet tested with Raspberry Pi OS Buster. Waiting for a production
+    replacement for the Python PiCamera module.
 - PyZMQ 16.0 and newer
 - RPi.GPIO 0.6 and newer (imported only if using GPIO pins)
 - picamera 1.13 (imported only if using PiCamera)
