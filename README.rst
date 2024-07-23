@@ -260,12 +260,6 @@ Acknowledgments
   `PyZMQ documentation <https://pyzmq.readthedocs.io/en/latest/index.html>`_.
 - **OpenCV** and its Python bindings provide great scaffolding for computer
   vision projects large or small: `OpenCV.org <https://opencv.org/>`_.
-- **imutils** is a collection of Python classes and methods that allow computer
-  vision programs using OpenCV to be cleaner and more compact. It has a very
-  helpful threaded image reader for Raspberry PiCamera modules or webcams. It
-  allowed me to shorten my camera reading programs on the Raspberry Pi by half:
-  `imutils on GitHub <https://github.com/jrosebr1/imutils>`_. **imutils** is an
-  open source project authored by Adrian Rosebrock.
 - The motion detection function detect_motion() borrowed a lot of helpful code
   from a motion detector
   `tutorial post <https://www.pyimagesearch.com/2015/06/01/home-surveillance-and-motion-detection-with-the-raspberry-pi-python-and-opencv/>`_
