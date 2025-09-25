@@ -10,6 +10,9 @@ import time
 import signal
 import logging
 
+class YamlOptionsError(Exception):
+    pass
+
 def versionCompare(v1, v2):
     """Method to compare two version number
     Return 1 if v2 is smaller,

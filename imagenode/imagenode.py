@@ -23,7 +23,7 @@ from tools.imaging import Settings, ImageNode
 def main():
     # set up controlled shutdown when Kill Process or SIGTERM received
     signal.signal(signal.SIGTERM, clean_shutdown_when_killed)
-    log = start_logging()
+    log = start_logging(settings)
     try:
         log.info('Starting imagenode.py')
         settings = Settings()  # get settings for node cameras, ROIs, GPIO
@@ -48,9 +48,9 @@ def main():
             node.closeall(settings) # close cameras, GPIO, files
         log.info('Exiting imagenode.py')
 
-def start_logging():
+def start_logging(settings):
     log = logging.getLogger()
-    handler = logging.handlers.RotatingFileHandler('imagenode.log',
+    handler = logging.handlers.RotatingFileHandler(settings.logfile,
         maxBytes=15000, backupCount=5)
     formatter = logging.Formatter('%(asctime)s ~ %(message)s')
     handler.setFormatter(formatter)
