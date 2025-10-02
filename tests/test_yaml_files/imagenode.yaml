@@ -1,0 +1,9 @@
+# Settings file for imagenode.py Mac webcam light detector testing
+---
+node:
+  name: WebCamTest
+  print_settings: True
+hub_address:
+  H1: tcp://127.0.0.1:5555  # or use tcp://localhost:5555
+netnode:
+  test1: 1
