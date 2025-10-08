@@ -8,10 +8,8 @@ hub_address:
   H1: tcp://192.168.86.88:5555  # or a format like tcp://jeff-macbook:5555
 cameras:
   P1:
-    resolution: (640, 480)
-    resize_width: 80
+    size: (640, 480)
     framerate: 32
-    vflip: True   # change to True or False to suit your RPi PiCamera
     detectors:
       motion:
         ROI: (70,2),(100,25)

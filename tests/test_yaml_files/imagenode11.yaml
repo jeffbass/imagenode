@@ -7,10 +7,8 @@ hub_address:
   H1: tcp://127.0.0.1:5555  # or use tcp://localhost:5555
 cameras:
   W1:
-    resolution: (640, 480)
-    resize_width: 80
+    size: (640, 480)
     framerate: 32
-    vflip: False
     src: 0
     detectors:
       light:

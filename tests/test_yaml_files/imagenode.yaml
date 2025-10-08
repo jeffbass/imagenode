@@ -5,5 +5,5 @@ node:
   print_settings: True
 hub_address:
   H1: tcp://127.0.0.1:5555  # or use tcp://localhost:5555
-netnode:
+netnode:   # can uncomment these 2 to test "extra settings not allowed "
   test1: 1

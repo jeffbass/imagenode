@@ -1,0 +1,27 @@
+# Settings file imagenode.yaml -- example with lots of settings
+---
+node:
+  name: WebCamTest
+  print_settings: True
+hub_address:
+  H1: tcp://127.0.0.1:5555  # or use tcp://localhost:5555
+cameras:
+  P1:
+    viewname: Sidewalk
+    size: (640, 480)
+    auto_exposure: True
+    framerate: 32  # set FrameDurationLimits
+    vflip: True
+  P2:
+    viewname: Driveway
+    size: (1280, 960)
+    auto_exposure: False
+    exposure_time: 15625
+    analog_gain: 1.5
+    brightness: 50
+    contrast: 50
+    saturation: 20
+    sharpness: 30
+    awb_mode: auto 
+    framerate: 16  # set FrameDurationLimits
+    vflip: False

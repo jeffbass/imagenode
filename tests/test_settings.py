@@ -1,9 +1,11 @@
-"""settings_test.py -- test the Settings Class
+"""test_settings.py -- test the Settings Class
 Tests the Settings Class by reading the imagenode.yaml file and parsing it
 Tests that the Pydantic field validators are working correctly
+Tests using all the *.yaml files in tests/test_yaml_files directory
+Launched via pytest to simplify iterating over all the test yaml files
 
 To run this program, you must be in the project root directory
-  that contains imagenode/ folder and tests/ folder
+  that contains the imagenode/ folder and the tests/ folder
   and must have the appropriate virtualenv activated. Like this:
 
 (py311cv4) jeffbass@jeff-mac-2022 ~/SDBdev2/imagenode $ pytest tests/test_settings.py
