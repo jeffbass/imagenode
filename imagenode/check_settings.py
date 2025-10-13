@@ -10,22 +10,22 @@ License: MIT, see LICENSE for more details.
 """
 
 import sys
+import pprint
 import argparse
 from pathlib import Path
+from pydantic import ValidationError
 from tools.yaml_loader import load_yaml
 from tools.settings import Settings
 
 # argparse to get imagenode_data alternative if any
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--path", required=False,
-	help="path to imagehub.yaml file")
-args = vars(ap.parse_args())
+	help="path to imagenode.yaml file")
+args, _ = ap.parse_known_args()
 
-print("args retrieved", args)
+print("args retrieved", args.path)
 
 # attempt to open imagenode.yaml file
-# YAML_DIR = Path(__file__).parent / "test_yaml_files"
-# yaml_file = Path() 
 imagenode_data_directory = "imagenode_data"
 if args.path:
     subdir = Path(args.path).expanduser()
@@ -37,17 +37,16 @@ else:
 
 yaml_file = subdir / "imagenode.yaml"
 
+raw_yaml = load_yaml(yaml_file)
 print("Yaml File: ", yaml_file)
 
-sys.exit("Current Testing Endpoint")
+# sys.exit("Current Testing Endpoint")
 
-raw_yaml = load_yaml(yaml_file)
-    print("Yaml File: ", yaml_file)
-    try:
-        settings = Settings(**raw_yaml)
-        settings.print_settings(raw_yaml=raw_yaml)
-    except ValidationError as e:
-        pytest.fail(f"Validation failed for {yaml_file.name}:\n{e}")
+try:
+    settings = Settings(**raw_yaml)
+    settings.print_settings(raw_yaml=raw_yaml)
+except ValidationError as e:
+    print(f"Validation failed for imagenode.yaml:\n{e}")
 
 # 
 

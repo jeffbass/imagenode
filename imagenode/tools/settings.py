@@ -38,9 +38,11 @@ class HubAddressList(BaseModel):
     H3: str = ""
 
 class DetectorOptions(BaseModel):
-    ROI: str = ""            # (70,2),(100,25)
-    draw_ROI: str = ""       # ((255,0,0),5) 
-    draw_time: str = ""      # ((255,0,0),1)  # the timestamp text is blue with 1 pixel line width
+    ROI: str = ""              # (70,2),(100,25) OpenCV format
+    draw_ROI: str = ""         # ((255,0,0),5) OpenCV format
+    roi_name: str = ""         # optional ROI name
+    log_roi_name: bool = False # add ROI to event detected message?
+    draw_time: str = ""      # ((255,0,0),1) timestamp text blue with 1 pixel line width
     draw_time_org: str = ""  # (1,1)  # the timestamp text starts at pixel (1,1)
     draw_time_fontScale: int = 1   # the timestamp fontScale factor is 1
     threshold: int = 25 
@@ -60,7 +62,7 @@ class CameraOptions(BaseModel):
     size: Optional[str] = "(320, 240)"  # will use literal_eval
     framerate: Optional[int] = 10
     src: Optional[int] = 0
-    detectors: Optional[Dict[str, DetectorOptions]] = None
+    detectors: Optional[Dict[Literal["motion","light"], DetectorOptions]] = None
     auto_exposure: bool = True
     framerate: Optional[int] = None
     vflip: bool = False
@@ -106,15 +108,52 @@ class Settings(BaseModel):
 
     def print_settings(self, title=None, raw_yaml=None):
         # prints the settings in the yaml file
+        # argument raw_yaml is the raw dictionary of yaml file before validation.
+        # if the raw_yaml argument is present, the raw_yaml file will be pprinted 
+        # and a comparison to the validated settings (post Pydantic validation)
+        # will print settings in the yaml file that aren't in the validated settings.
+        # This will catch some, but not all typos of settings names
         if title:
             print(title)
-        print('Validated contents of imagenode.yaml:')
+        print('\nValidated contents of imagenode.yaml:')
         pprint.pprint(self.model_dump())
         print()
         if raw_yaml:
-            # compare expected validated fields to raw_yaml fields
+            n_unknowns = 0
+            # compare expected validated fields to raw_yaml fields in various sections
+            # The root first level settings of the YAML
             defined = set(self.model_dump().keys())
             unknown = set(raw_yaml.keys()) - defined
             if unknown:
+                n_unknowns += 1
                 print("Unknown YAML options:", unknown)
+            # The settings in the node section
+            defined = set(self.model_dump()["node"].keys())
+            unknown = set(raw_yaml["node"].keys()) - defined
+            if unknown:
+                n_unknowns += 1
+                print("Unknown node options:", unknown)
+            # The settings for each camera (there may be multiple cameras)
+            cams = self.model_dump()["cameras"]
+            # print("Model Dump of cameras")
+            # pprint.pprint(cams)
+            for cam in cams:
+                # print("One cam")
+                # pprint.pprint(cam)
+                defined = set(cams[cam].keys())
+                # print("set of cam keys")
+                # pprint.pprint(defined)
+                unknown = set(raw_yaml["cameras"][cam].keys()) - defined
+                if unknown:
+                    n_unknowns += 1
+                    print("Camera ", cam, "Unknown camera options:", unknown)
+            if n_unknowns:
+                print(f"\nUnknown YAML options were found in {n_unknowns} sections.")
+                print("Dump of raw imagenode.yaml file as an unordered dictionary")
+                print("Compare to Validated Settings above")
+                print()
+                pprint.pprint(raw_yaml)
+
+
+
 
