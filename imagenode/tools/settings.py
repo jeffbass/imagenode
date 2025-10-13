@@ -12,7 +12,7 @@ import pprint
 import logging
 from pathlib import Path
 
-from typing import Any, Dict, List, Tuple, Optional, Literal
+from typing import Any, Dict, List, Tuple, Union, Optional, Literal
 from pydantic import BaseModel, ConfigDict, root_validator, validator
 
 log = logging.getLogger(__name__)
@@ -57,12 +57,20 @@ class DetectorOptions(BaseModel):
     min_area: int = 3 
     blur_kernal_size: int = 21 
 
+class DetectorDict(BaseModel):
+    Dict[Literal["motion","light"], DetectorOptions]
+
+class DetectorList(BaseModel):
+    List[DetectorDict]
+
 class CameraOptions(BaseModel):
     viewname: Optional[str] = None
     size: Optional[str] = "(320, 240)"  # will use literal_eval
     framerate: Optional[int] = 10
     src: Optional[int] = 0
-    detectors: Optional[Dict[Literal["motion","light"], DetectorOptions]] = None
+    detectors: Optional[Union[
+        List[DetectorDict],
+        Dict[Literal["motion","light"], DetectorOptions]]] = None
     auto_exposure: bool = True
     framerate: Optional[int] = None
     vflip: bool = False
