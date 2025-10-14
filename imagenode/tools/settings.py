@@ -69,7 +69,7 @@ class CameraOptions(BaseModel):
     framerate: Optional[int] = 10
     src: Optional[int] = 0
     detectors: Optional[Union[
-        List[DetectorDict],
+        List[Dict],
         Dict[Literal["motion","light"], DetectorOptions]]] = None
     auto_exposure: bool = True
     framerate: Optional[int] = None
@@ -155,6 +155,7 @@ class Settings(BaseModel):
                 if unknown:
                     n_unknowns += 1
                     print("Camera ", cam, "Unknown camera options:", unknown)
+
             if n_unknowns:
                 print(f"\nUnknown YAML options were found in {n_unknowns} sections.")
                 print("Dump of raw imagenode.yaml file as an unordered dictionary")

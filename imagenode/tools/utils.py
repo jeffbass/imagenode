@@ -9,9 +9,35 @@ import sys
 import time
 import signal
 import logging
+from pydantic import BaseModel
 
 class YamlOptionsError(Exception):
     pass
+
+def print_attrs(obj, indent=0):
+    """Recursively print Pydantic models, lists, and dicts."""
+    # helpful when debuggin Settings class validated by Pydantic classes
+    # will generate a lot of printed output for a large yaml file
+    prefix = " " * indent
+
+    if isinstance(obj, BaseModel):
+        print(f"{prefix}{obj.__class__.__name__}:")
+        for name, value in obj.model_dump().items():
+            print(f"{prefix}  {name}:")
+            print_attrs(value, indent + 4)
+
+    elif isinstance(obj, dict):
+        for k, v in obj.items():
+            print(f"{prefix}{k}:")
+            print_attrs(v, indent + 4)
+
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            print(f"{prefix}- [{i}]")
+            print_attrs(v, indent + 4)
+
+    else:
+        print(f"{prefix}{repr(obj)}")
 
 def versionCompare(v1, v2):
     """Method to compare two version number
